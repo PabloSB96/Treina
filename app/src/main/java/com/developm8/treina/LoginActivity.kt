@@ -1,8 +1,11 @@
 package com.developm8.treina
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.developm8.treina.client.MainClientActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -25,6 +28,12 @@ class LoginActivity : AppCompatActivity() {
                 kindPerson.setText(R.string.kindPersonClient)
                 textInputLayoutTrainerCode.visibility = View.VISIBLE
             }
+        }
+
+        findViewById<MaterialButton>(R.id.materialButtonSignIn).setOnClickListener {
+            val i = Intent(this, MainClientActivity::class.java)
+            startActivity(i)
+            finish()
         }
     }
 }

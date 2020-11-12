@@ -13,8 +13,24 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
 
 
+    <!-- General strings -->
+    <string name="email">Email</string>
+    <string name="password">Contraseña</string>
+    <string name="work_in_progress">En construcción</string>
+
     <!-- Login page -->
     <string name="kindPersonClient">Soy cliente/deportista</string>
     <string name="kindPersonTrainer">Soy entrenador</string>
     <string name="app_name_uppercase">TREINA</string>
+    <string name="trainer_code">Código de entrenador</string>
+    <string name="sign_in">Iniciar sesión</string>
+    <string name="login_register">No tengo cuenta.
+        <b>Registrarme!</b>
+    </string>
+
+    <!-- Main page client -->
+    <string name="main_activity_bottom_menu_exercices">Rutinas</string>
+    <string name="main_activity_bottom_menu_diet">Dietas</string>
+    <string name="main_activity_bottom_menu_chat">Chat</string>
+    <string name="main_activity_bottom_menu_profile">Perfil</string>
 </resources>

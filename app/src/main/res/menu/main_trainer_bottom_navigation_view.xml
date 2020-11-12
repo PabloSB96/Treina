@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/navigation_main_exercices"
+            android:icon="@drawable/ic_fitness_center_black"
+            android:title="@string/main_activity_bottom_menu_exercices"/>
+
+    <item
+            android:id="@+id/navigation_main_diet"
+            android:icon="@drawable/ic_restaurant_menu_black"
+            android:title="@string/main_activity_bottom_menu_diet"/>
+
+    <item
+            android:id="@+id/navigation_main_chat"
+            android:icon="@drawable/ic_chat_black"
+            android:title="@string/main_activity_bottom_menu_chat"/>
+
+    <item
+            android:id="@+id/navigation_main_profile"
+            android:icon="@drawable/ic_person_black"
+            android:title="@string/main_activity_bottom_menu_profile"/>
+</menu>
