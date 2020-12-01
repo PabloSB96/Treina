@@ -29,8 +29,15 @@
     </string>
 
     <!-- Main page client -->
-    <string name="main_activity_bottom_menu_exercices">Rutinas</string>
-    <string name="main_activity_bottom_menu_diet">Dietas</string>
-    <string name="main_activity_bottom_menu_chat">Chat</string>
-    <string name="main_activity_bottom_menu_profile">Perfil</string>
+    <string name="main_activity_bottom_menu_client_exercices">Rutinas</string>
+    <string name="main_activity_bottom_menu_client_diet">Dietas</string>
+    <string name="main_activity_bottom_menu_client_chat">Chat</string>
+    <string name="main_activity_bottom_menu_client_stats">Estadísticas</string>
+    <string name="main_activity_bottom_menu_client_profile">Perfil</string>
+
+    <!-- Main page trainer -->
+    <string name="main_activity_bottom_menu_trainer_clients">Clientes</string>
+    <string name="main_activity_bottom_menu_trainer_myexercices">Mis ejercicios</string>
+    <string name="main_activity_bottom_menu_trainer_profile">Perfil</string>
+    <string name="main_trainer_title_clients">Lista de clientes</string>
 </resources>

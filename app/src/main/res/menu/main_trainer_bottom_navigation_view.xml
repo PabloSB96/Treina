@@ -2,22 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/navigation_main_exercices"
-            android:icon="@drawable/ic_fitness_center_black"
-            android:title="@string/main_activity_bottom_menu_exercices"/>
+            android:id="@+id/navigation_main_trainer_clients"
+            android:icon="@drawable/ic_group_black"
+            android:title="@string/main_activity_bottom_menu_trainer_clients"/>
 
     <item
-            android:id="@+id/navigation_main_diet"
-            android:icon="@drawable/ic_restaurant_menu_black"
-            android:title="@string/main_activity_bottom_menu_diet"/>
+            android:id="@+id/navigation_main_trainer_myexercices"
+            android:icon="@drawable/ic_content_paste_black"
+            android:title="@string/main_activity_bottom_menu_trainer_myexercices"/>
 
     <item
-            android:id="@+id/navigation_main_chat"
-            android:icon="@drawable/ic_chat_black"
-            android:title="@string/main_activity_bottom_menu_chat"/>
-
-    <item
-            android:id="@+id/navigation_main_profile"
+            android:id="@+id/navigation_main_trainer_profile"
             android:icon="@drawable/ic_person_black"
-            android:title="@string/main_activity_bottom_menu_profile"/>
+            android:title="@string/main_activity_bottom_menu_trainer_profile"/>
 </menu>

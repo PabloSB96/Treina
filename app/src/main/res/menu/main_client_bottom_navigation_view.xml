@@ -2,22 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/navigation_main_exercices"
+            android:id="@+id/navigation_main_client_exercices"
             android:icon="@drawable/ic_fitness_center_black"
-            android:title="@string/main_activity_bottom_menu_exercices"/>
+            android:title="@string/main_activity_bottom_menu_client_exercices"/>
 
     <item
-            android:id="@+id/navigation_main_diet"
+            android:id="@+id/navigation_main_client_diet"
             android:icon="@drawable/ic_restaurant_menu_black"
-            android:title="@string/main_activity_bottom_menu_diet"/>
+            android:title="@string/main_activity_bottom_menu_client_diet"/>
 
     <item
-            android:id="@+id/navigation_main_chat"
+            android:id="@+id/navigation_main_client_chat"
             android:icon="@drawable/ic_chat_black"
-            android:title="@string/main_activity_bottom_menu_chat"/>
+            android:title="@string/main_activity_bottom_menu_client_chat"/>
 
     <item
-            android:id="@+id/navigation_main_profile"
+            android:id="@+id/navigation_main_client_stats"
+            android:icon="@drawable/ic_show_chart_black"
+            android:title="@string/main_activity_bottom_menu_client_stats"/>
+
+    <item
+            android:id="@+id/navigation_main_client_profile"
             android:icon="@drawable/ic_person_black"
-            android:title="@string/main_activity_bottom_menu_profile"/>
+            android:title="@string/main_activity_bottom_menu_client_profile"/>
 </menu>

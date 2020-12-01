@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.developm8.treina.client.MainClientActivity
+import com.developm8.treina.trainer.MainTrainerActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
@@ -31,7 +32,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.materialButtonSignIn).setOnClickListener {
-            val i = Intent(this, MainClientActivity::class.java)
+            val i: Intent = if(switchKindPerson.isChecked) {
+                Intent(this, MainTrainerActivity::class.java)
+            } else {
+                Intent(this, MainClientActivity::class.java)
+            }
             startActivity(i)
             finish()
         }
