@@ -5,12 +5,11 @@
              android:layout_height="match_parent"
              android:paddingTop="?attr/actionBarSize">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewTrainerClients"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textAlignment="center"
-            android:text="Clients"
-            android:textColor="@color/black"
-    />
+            android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </FrameLayout>
