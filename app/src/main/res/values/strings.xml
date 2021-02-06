@@ -17,6 +17,10 @@
     <string name="email">Email</string>
     <string name="password">Contraseña</string>
     <string name="work_in_progress">En construcción</string>
+    <string name="warning">Atención</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirm_delete_message">¿Está seguro que desea eliminar este elemento?</string>
 
     <!-- Login page -->
     <string name="kindPersonClient">Soy cliente/deportista</string>
@@ -40,4 +44,9 @@
     <string name="main_activity_bottom_menu_trainer_myexercices">Mis ejercicios</string>
     <string name="main_activity_bottom_menu_trainer_profile">Perfil</string>
     <string name="main_trainer_title_clients">Lista de clientes</string>
+
+    <!-- MyExercice pages -->
+    <string name="myexercice_title">Título del ejercicio</string>
+    <string name="myexercice_description">Descripción del ejercicio</string>
+    <string name="myexercice_details_title">Detalles del ejercicio</string>
 </resources>

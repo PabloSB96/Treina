@@ -2,6 +2,10 @@ package com.developm8.treina.trainer
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,10 +15,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainTrainerActivity : AppCompatActivity() {
 
     var fm : FragmentManager = supportFragmentManager
-    var clientsFragment: Fragment = FragmentMainTrainerClients()
-    var myExercicesFragment: Fragment = FragmentMainTrainerMyExercices()
-    var profileFragment: Fragment = FragmentMainTrainerProfile()
-    var activeFragment: Fragment = clientsFragment
+    private var clientsFragment: Fragment = FragmentMainTrainerClients()
+    private var myExercicesFragment: Fragment = FragmentMainTrainerMyExercices()
+    private var profileFragment: Fragment = FragmentMainTrainerProfile()
+    private var activeFragment: Fragment = clientsFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,16 +39,19 @@ class MainTrainerActivity : AppCompatActivity() {
                 R.id.navigation_main_trainer_clients -> {
                     fm.beginTransaction().hide(activeFragment).show(clientsFragment).commit()
                     activeFragment = clientsFragment
+                    toolbar.menu.clear()
                     true
                 }
                 R.id.navigation_main_trainer_myexercices -> {
                     fm.beginTransaction().hide(activeFragment).show(myExercicesFragment).commit()
                     activeFragment = myExercicesFragment
+                    invalidateOptionsMenu()
                     true
                 }
                 R.id.navigation_main_trainer_profile -> {
                     fm.beginTransaction().hide(activeFragment).show(profileFragment).commit()
                     activeFragment = profileFragment
+                    toolbar.menu.clear()
                     true
                 }
                 else -> false
