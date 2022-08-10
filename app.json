@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Treina",
+    "slug": "Treina",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationUsageDescription": "The Beep App uses your location to pick origins, destinations, and predict ride times",
+        "NSLocationWhenInUseUsageDescription": "The Beep App uses your location to pick origins, destinations, and predict ride times",
+        "NSLocationAlwaysUsageDescription": "The Beep App will use your location to provide ETA's to yourself and others",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "The Beep App will use your location to provide ETA's to yourself and others",
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
+      },
+      "bundleIdentifier": "com.likeapablo.Treina"
+    },
+    "android": {
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.likeapablo.Treina"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
