@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+            android:id="@+id/navigation_trainer_client_detail_stats"
+            android:icon="@drawable/ic_show_chart_black"
+            android:title="@string/trainer_client_detail_bottom_menu_stats"/>
+
+    <item
+            android:id="@+id/navigation_trainer_client_detail_exercices"
+            android:icon="@drawable/ic_fitness_center_black"
+            android:title="@string/trainer_client_detail_bottom_menu_exercices"/>
+
+    <item
+            android:id="@+id/navigation_trainer_client_detail_diet"
+            android:icon="@drawable/ic_restaurant_menu_black"
+            android:title="@string/trainer_client_detail_bottom_menu_diet"/>
+</menu>

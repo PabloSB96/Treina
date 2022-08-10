@@ -1,5 +1,6 @@
 package com.developm8.treina.trainer
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.developm8.treina.R
 import com.developm8.treina.model.Client
+import com.developm8.treina.trainer.clientdetail.TrainerClientDetailActivity
+import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -21,9 +24,14 @@ class MainTrainerClientsAdapter(
         class ClientViewHolder(val view: View, val layoutInflater: LayoutInflater) : BaseViewHolder<Client>(view, layoutInflater) {
             private val clientName: TextView = view.findViewById(R.id.materialTextViewClientName)
             private val clientProfileImage: CircleImageView = view.findViewById(R.id.circleImageViewProfile)
+            private val materialButtonSee: MaterialButton = view.findViewById(R.id.materialButtonSee)
             override fun bind(item: Client) {
                 this.clientName.text = item.name
-                Picasso.get().load(item.photo).resize(50,50).centerCrop().into(this.clientProfileImage);
+                Picasso.get().load(item.photo).resize(50,50).centerCrop().into(this.clientProfileImage)
+                materialButtonSee.setOnClickListener {
+                    val i: Intent = Intent(view.context, TrainerClientDetailActivity::class.java)
+                    view.context.startActivity(i)
+                }
             }
         }
 

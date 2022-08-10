@@ -14,10 +14,12 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".trainer.TrainerMyExerciceDetailsActivity"></activity>
+        <activity android:name=".trainer.clientdetail.TrainerClientDetailActivity"></activity>
+        <activity android:name=".trainer.TrainerClientDetails" />
+        <activity android:name=".trainer.TrainerMyExerciceDetailsActivity" />
         <activity
                 android:name=".LoginActivity"
-                android:label="@string/title_activity_login"></activity>
+                android:label="@string/title_activity_login" />
         <activity
                 android:name=".SplashActivity"
                 android:theme="@style/SplashTheme">
@@ -27,8 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".client.MainClientActivity"></activity>
-        <activity android:name=".trainer.MainTrainerActivity"></activity>
+        <activity android:name=".client.MainClientActivity" />
+        <activity android:name=".trainer.MainTrainerActivity" />
     </application>
 
 </manifest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/trainer_client_detail_fragment_container"
+        tools:showIn="@layout/activity_trainer_client_detail_content"
+        android:layout_marginBottom="@dimen/bottomnavigationview_height">
+
+</androidx.constraintlayout.widget.ConstraintLayout>

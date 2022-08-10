@@ -49,4 +49,10 @@
     <string name="myexercice_title">Título del ejercicio</string>
     <string name="myexercice_description">Descripción del ejercicio</string>
     <string name="myexercice_details_title">Detalles del ejercicio</string>
+
+    <!-- Client details -->
+    <string name="client_details_title">Detalles del cliente</string>
+    <string name="trainer_client_detail_bottom_menu_stats">General</string>
+    <string name="trainer_client_detail_bottom_menu_exercices">Ejercicios</string>
+    <string name="trainer_client_detail_bottom_menu_diet">Dietas</string>
 </resources>
