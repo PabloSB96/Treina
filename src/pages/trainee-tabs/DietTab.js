@@ -8,17 +8,15 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const RutinasTab = ({ navigation, route }) => {
+const DietTab = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
 
   let [loading, setLoading] = useState(false);
-  let [myRoutines, setMyRoutines] = useState();
+  let [myDiet, setMyDiet] = useState();
   let [userToken, setUserToken] = useState();
   let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
   let [detailsModalDescription, setDetailsModalDescription] = useState('');
-  let [detailsModalObservation, setDetailsModalObservation] = useState('');
-  let [currentDay, setCurrentDay] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -30,20 +28,18 @@ const RutinasTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setMyRoutines(orderMyRoutines(getMyRoutinesAux()));
-    //getMyRoutines();
+    setMyDiet(orderMyDiet(getMyDietAux()));
+    //getMyDiet();
 
   }, [isFocused]);
 
-  let getMyRoutinesAux = () => {
+  let getMyDietAux = () => {
     let obj1 = {
       id: 1,
-      title: 'Ejercicio 1',
-      description: 'Descripcion jkdsfñlkasdjfñ lakjdsfk ajsdklf añslkdfj añlskdf jkñlasd flñkasdj fñlkas dfñ asdf.',
-      observation: 'Observation jkdsfñlkasdjfñ lakjdsfk ajsdklf añslkdfj añlskdf jkñlasd flñkasdj fñlkas dfñ asdf.',
-      repetitions: '10 - 15',
-      rest: '1 min',
-      series: '5',
+      title: 'Comida 3',
+      description: 'Description ñalk asdklfj añsdkf aklñsdf ñalskdjf ñaklds faklñ dsfasdf.',
+      amount: '300 gr',
+      foodType: 'Comida',
       onMonday: true,
       onTuesday: false,
       onWednesday: true,
@@ -56,12 +52,10 @@ const RutinasTab = ({ navigation, route }) => {
     };
     let obj2 = {
       id: 2,
-      title: 'Ejercicio 2',
+      title: 'Desayuno 2',
       description: '',
-      observation: '',
-      repetitions: '5 - 10',
-      rest: '30 sec',
-      series: '4',
+      amount: '300 gr',
+      foodType: 'Desayuno',
       onMonday: true,
       onTuesday: true,
       onWednesday: true,
@@ -72,18 +66,16 @@ const RutinasTab = ({ navigation, route }) => {
     };
     let obj3 = {
       id: 3,
-      title: 'Ejercicio 3',
+      title: 'Cena 3',
       description: '',
-      observation: '',
-      repetitions: '20 - 30',
-      rest: '2 mins',
-      series: '3 - 5',
+      amount: '300 gr',
+      foodType: 'Cena',
       onMonday: false,
       onTuesday: true,
       onWednesday: true,
       onThursday: false,
       onFriday: false,
-      onSaturday: false,
+      onSaturday: true,
       onSunday: true
     };
     var result = [];
@@ -94,66 +86,65 @@ const RutinasTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyRoutines = () => {
-  }
+  let getMyDiet = () => {}
 
-  let orderMyRoutines = (routines) => {
+  let orderMyDiet = (diet) => {
     var result = new Map();
-    for (var i = 0; i < routines.length; i++) {
-      if (routines[i].onMonday) {
+    for (var i = 0; i < diet.length; i++) {
+      if (diet[i].onMonday) {
         var items = result.get('Monday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Monday', items);
       }
-      if (routines[i].onTuesday) {
+      if (diet[i].onTuesday) {
         var items = result.get('Tuesday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Tuesday', items);
       }
-      if (routines[i].onWednesday) {
+      if (diet[i].onWednesday) {
         var items = result.get('Wednesday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Wednesday', items);
       }
-      if (routines[i].onThursday) {
+      if (diet[i].onThursday) {
         var items = result.get('Thursday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Thursday', items);
       }
-      if (routines[i].onFriday) {
+      if (diet[i].onFriday) {
         var items = result.get('Friday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Friday', items);
       }
-      if (routines[i].onSaturday) {
+      if (diet[i].onSaturday) {
         var items = result.get('Saturday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Saturday', items);
       }
-      if (routines[i].onSunday) {
+      if (diet[i].onSunday) {
         var items = result.get('Sunday');
         if (items == undefined) {
           items = [];
         }
-        items.push(routines[i]);
+        items.push(diet[i]);
         result.set('Sunday', items);
       }
     }
@@ -169,21 +160,17 @@ const RutinasTab = ({ navigation, route }) => {
           <Text style={styles.boldText}>{item.title}</Text>
           <View>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Repeticiones</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.repetitions}</Text>
+              <Text style={[styles.labelText, {flex: 1}]}>Cantidad</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.amount}</Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Descanso</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.rest}</Text>
-            </View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Nº de series</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.series}</Text>
+              <Text style={[styles.labelText, {flex: 1}]}>Tipo</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.foodType}</Text>
             </View>
             <Mytextbutton 
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Detalles"
-              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalObservation(item.observation); setDetailsModalVisibility(true);}}
+              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalVisibility(true);}}
               />
           </View>
         </View>
@@ -203,7 +190,7 @@ const RutinasTab = ({ navigation, route }) => {
           <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
               <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myRoutines==undefined || myRoutines.length == 0) && loading == false ) ? (
+                {((myDiet==undefined || myDiet.length == 0) && loading == false ) ? (
                   <View style={{flex: 1}}>
                     <View style={{flex: 1, height: 300, marginTop: 40}}>
                       <Image
@@ -216,7 +203,7 @@ const RutinasTab = ({ navigation, route }) => {
                       />
                     </View>
                     <Mytext 
-                      text="Todavía no tienes ningún ejercicio asignado." 
+                      text="Todavía no tienes ninguna dieta asignada." 
                       estilos={{
                         fontSize: 16,
                         fontWeight: 'bold',
@@ -239,13 +226,6 @@ const RutinasTab = ({ navigation, route }) => {
                             ) : (
                               <Text style={styles.modalTextNothing}>No hay ninguna descripción todavía.</Text>
                             )}
-                            <Text style={styles.modalSubtitle}>Observaciones</Text>
-                            {detailsModalObservation != '' ? (
-                              <Text style={styles.modalText}>{detailsModalObservation}</Text>
-                            ) : (
-                              <Text style={styles.modalTextNothing}>No hay ninguna observación todavía.</Text>
-                            )}
-                            
                             <Pressable
                               style={[styles.modalButton, styles.modalButtonClose]}
                               onPress={() => setDetailsModalVisibility(false)}>
@@ -254,85 +234,85 @@ const RutinasTab = ({ navigation, route }) => {
                           </View>
                         </View>
                     </Modal>
-                    {myRoutines.get('Monday') != undefined ? (
+                    {myDiet.get('Monday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lunes</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Monday')}
+                          data={myDiet.get('Monday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Tuesday') != undefined ? (
+                    {myDiet.get('Tuesday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Martes</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Tuesday')}
+                          data={myDiet.get('Tuesday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Wednesday') != undefined ? (
+                    {myDiet.get('Wednesday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Miércoles</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Wednesday')}
+                          data={myDiet.get('Wednesday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Thursday') != undefined ? (
+                    {myDiet.get('Thursday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Jueves</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Thursday')}
+                          data={myDiet.get('Thursday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Friday') != undefined ? (
+                    {myDiet.get('Friday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Viernes</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Friday')}
+                          data={myDiet.get('Friday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Saturday') != undefined ? (
+                    {myDiet.get('Saturday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Sábado</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Sábado')}
+                          data={myDiet.get('Sábado')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
                       </View>
                     ) : null}
-                    {myRoutines.get('Sunday') != undefined ? (
+                    {myDiet.get('Sunday') != undefined ? (
                       <View>
                         <View><Text style={[styles.labelDay, {flex: 1}]}>Domingo</Text></View>
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Sunday')}
+                          data={myDiet.get('Sunday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
@@ -507,11 +487,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     textTransform: 'uppercase'
-  },
-  itemListTitle : {
-    color: '#d32f2f',
-    fontWeight: 'bold'
-  },
+  }
 });
 
-export default RutinasTab;
+export default DietTab;

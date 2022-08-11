@@ -21,6 +21,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import PhoneNumbersTab from './trainee-tabs/PhoneNumbersTab';
 import AboutTab from './trainee-tabs/AboutTab';
 import RutinasTab from './trainee-tabs/RutinasTab';
+import DietTab from './trainee-tabs/DietTab';
 
 const Drawer = createDrawerNavigator();
 
@@ -68,20 +69,46 @@ function TraineeMainScreen({ navigation, route }) {
           name="Rutinas" 
           component={RutinasTab} 
           options={{
-            headerTitle: 'Rutinas'
+            headerTitle: 'Rutinas',
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            }
           }}
           />
         <Tab.Screen 
           name="Dieta" 
-          component={PhoneNumbersTab} />
+          component={DietTab}
+          options={{
+            headerTitle: 'Dieta',
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            }
+          }} />
         <Tab.Screen 
           name="Historial" 
-          component={PhoneNumbersTab} />
+          component={PhoneNumbersTab}
+          options={{
+            headerTitle: 'Historial',
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            }
+          }} />
         <Tab.Screen 
           name="Perfil" 
           component={AboutTab} 
           options={{
-            headerTitle: 'Perfil'
+            headerTitle: 'Perfil',
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            }
           }}
           />
       </Tab.Navigator>
