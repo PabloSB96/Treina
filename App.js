@@ -12,6 +12,7 @@ import { useFonts } from 'expo-font';
 import { LogBox } from 'react-native';
 import TrainerMainScreen from './src/pages/TrainerMainScreen';
 import TraineeMainScreen from './src/pages/TraineeMainScreen';
+import NewHistoryScreen from './src/pages/trainee-tabs/NewHistoryScreen';
 
 const Stack = createStackNavigator();
 
@@ -41,7 +42,7 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <Stack.Navigator initialRouteName="LoginScreen">
         <Stack.Screen
           name="LoginScreen"
@@ -58,7 +59,20 @@ const App = () => {
             title: 'Registro',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#ffa726',
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="NewHistoryScreen"
+          component={NewHistoryScreen}
+          options={{
+            headerShown: true,
+            title: 'Nuevas medidas',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
             },
             headerTintColor: '#ffffff'
           }}

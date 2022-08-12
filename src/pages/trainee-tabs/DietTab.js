@@ -75,7 +75,7 @@ const DietTab = ({ navigation, route }) => {
       onWednesday: true,
       onThursday: false,
       onFriday: false,
-      onSaturday: true,
+      onSaturday: false,
       onSunday: true
     };
     var result = [];
@@ -300,7 +300,7 @@ const DietTab = ({ navigation, route }) => {
                         <FlatList
                           style={{marginTop: 0, marginBottom: 20}}
                           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Sábado')}
+                          data={myDiet.get('Saturday')}
                           keyExtractor={(item, index) => index.toString()}
                           renderItem={({ item }) => listItemView(item)}
                           />
@@ -444,6 +444,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 35,
+    paddingBottom: 20,
     alignItems: 'left',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 

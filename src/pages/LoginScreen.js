@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       {loading ? (
         <View style={[styles.container, styles.horizontal, styles.loading]}>
-          <ActivityIndicator size="large" color="#ffa726" />
+          <ActivityIndicator size="large" color="#d32f2f" />
         </View>
       ): null}
       <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -115,9 +115,9 @@ const LoginScreen = ({ navigation }) => {
             <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10}}>
               <Switch
                 style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
-                trackColor={{ false: '#333', true: '#FFF' }}
-                thumbColor={'#c77800'}
-                ios_backgroundColor="#c77800"
+                trackColor={{ false: '#000', true: '#fff' }}
+                thumbColor={isTrainer ? '#9a0007' : '#000000'}
+                ios_backgroundColor="#fff"
                 value={isTrainer}
                 onValueChange={(value) => {
                   setIsTrainer(value);

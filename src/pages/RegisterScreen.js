@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator } from 'react-native';
+import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, Switch } from 'react-native';
 import { DatabaseConnection } from '../database/database-connection';
 import Mytextinput from './components/Mytextinput';
 import Mytext from './components/Mytext';
 import Mybutton from './components/Mybutton';
 import MytextinputPassword from './components/MytextinputPassword';
 
-import logo from './assets/wave-login.png';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Button } from 'react-native';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -19,6 +18,9 @@ import { Platform } from 'expo-modules-core';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import logoTreina from './assets/icon.png';
+import logoGymImage from './assets/login_gym.jpeg';
 
 const db = DatabaseConnection.getConnection();
 
@@ -41,18 +43,15 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleConfirm = (date) => {
-    console.log("handleConfirm - 1");
     birthDate = (new Date(date)).getTime()
     setBirthDate(birthDate);
-    console.log("handleConfirm - 2");
     console.log(birthDate);
-    console.log("handleConfirm - 3");
     setBirthDateTitle(birthDateTitleInit + (new Date(birthDate)).toLocaleDateString());
-    console.log("handleConfirm - 4");
     hideDatePicker();
-    console.log("handleConfirm - 5");
   };
 
+  let [isTrainer, setIsTrainer] = useState(false);
+  let [trainerCode, setTrainerCode] = useState('');
   let [email, setEmail] = useState('');
   let [password, setPassword] = useState('');
   let [repeatPassword, setRepeatPassword] = useState('');
@@ -60,6 +59,8 @@ const RegisterScreen = ({ navigation }) => {
   let [birthDate, setBirthDate] = useState(null);
   let [birthDateTitle, setBirthDateTitle] = useState('Fecha de nacimiento');
   let [name, setName] = useState('');
+  let [height, setHeight] = useState();
+  let [weight, setWeight] = useState();
 
   const getDeviceId = async () => {
     if (Platform.OS === 'android') {
@@ -82,7 +83,7 @@ const RegisterScreen = ({ navigation }) => {
 
   let saveToken = async (token) => {
     try {
-      await AsyncStorage.setItem('atopame.token', token);
+      await AsyncStorage.setItem('treina.token', token);
     } catch(e){
       console.log("asynstorage - 1");
       console.log(e);
@@ -95,7 +96,7 @@ const RegisterScreen = ({ navigation }) => {
 
   let doRegister = () => {
 
-    setLoading(true);
+    /*setLoading(true);
 
     // Check device ID
     let deviceId = null;
@@ -172,87 +173,176 @@ const RegisterScreen = ({ navigation }) => {
           }
         }
       });
-    });
+    });*/
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {loading ? (
-      
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#ffa726" />
+          <ActivityIndicator size="large" color="#d32f2f" />
         </View>
       ): null}
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
+            <Image
+              style={styles.gymImageLogo}
+              source={logoGymImage}
+            />
             <KeyboardAwareScrollView>
             <Image
               style={styles.upperLogo}
-              source={logo}
+              source={logoTreina}
             />
-            <Mytextinput
-              placeholder="Email"
-              style={{ padding: 10 }}
-              onChangeText={
-                (email) => setEmail(email)
-              }
-            />
-            <MytextinputPassword
-              placeholder="Password"
-              style={{ padding: 10 }}
-              onChangeText={
-                (password) => setPassword(password)
-              }
-            />
-            <MytextinputPassword
-              placeholder="Repeat password"
-              style={{ padding: 10 }}
-              onChangeText={
-                (repeatPassword) => setRepeatPassword(repeatPassword)
-              }
-            />
-            <MyDatePickerButton customClick={showDatePicker} title={birthDateTitle}
-            />            
-            <DateTimePicker
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-              accentColor='#ffa726'
-              locale='es_ES'
-            />
-            { Platform.OS == 'ios' ? (
-              <Mytext
-                text="Sexo"
-                estilos={{fontSize: 14, marginBottom: -16, color: '#ffa726'}}
-               />
-            )  : null}
-            <View style={styles.selectorView}>
-              <Picker
-                style={styles.selector}
-                selectedValue={sex}
-                onValueChange={(itemValue, itemIndex) =>
-                  setSex(itemValue)
-                }>
-                <Picker.Item label="Selecciona tu sexo..." value="-" />
-                <Picker.Item label="Hombre" value="H" />
-                <Picker.Item label="Mujer" value="M" />
-                <Picker.Item label="Otro/a" value="X" />
-              </Picker>
+            <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10}}>
+              <Switch
+                style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
+                trackColor={{ false: '#000', true: '#fff' }}
+                thumbColor={isTrainer ? '#9a0007' : '#000000'}
+                ios_backgroundColor="#fff"
+                value={isTrainer}
+                onValueChange={(value) => {
+                  setIsTrainer(value);
+                }}
+              />
+              {isTrainer ? (
+                <Text style={{fontStyle: 'normal',
+                fontFamily: 'Montserrat',
+                fontSize: 14,
+                color: '#fff',
+                textAlign: 'left',
+                marginTop: 8}}>Soy entrenador</Text>
+              ) : (
+                <Text style={{fontStyle: 'normal',
+                fontFamily: 'Montserrat',
+                fontSize: 14,
+                color: '#fff',
+                textAlign: 'left',
+                marginTop: 8}}>Soy cliente / deportista</Text>
+              )}
             </View>
-            <Mytextinput
-              placeholder="Nombre"
-              style={{ padding: 10 }}
-              onChangeText={
-                (name) => setName(name)
-              }
-            />
+            {isTrainer ? (
+              <View>
+                <Mytextinput
+                  placeholder="Email"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (email) => setEmail(email)
+                  }
+                />
+                <MytextinputPassword
+                  placeholder="Password"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (password) => setPassword(password)
+                  }
+                />
+                <MytextinputPassword
+                  placeholder="Repeat password"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (repeatPassword) => setRepeatPassword(repeatPassword)
+                  }
+                />
+                <Mytextinput
+                  placeholder="Nombre"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (name) => setName(name)
+                  }
+                />
+              </View>
+            ) : (
+              <View>
+                <Mytextinput
+                  placeholder="Email"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (email) => setEmail(email)
+                  }
+                />
+                <MytextinputPassword
+                  placeholder="Password"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (password) => setPassword(password)
+                  }
+                />
+                <MytextinputPassword
+                  placeholder="Repeat password"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (repeatPassword) => setRepeatPassword(repeatPassword)
+                  }
+                />
+                <MyDatePickerButton customClick={showDatePicker} title={birthDateTitle}
+                />            
+                <DateTimePicker
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleConfirm}
+                  onCancel={hideDatePicker}
+                  accentColor='#fff'
+                  locale='es_ES'
+                />
+                { Platform.OS == 'ios' ? (
+                  <Mytext
+                    text="Sexo"
+                    estilos={{fontSize: 14, marginBottom: -16, color: '#fff'}}
+                  />
+                )  : null}
+                <View style={styles.selectorView}>
+                  <Picker
+                    style={styles.selector}
+                    selectedValue={sex}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setSex(itemValue)
+                    }
+                    itemStyle={{color: '#000', backgroundColor: '#fff', borderRadius: 8}} >
+                    <Picker.Item label="Selecciona tu sexo..." value="-" />
+                    <Picker.Item label="Hombre" value="H" />
+                    <Picker.Item label="Mujer" value="M" />
+                    <Picker.Item label="Otro/a" value="X" />
+                  </Picker>
+                </View>
+                <Mytextinput
+                  placeholder="Nombre"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (name) => setName(name)
+                  }
+                />
+                <Mytextinput
+                  placeholder="Altura (cm)"
+                  style={{ padding: 10 }}
+                  keyboardType="numeric"
+                  onChangeText={
+                    (height) => setHeight(height)
+                  }
+                />
+                <Mytextinput
+                  placeholder="Peso (kg)"
+                  style={{ padding: 10 }}
+                  keyboardType="numeric"
+                  onChangeText={
+                    (weight) => setWeight(weight)
+                  }
+                />
+                <Mytextinput
+                  placeholder="Código de entrenador"
+                  style={{ padding: 10 }}
+                  onChangeText={
+                    (trainerCode) => setTrainerCode(trainerCode)
+                  }
+                />
+              </View>
+            )}
 
             <Mybutton 
-              estilos={{marginBottom: 30}}
               text="Registrarse"
               title="Registrarse"
+              estilos={{marginBottom: 50}}
               customClick={doRegister}
             />
 
@@ -279,6 +369,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     padding: 10,
   },
+  loading: {
+    backgroundColor: '#fff'
+  },
   baseText: {
     fontWeight: 'bold'
   },
@@ -286,43 +379,58 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'right',
     marginTop: 30,
-    marginRight: 36
+    marginRight: 36,
+    color: '#fff'
   },
   upperLogo: {
-    marginTop: -40,
+    marginTop: 0,
     paddingTop: 0,
-    top: 0,
+    top: 50,
+    height: 150,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    marginBottom: 90
+  },
+  gymImageLogo: {
+    position: 'absolute',
     width: '100%',
-    marginBottom: 30
+    height: '100%',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
+    margin: 0,
+    padding: 0
   },
   selectorView: {
     ...Platform.select({
       ios: {
-        color: '#ffa726',
+        color: '#fff',
         marginTop: 16,
         marginLeft: 35,
         marginRight: 35,
-        borderColor: '#ffa726',
+        borderColor: '#fff',
         borderWidth: 1,
         borderRadius: 10,
       },
       android: {
         alignItems: 'flex-start',
-        color: '#ffa726',
+        color: '#fff',
         marginTop: 16,
         marginLeft: 35,
         marginRight: 35,
-        borderColor: '#ffa726',
+        borderColor: '#fff',
         borderWidth: 1,
         borderRadius: 10,
       }
     })
   },
   selector: {
+    color: '#fff',
     ...Platform.select({
       android: {
         alignItems: 'flex-start',
-        color: '#ffa726',
+        color: '#fff',
         width: '10%',
         padding: 0,
         margin: 0

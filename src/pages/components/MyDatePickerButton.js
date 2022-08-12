@@ -11,7 +11,7 @@ const MyDatePickerButton = (props) => {
 
       <View style={{flexDirection: 'row'}}>
         <Icon style={styles.icon}
-          name="calendar" size={30} color='#ffa726' />
+          name="calendar" size={30} color='#d32f2f' />
 
         <Text style={styles.text}>
           {props.title}
@@ -25,17 +25,18 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'flex-start',
     backgroundColor: '#ffffff',
-    color: '#ffa726',
+    color: '#9a0007',
     padding: 10,
     marginTop: 16,
     marginLeft: 35,
     marginRight: 35,
-    borderColor: '#ffa726',
+    borderColor: '#9a0007',
     borderWidth: 1,
     borderRadius: 10
   },
   text: {
-    color: '#ffa726'
+    color: '#d32f2f',
+    paddingTop: 3
   },
   icon: {
     paddingBottom: 5,

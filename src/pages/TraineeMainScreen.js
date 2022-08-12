@@ -18,12 +18,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import PhoneNumbersTab from './trainee-tabs/PhoneNumbersTab';
 import AboutTab from './trainee-tabs/AboutTab';
 import RutinasTab from './trainee-tabs/RutinasTab';
 import DietTab from './trainee-tabs/DietTab';
+import MeasuresHistoryTab from './trainee-tabs/MeasuresHistoryTab';
+import NewHistoryScreen from './trainee-tabs/NewHistoryScreen';
 
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
 
 const db = DatabaseConnection.getConnection();
 
@@ -37,7 +41,6 @@ function TraineeMainScreen({ navigation, route }) {
   }, []);
 
   return (
-    <NavigationContainer independent={true}>
       <Tab.Navigator
         screenOptions={({route}) => ({
           tabBarIcon: ({focused, color, size }) => {
@@ -90,7 +93,7 @@ function TraineeMainScreen({ navigation, route }) {
           }} />
         <Tab.Screen 
           name="Historial" 
-          component={PhoneNumbersTab}
+          component={MeasuresHistoryTab}
           options={{
             headerTitle: 'Historial',
             headerShown: true,
@@ -112,7 +115,6 @@ function TraineeMainScreen({ navigation, route }) {
           }}
           />
       </Tab.Navigator>
-    </NavigationContainer>
   );
 }
 

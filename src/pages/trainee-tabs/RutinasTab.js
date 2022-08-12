@@ -464,6 +464,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 35,
+    paddingBottom: 20,
     alignItems: 'left',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
