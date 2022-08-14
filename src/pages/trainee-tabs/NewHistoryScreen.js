@@ -21,7 +21,6 @@ const NewHistoryScreen = ({ navigation, route }) => {
 
   //let {userToken} = route.params;
   let [loading, setLoading] = useState(false);
-  let [height, setHeight]= useState();
   let [weight, setWeight]= useState();
   let [chest, setChest]= useState();
   let [arm, setArm]= useState();
@@ -47,14 +46,6 @@ const NewHistoryScreen = ({ navigation, route }) => {
               source={logoData}
             />
 
-            <Mytextinputred
-              placeholder="Altura (cm)"
-              keyboardType="numeric"
-              style={{ padding: 10 }}
-              onChangeText={
-                (height) => setHeight(height)
-              }
-            />
             <Mytextinputred
               placeholder="Peso (kg)"
               keyboardType="numeric"

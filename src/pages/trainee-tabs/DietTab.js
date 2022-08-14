@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
@@ -17,6 +18,16 @@ const DietTab = ({ navigation, route }) => {
   let [userToken, setUserToken] = useState();
   let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
   let [detailsModalDescription, setDetailsModalDescription] = useState('');
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Icon name='list-alt' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
+          navigation.navigate('FoodListScreen')
+        }}  />
+      )
+    });
+  }, [navigation]);
 
   useEffect(() => {
     setLoading(true);

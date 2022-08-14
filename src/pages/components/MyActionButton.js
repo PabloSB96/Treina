@@ -11,7 +11,7 @@ const MyActionButton = (props) => {
       onPress={props.customClick}>
 
       <Icon style={styles.icon}
-        name={props.btnIcon} size={props.iconSize} color='white' />
+        name={props.btnIcon} size={props.iconSize} color={props.iconColor} />
 
     </TouchableOpacity>
   );
@@ -19,15 +19,15 @@ const MyActionButton = (props) => {
 
 const styles = StyleSheet.create({
   button: {
-    alignItems: 'flex-end',
     color: '#ffffff',
-    width: 50
+    marginTop: 'auto',
+    marginBottom: 'auto'
   },
   text: {
     color: '#ffffff',
   },
   icon: {
-    paddingBottom: 5,
+    textAlign: 'center'
   }
 });
 

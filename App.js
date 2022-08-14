@@ -13,6 +13,8 @@ import { LogBox } from 'react-native';
 import TrainerMainScreen from './src/pages/TrainerMainScreen';
 import TraineeMainScreen from './src/pages/TraineeMainScreen';
 import NewHistoryScreen from './src/pages/trainee-tabs/NewHistoryScreen';
+import FoodListScreen from './src/pages/trainee-tabs/FoodListScreen';
+import NewExerciceFoodScreen from './src/pages/trainer-tabs/NewExerciceFoodScreen';
 
 const Stack = createStackNavigator();
 
@@ -65,19 +67,6 @@ const App = () => {
           }}
         />
         <Stack.Screen
-          name="NewHistoryScreen"
-          component={NewHistoryScreen}
-          options={{
-            headerShown: true,
-            title: 'Nuevas medidas',
-            detachPreviousScreen: false,
-            headerStyle: {
-              backgroundColor: '#d32f2f',
-            },
-            headerTintColor: '#ffffff'
-          }}
-        />
-        <Stack.Screen
           name="TrainerMainScreen"
           component={TrainerMainScreen}
           options={{
@@ -97,6 +86,45 @@ const App = () => {
             detachPreviousScreen: true,
             headerStyle: {
               backgroundColor: '#ffa726',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="NewHistoryScreen"
+          component={NewHistoryScreen}
+          options={{
+            headerShown: true,
+            title: 'Nuevas medidas',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="FoodListScreen"
+          component={FoodListScreen}
+          options={{
+            headerShown: true,
+            title: 'Lista de la compra',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="NewExerciceFoodScreen"
+          component={NewExerciceFoodScreen}
+          options={{
+            headerShown: true,
+            title: 'Administrar datos',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
             },
             headerTintColor: '#ffffff'
           }}

@@ -215,7 +215,7 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
                         </DataTable>
                       </ScrollView>
                     </View>
-                    {myHistory != undefined ? (
+                    {weightChartValues != undefined ? (
                       <View>
                         <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Evolución peso</Text></View>
                         <ScrollView horizontal={true}>

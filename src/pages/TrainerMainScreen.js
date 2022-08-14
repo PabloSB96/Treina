@@ -21,6 +21,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import InformationTab from './trainer-tabs/InformationTab';
 import PhoneNumbersTab from './trainer-tabs/PhoneNumbersTab';
 import AboutTab from './trainer-tabs/AboutTab';
+import TraineesTab from './trainer-tabs/TraineesTab';
+import DataTab from './trainer-tabs/DataTab';
 
 const Drawer = createDrawerNavigator();
 
@@ -36,51 +38,63 @@ function TrainerMainScreen({ navigation, route }) {
   }, []);
 
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size }) => {
-            let iconName;
-            if (route.name == 'Deportistas') {
-              iconName = 'list-alt';
-            } else if (route.name == 'Datos') {
-              iconName = 'database';
-            } else {
-              iconName = 'user';
-            }
-            let iconColor = '#aaa';
-            if (focused) {
-              iconColor = '#d32f2f';
-            }
-            return <Icon style={styles.iconDrawer} name={iconName} size={20} color={iconColor}  />
-          },
-          tabBarLabelStyle: {
-            fontSize: 14
-          },
-          tabBarActiveTintColor: '#d32f2f',
-          tabBarInactiveTintColor: '#aaa',
-          headerShown: false
-        })}
-        >
-        <Tab.Screen 
-          name="Deportistas" 
-          component={InformationTab} 
-          options={{
-            headerTitle: 'Deportistas'
-          }}
-          />
-        <Tab.Screen 
-          name="Datos" 
-          component={PhoneNumbersTab} />
-        <Tab.Screen 
-          name="Perfil" 
-          component={AboutTab} 
-          options={{
-            headerTitle: 'Perfil'
-          }}
-          />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size }) => {
+          let iconName;
+          if (route.name == 'Deportistas') {
+            iconName = 'users';
+          } else if (route.name == 'Datos') {
+            iconName = 'database';
+          } else {
+            iconName = 'user';
+          }
+          let iconColor = '#aaa';
+          if (focused) {
+            iconColor = '#d32f2f';
+          }
+          return <Icon style={styles.iconDrawer} name={iconName} size={20} color={iconColor}  />
+        },
+        tabBarLabelStyle: {
+          fontSize: 14
+        },
+        tabBarActiveTintColor: '#d32f2f',
+        tabBarInactiveTintColor: '#aaa',
+        headerShown: false
+      })}
+      >
+      <Tab.Screen 
+        name="Deportistas" 
+        component={TraineesTab} 
+        options={{
+          headerTitle: 'Mis deportistas',
+          headerShown: true,
+          headerTintColor: '#fff',
+          headerStyle: {
+            backgroundColor: '#d32f2f',
+          }
+        }}
+        />
+      <Tab.Screen 
+        name="Datos" 
+        component={DataTab} 
+        options={{
+          headerTitle: 'Datos',
+          headerShown: true,
+          headerTintColor: '#fff',
+          headerStyle: {
+            backgroundColor: '#d32f2f',
+          }
+        }}
+        />
+      <Tab.Screen 
+        name="Perfil" 
+        component={AboutTab} 
+        options={{
+          headerTitle: 'Perfil'
+        }}
+        />
+    </Tab.Navigator>
   );
 }
 

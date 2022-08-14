@@ -19,12 +19,11 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import PhoneNumbersTab from './trainee-tabs/PhoneNumbersTab';
-import AboutTab from './trainee-tabs/AboutTab';
 import RutinasTab from './trainee-tabs/RutinasTab';
 import DietTab from './trainee-tabs/DietTab';
 import MeasuresHistoryTab from './trainee-tabs/MeasuresHistoryTab';
 import NewHistoryScreen from './trainee-tabs/NewHistoryScreen';
+import ProfileTab from './trainee-tabs/ProfileTab';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -104,7 +103,7 @@ function TraineeMainScreen({ navigation, route }) {
           }} />
         <Tab.Screen 
           name="Perfil" 
-          component={AboutTab} 
+          component={ProfileTab} 
           options={{
             headerTitle: 'Perfil',
             headerShown: true,
