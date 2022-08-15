@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity, Switch } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -9,15 +9,14 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const TraineesTab = ({ navigation, route }) => {
+const TraineeDetailsDietTab = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
 
   let [loading, setLoading] = useState(false);
-  let [trainees, setTrainees] = useState();
+  let [showFood, setShowFood] = useState(false);
+  let [foodList, setFoodList] = useState();
   let [userToken, setUserToken] = useState();
-  let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
-  let [detailsModalDescription, setDetailsModalDescription] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -25,7 +24,7 @@ const TraineesTab = ({ navigation, route }) => {
         <Icon name='question-circle' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
           Alert.alert(
             'Ayuda',
-            'Para añadir un nuevo cliente, indícale el código de entrenador y que se registre en Treina usándolo. ¡Así de simple!',
+            'En esta pantalla puedes crear o editar tus ejercicios y comidas de los que dispondrás a la hora de asignarselos a uno de tus clientes. Pulsa en el botón + para añadir un nuevo ejercicio o comida.',
             [{text: 'Ok'},],
             { cancelable: false }
           );
@@ -44,29 +43,55 @@ const TraineesTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setTrainees(getMyTraineesAux());
-    //getMyTrainees();
-
+    setFoodList(getMyFoodListAux());
+    
+    //setFoodList(getMyFoodList());
   }, [isFocused]);
 
-  let getMyTraineesAux = () => {
+  let getMyFoodListAux = () => {
     let obj1 = {
       id: 1,
-      name: 'Pablo Sánchez',
-      email: 'pablosanchezbello@gmail.com',
-      lastMeasuresUpdate: 1646136000000
+      title: 'Comida 3',
+      description: 'Description ñalk asdklfj añsdkf aklñsdf ñalskdjf ñaklds faklñ dsfasdf.',
+      amount: '300 gr',
+      foodType: 'Comida',
+      onMonday: true,
+      onTuesday: true,
+      onWednesday: true,
+      onThursday: true,
+      onFriday: true,
+      onSaturday: true,
+      onSunday: true
+      // TODO
+      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
-      name: 'Samuel Sánchez',
-      email: 'samuelsanchezbello@gmail.com',
-      lastMeasuresUpdate: 1646136000000
+      title: 'Desayuno 2',
+      description: '',
+      amount: '300 gr',
+      foodType: 'Desayuno',
+      onMonday: true,
+      onTuesday: true,
+      onWednesday: true,
+      onThursday: true,
+      onFriday: true,
+      onSaturday: false,
+      onSunday: false
     };
     let obj3 = {
-      id: 1,
-      name: 'Noelia Sopeña',
-      email: 'noeliasopenha@gmail.com',
-      lastMeasuresUpdate: 1646136000000
+      id: 3,
+      title: 'Cena 3',
+      description: '',
+      amount: '300 gr',
+      foodType: 'Cena',
+      onMonday: false,
+      onTuesday: true,
+      onWednesday: true,
+      onThursday: false,
+      onFriday: false,
+      onSaturday: false,
+      onSunday: true
     };
     var result = [];
     result.push(obj1);
@@ -76,31 +101,48 @@ const TraineesTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyTrainees = () => {}
+  let getMyFoodList = () => {}
 
-  let listItemView = (item) => {
+  let foodListItemView = (item) => {
     return (
       <View
         key={item.producto_id}
         style={{ backgroundColor: '#fff', borderColor: '#eee', borderRadius: 20, borderWidth: 1, marginTop: 10, padding: 16, borderRadius: 10, flex: 3, flexDirection: "row", shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 5, elevation: 3, shadowColor: '#222', }}>
         <View style={{flex: 3, margin: 0}}>
-          <Text style={styles.boldText}>{item.name}</Text>
+          <Text style={styles.boldText}>{item.title}</Text>
           <View>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Email</Text>
-              <Text style={[styles.baseText, {flex: 2}]}>{item.email}</Text>
+              <Text style={[styles.labelText, {flex: 1}]}>Cantidad</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.amount}</Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Última revisión</Text>
-              <Text style={[styles.baseText, {flex: 2}]}>{(new Date(item.lastMeasuresUpdate)).toLocaleDateString()}</Text>
+              <Text style={[styles.labelText, {flex: 1}]}>Tipo</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.foodType}</Text>
             </View>
-            <Mytextbutton 
-              estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
-              title="Ver"
-              customClick={() => {
-                navigation.navigate('TraineeDetailsMainScreen');
-              }}
-              />
+            <View style={{flex: 1, flexDirection: 'row'}}>
+              <Text style={[styles.labelText, {flex: 1}]}>Días</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>
+                <Text style={[styles.baseText, item.onMonday ? {color: '#d32f2f'} : {color: '#aaa'}]}>L </Text>
+                <Text style={[styles.baseText, item.onTuesday ? {color: '#d32f2f'} : {color: '#aaa'}]}>M </Text>
+                <Text style={[styles.baseText, item.onWednesday ? {color: '#d32f2f'} : {color: '#aaa'}]}>X </Text>
+                <Text style={[styles.baseText, item.onThursday ? {color: '#d32f2f'} : {color: '#aaa'}]}>J </Text>
+                <Text style={[styles.baseText, item.onFriday ? {color: '#d32f2f'} : {color: '#aaa'}]}>V </Text>
+                <Text style={[styles.baseText, item.onSaturday ? {color: '#d32f2f'} : {color: '#aaa'}]}>S </Text>
+                <Text style={[styles.baseText, item.onSunday ? {color: '#d32f2f'} : {color: '#aaa'}]}>D </Text>
+              </Text>
+            </View>
+            <View style={{flex: 1, flexDirection: 'row', alignSelf: 'flex-end'}}>
+              <Mytextbutton 
+                estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
+                title="Eliminar"
+                customClick={() => {console.log("Eliminar");}}
+                />
+              <Mytextbutton 
+                estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
+                title="Editar"
+                customClick={() => {console.log("Editar");}}
+                />
+            </View>
           </View>
         </View>
       </View>
@@ -111,7 +153,7 @@ const TraineesTab = ({ navigation, route }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         {loading ? (
-          <View style={[styles.container, styles.horizontal]}>
+          <View style={[styles.container, styles.horizontal, {backgroundColor: '#fff'}]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
         ): null}
@@ -119,7 +161,7 @@ const TraineesTab = ({ navigation, route }) => {
           <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
               <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((trainees==undefined || trainees.length == 0) && loading == false ) ? (
+                {((foodList==undefined || foodList.length == 0) && loading == false ) ? (
                   <View style={{flex: 1}}>
                     <View style={{flex: 1, height: 300, marginTop: 40}}>
                       <Image
@@ -132,7 +174,7 @@ const TraineesTab = ({ navigation, route }) => {
                       />
                     </View>
                     <Mytext 
-                      text="Todavía no tienes ningún cliente." 
+                      text="Todavía no tienes ejercicios asignados a este cliente. Pulsa el botón '+' para añadir uno nuevo." 
                       estilos={{
                         fontSize: 16,
                         fontWeight: 'bold',
@@ -141,17 +183,24 @@ const TraineesTab = ({ navigation, route }) => {
                       }}/>
                   </View>
                 ): (
-                  <View>
-                    <FlatList
-                      style={{marginTop: 0, marginBottom: 20}}
-                      contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                      data={trainees}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item }) => listItemView(item)}
-                      />
-                  </View>
+                  <FlatList
+                    style={{marginTop: 0, marginBottom: 20}}
+                    contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                    data={foodList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => foodListItemView(item)}
+                    />
                 )}
               </KeyboardAwareScrollView>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {navigation.navigate('NewFoodToTraineeScreen')}}
+                style={styles.touchableOpacityStyle}>
+                <View style={{flex: 1}}>
+                  <Icon style={{top: 0}} name='circle' size={60} color='#fff'  />
+                  <Icon style={{top: -60}} name='plus-circle' size={60} color='#d32f2f'  />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -322,4 +371,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default TraineesTab;
+export default TraineeDetailsDietTab;

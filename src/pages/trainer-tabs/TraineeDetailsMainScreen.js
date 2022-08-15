@@ -1,22 +1,19 @@
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
-import { DatabaseConnection } from '../database/database-connection';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ProfileTab from './trainer-tabs/ProfileTab';
-import TraineesTab from './trainer-tabs/TraineesTab';
-import DataTab from './trainer-tabs/DataTab';
-
-const Drawer = createDrawerNavigator();
-
-const db = DatabaseConnection.getConnection();
+import ProfileTab from '../trainer-tabs/ProfileTab';
+import TraineesTab from '../trainer-tabs/TraineesTab';
+import DataTab from '../trainer-tabs/DataTab';
+import TraineeDetailsInfoTab from './TraineeDetailsInfoTab';
+import TraineeDetailsRutinasTab from './TraineeDetailsRutinasTab';
+import TraineeDetailsDietTab from './TraineeDetailsDietTab';
 
 const baseUrl = 'http://192.168.8.104:3000';
 
-function TrainerMainScreen({ navigation, route }) {
+function TraineeDetailsMainScreen({ navigation, route }) {
 
   const Tab = createBottomTabNavigator();
 
@@ -28,12 +25,12 @@ function TrainerMainScreen({ navigation, route }) {
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color, size }) => {
           let iconName;
-          if (route.name == 'Deportistas') {
-            iconName = 'users';
-          } else if (route.name == 'Datos') {
-            iconName = 'database';
-          } else {
+          if (route.name == 'Detalles') {
             iconName = 'user';
+          } else if (route.name == 'Rutinas') {
+            iconName = 'bicycle';
+          } else {
+            iconName = 'coffee';
           }
           let iconColor = '#aaa';
           if (focused) {
@@ -50,40 +47,16 @@ function TrainerMainScreen({ navigation, route }) {
       })}
       >
       <Tab.Screen 
-        name="Deportistas" 
-        component={TraineesTab} 
-        options={{
-          headerTitle: 'Mis deportistas',
-          headerShown: true,
-          headerTintColor: '#fff',
-          headerStyle: {
-            backgroundColor: '#d32f2f',
-          }
-        }}
+        name="Detalles" 
+        component={TraineeDetailsInfoTab}
         />
       <Tab.Screen 
-        name="Datos" 
-        component={DataTab} 
-        options={{
-          headerTitle: 'Datos',
-          headerShown: true,
-          headerTintColor: '#fff',
-          headerStyle: {
-            backgroundColor: '#d32f2f',
-          }
-        }}
+        name="Rutinas" 
+        component={TraineeDetailsRutinasTab} 
         />
       <Tab.Screen 
-        name="Perfil" 
-        component={ProfileTab} 
-        options={{
-          headerTitle: 'Perfil',
-          headerShown: true,
-          headerTintColor: '#fff',
-          headerStyle: {
-            backgroundColor: '#d32f2f',
-          }
-        }}
+        name="Dieta" 
+        component={TraineeDetailsDietTab} 
         />
     </Tab.Navigator>
   );
@@ -154,4 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrainerMainScreen;
+export default TraineeDetailsMainScreen;

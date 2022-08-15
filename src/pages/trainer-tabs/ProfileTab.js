@@ -1,34 +1,34 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as Clipboard from 'expo-clipboard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
+import logoProfile from '../assets/icons/treina_undraw_personaltraining.png';
+import logoElementLogo from '../assets/icons/treina_undraw_profile_element_logo.png';
+import logoElementCode from '../assets/icons/treina_undraw_profile_element_code.png';
+import logoElementPhisical from '../assets/icons/treina_undraw_profile_element_phisical.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+import Mybutton from '../components/Mybutton';
+import MyActionButton from '../components/MyActionButton';
 
-const TraineesTab = ({ navigation, route }) => {
+const ProfileTab = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
 
   let [loading, setLoading] = useState(false);
-  let [trainees, setTrainees] = useState();
+  let [myProfile, setMyProfile] = useState();
   let [userToken, setUserToken] = useState();
-  let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
-  let [detailsModalDescription, setDetailsModalDescription] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Icon name='question-circle' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
-          Alert.alert(
-            'Ayuda',
-            'Para añadir un nuevo cliente, indícale el código de entrenador y que se registre en Treina usándolo. ¡Así de simple!',
-            [{text: 'Ok'},],
-            { cancelable: false }
-          );
+        <Icon name='info-circle' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
+          navigation.navigate('AboutScreen');
         }}  />
       )
     });
@@ -44,67 +44,25 @@ const TraineesTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setTrainees(getMyTraineesAux());
-    //getMyTrainees();
+    setMyProfile(getMyProfileInfoAux());
+    //getMyProfileInfo();
 
   }, [isFocused]);
 
-  let getMyTraineesAux = () => {
-    let obj1 = {
-      id: 1,
-      name: 'Pablo Sánchez',
-      email: 'pablosanchezbello@gmail.com',
-      lastMeasuresUpdate: 1646136000000
-    };
-    let obj2 = {
-      id: 2,
-      name: 'Samuel Sánchez',
-      email: 'samuelsanchezbello@gmail.com',
-      lastMeasuresUpdate: 1646136000000
-    };
-    let obj3 = {
+  let getMyProfileInfoAux = () => {
+    let result = {
       id: 1,
       name: 'Noelia Sopeña',
-      email: 'noeliasopenha@gmail.com',
-      lastMeasuresUpdate: 1646136000000
+      email: 'lamejoentrenadoraqueexiste@gmail.com',
+      trainerCode: 'ABC1234',
+      traineeNumber: 3,
+      plan: 'BASICO'
     };
-    var result = [];
-    result.push(obj1);
-    result.push(obj2);
-    result.push(obj3);
     setLoading(false);
     return result;
   }
 
-  let getMyTrainees = () => {}
-
-  let listItemView = (item) => {
-    return (
-      <View
-        key={item.producto_id}
-        style={{ backgroundColor: '#fff', borderColor: '#eee', borderRadius: 20, borderWidth: 1, marginTop: 10, padding: 16, borderRadius: 10, flex: 3, flexDirection: "row", shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 5, elevation: 3, shadowColor: '#222', }}>
-        <View style={{flex: 3, margin: 0}}>
-          <Text style={styles.boldText}>{item.name}</Text>
-          <View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Email</Text>
-              <Text style={[styles.baseText, {flex: 2}]}>{item.email}</Text>
-            </View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Última revisión</Text>
-              <Text style={[styles.baseText, {flex: 2}]}>{(new Date(item.lastMeasuresUpdate)).toLocaleDateString()}</Text>
-            </View>
-            <Mytextbutton 
-              estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
-              title="Ver"
-              customClick={() => {
-                navigation.navigate('TraineeDetailsMainScreen');
-              }}
-              />
-          </View>
-        </View>
-      </View>
-    );
+  let getMyProfileInfo = () => {
   }
 
   return (
@@ -119,7 +77,7 @@ const TraineesTab = ({ navigation, route }) => {
           <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
               <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((trainees==undefined || trainees.length == 0) && loading == false ) ? (
+                {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
                   <View style={{flex: 1}}>
                     <View style={{flex: 1, height: 300, marginTop: 40}}>
                       <Image
@@ -132,7 +90,7 @@ const TraineesTab = ({ navigation, route }) => {
                       />
                     </View>
                     <Mytext 
-                      text="Todavía no tienes ningún cliente." 
+                      text="Todavía no tienes información de perfil." 
                       estilos={{
                         fontSize: 16,
                         fontWeight: 'bold',
@@ -141,14 +99,63 @@ const TraineesTab = ({ navigation, route }) => {
                       }}/>
                   </View>
                 ): (
-                  <View>
-                    <FlatList
-                      style={{marginTop: 0, marginBottom: 20}}
-                      contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                      data={trainees}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item }) => listItemView(item)}
+                  <View style={{padding: 20}}>
+                    <Image
+                      style={styles.upperLogo}
+                      source={logoProfile}
+                    />
+                    <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
+                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                    <View style={{flex: 1, flexDirection: 'row', marginTop: 30}}>
+                      <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoElementCode}
                       />
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto',}}>
+                        <Text style={[styles.elementTitle, {}]}>Código de entrenador</Text>
+                        <View style={{flexDirection: 'row', }}>
+                          <Text style={[styles.elementText,{}]}>{myProfile.trainerCode}</Text>
+                          <MyActionButton
+                            iconColor='#d32f2f'
+                            btnIcon="copy"
+                            estilos={[styles.elementText, styles.actionMiniButton]}
+                            iconSize={18}
+                            customClick={() => {
+                              Clipboard.setStringAsync(myProfile.trainerCode);
+                            }}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoElementPhisical}
+                      />
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                        <Text style={[styles.elementTitle, {}]}>Número de clientes</Text>
+                        <Text style={[styles.elementText,]}>{myProfile.traineeNumber}</Text>
+                      </View>
+                    </View>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoElementLogo}
+                      />
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                        <Text style={[styles.elementTitle, {}]}>Plan de la cuenta</Text>
+                        <Text style={[styles.elementText,]}>{myProfile.plan}</Text>
+                      </View>
+                    </View>
+                    <Mybutton
+                      text="Cerrar sesión"
+                      title="Cerrar sesión"
+                      estilos={{
+                          marginTop: 40,
+                          marginBottom: 50
+                      }}
+                      customClick={() => console.log("Close session")}
+                    />
                   </View>
                 )}
               </KeyboardAwareScrollView>
@@ -189,7 +196,7 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
-    color: '#d32f2f',
+    color: '#000',
     textAlign: 'left',
     marginTop: 10
   },
@@ -201,11 +208,12 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   upperLogo: {
-    marginTop: -30,
+    marginTop: 5,
     paddingTop: 0,
-    top: 0,
+    height: 150,
     width: '100%',
-    marginBottom: 0
+    resizeMode: 'contain',
+    marginBottom: 10
   },
   image: {
     alignSelf: 'center',
@@ -221,15 +229,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   actionMiniButton: {
-    top: 10,
-    left: 8,
+    marginLeft: 10,
     alignItems: 'flex-start',
-    width: 100,
   },
   touchableOpacityStyle: {
     position: 'absolute',
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     right: 30,
@@ -319,7 +325,39 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     textTransform: 'uppercase'
-  }
+  },
+  itemListTitle : {
+    color: '#d32f2f',
+    fontWeight: 'bold'
+  },
+  titleText: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    textAlign: 'center',
+    fontSize: 20
+  },
+  emailText: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    textAlign: 'center',
+    fontSize: 12
+  },
+  elementTitle: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 12
+  },
+  elementText: {
+    color: '#aaa',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    fontSize: 14
+  },
 });
 
-export default TraineesTab;
+export default ProfileTab;

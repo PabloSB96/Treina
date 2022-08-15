@@ -15,6 +15,8 @@ import TraineeMainScreen from './src/pages/TraineeMainScreen';
 import NewHistoryScreen from './src/pages/trainee-tabs/NewHistoryScreen';
 import FoodListScreen from './src/pages/trainee-tabs/FoodListScreen';
 import NewExerciceFoodScreen from './src/pages/trainer-tabs/NewExerciceFoodScreen';
+import AboutScreen from './src/pages/AboutScreen';
+import TraineeDetailsMainScreen from './src/pages/trainer-tabs/TraineeDetailsMainScreen';
 
 const Stack = createStackNavigator();
 
@@ -122,6 +124,32 @@ const App = () => {
           options={{
             headerShown: true,
             title: 'Administrar datos',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="AboutScreen"
+          component={AboutScreen}
+          options={{
+            headerShown: true,
+            title: 'Acerca de',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="TraineeDetailsMainScreen"
+          component={TraineeDetailsMainScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Detalles del cliente',
             detachPreviousScreen: false,
             headerStyle: {
               backgroundColor: '#d32f2f',

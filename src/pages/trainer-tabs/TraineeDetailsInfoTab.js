@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
+import logoProfile from '../assets/icons/treina_undraw_profile.png';
+import logoElementTarget from '../assets/icons/treina_undraw_profile_element_target.png';
+import logoElementTargetFull from '../assets/icons/treina_undraw_profile_element_targetfull.png';
+import logoElementPhisical from '../assets/icons/treina_undraw_profile_element_phisical.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
@@ -12,12 +16,13 @@ import { DataTable } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { set } from 'react-native-reanimated';
 
-const MeasuresHistoryTab = ({ navigation, route }) => {
+const TraineeDetailsInfoTab = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
 
   let [loading, setLoading] = useState(false);
   let [myHistory, setMyHistory] = useState();
+  let [myProfile, setMyProfile] = useState();
   let [userToken, setUserToken] = useState();
   let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
   let [detailsModalDescription, setDetailsModalDescription] = useState('');
@@ -38,6 +43,8 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
     // TODO
     getMyHistoryAux();
     //getMyHistory();
+
+    // setMyProfile(getMyProfileInfo());
 
   }, [isFocused]);
 
@@ -89,6 +96,22 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
   let getMyHistory = () => {
   }
 
+  let getMyProfileInfoAux = () => {
+    let result = {
+      id: 1,
+      name: 'Noelia Sopeña',
+      email: 'lamejornoviaqueexiste@gmail.com',
+      goal: 'Perder peso',
+      goalFull: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumpeso.',
+      height: 180,
+      weight: 74
+    };
+    return result;
+  }
+
+  let getMyProfileInfo = () => {
+  }
+
   let updateWeightChartData = (historyData) => {
     if (historyData != undefined) {
       var labels = [];
@@ -100,6 +123,7 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
       setWeightChartLabels(labels);
       setWeightChartValues(values);
       setMyHistory(historyData);
+      setMyProfile(getMyProfileInfoAux());
       setLoading(false);
     }
   }
@@ -132,6 +156,36 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
           <View style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
               <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                {myProfile==undefined ? null : (
+                  <View style={{padding: 20}}>
+                    <Image
+                      style={styles.upperLogo}
+                      source={logoProfile}
+                    />
+                    <View><Text style={[styles.profileTitleText, {flex: 1}]}>{myProfile.name}</Text></View>
+                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoElementTarget}
+                      />
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                        <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
+                        <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
+                      </View>
+                    </View>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoElementTargetFull}
+                      />
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                        <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
+                        <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
                 {((myHistory==undefined || myHistory.length == 0) && loading == false ) ? (
                   <View style={{flex: 1}}>
                     <View style={{flex: 1, height: 300, marginTop: 40}}>
@@ -145,7 +199,7 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
                       />
                     </View>
                     <Mytext 
-                      text="Todavía no tienes datos de historial." 
+                      text="Todavía no hay datos de historial." 
                       estilos={{
                         fontSize: 16,
                         fontWeight: 'bold',
@@ -154,7 +208,7 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
                       }}/>
                   </View>
                 ): (
-                  <View style={{margin: 30}}>
+                  <View style={{margin: 30, marginTop: 10}}>
                     <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
                     <View style={{flex: 1}}>
                       <View style={{flex: 1, flexDirection: 'row'}}>
@@ -261,15 +315,6 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
                   </View>
                 )}
               </KeyboardAwareScrollView>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {navigation.navigate('NewHistoryScreen')}}
-                style={styles.touchableOpacityStyle}>
-                <View style={{flex: 1}}>
-                  <Icon style={{top: 0}} name='circle' size={60} color='#fff'  />
-                  <Icon style={{top: -60}} name='plus-circle' size={60} color='#d32f2f'  />
-                </View>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -317,17 +362,39 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 5
   },
+  profileTitleText: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    textAlign: 'center',
+    fontSize: 20
+  },
+  emailText: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginBottom: 5,
+    textAlign: 'center',
+    fontSize: 12
+  },
+  elementTitle: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 14
+  },
   labelText: {
     marginTop: 5,
     fontSize: 14,
     fontStyle: 'italic'
   },
   upperLogo: {
-    marginTop: -30,
+    marginTop: 5,
     paddingTop: 0,
-    top: 0,
+    height: 150,
     width: '100%',
-    marginBottom: 0
+    resizeMode: 'contain',
+    marginBottom: 10
   },
   image: {
     alignSelf: 'center',
@@ -448,4 +515,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MeasuresHistoryTab;
+export default TraineeDetailsInfoTab;

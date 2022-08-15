@@ -57,37 +57,6 @@ const ProfileTab = ({ navigation, route }) => {
   let getMyProfileInfo = () => {
   }
 
-  let listItemView = (item) => {
-    return (
-      <View
-        key={item.producto_id}
-        style={{ backgroundColor: '#fff', borderColor: '#eee', borderRadius: 20, borderWidth: 1, marginTop: 10, padding: 16, borderRadius: 10, flex: 3, flexDirection: "row", shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 5, elevation: 3, shadowColor: '#222', }}>
-        <View style={{flex: 3, margin: 0}}>
-          <Text style={styles.boldText}>{item.title}</Text>
-          <View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Repeticiones</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.repetitions}</Text>
-            </View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Descanso</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.rest}</Text>
-            </View>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-              <Text style={[styles.labelText, {flex: 1}]}>Nº de series</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.series}</Text>
-            </View>
-            <Mytextbutton 
-              estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
-              title="Detalles"
-              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalObservation(item.observation); setDetailsModalVisibility(true);}}
-              />
-          </View>
-        </View>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
