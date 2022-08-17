@@ -17,6 +17,9 @@ import FoodListScreen from './src/pages/trainee-tabs/FoodListScreen';
 import NewExerciceFoodScreen from './src/pages/trainer-tabs/NewExerciceFoodScreen';
 import AboutScreen from './src/pages/AboutScreen';
 import TraineeDetailsMainScreen from './src/pages/trainer-tabs/TraineeDetailsMainScreen';
+import NewExerciceToTraineeScreen from './src/pages/trainer-tabs/NewExerciceToTraineeScreen';
+import NewFoodToTraineeScreen from './src/pages/trainer-tabs/NewFoodToTraineeScreen';
+import EditProfileScreen from './src/pages/trainee-tabs/EditProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -106,6 +109,19 @@ const App = () => {
           }}
         />
         <Stack.Screen
+          name="EditProfileScreen"
+          component={EditProfileScreen}
+          options={{
+            headerShown: true,
+            title: 'Editar perfil',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
           name="FoodListScreen"
           component={FoodListScreen}
           options={{
@@ -150,6 +166,32 @@ const App = () => {
           options={{
             headerShown: true,
             headerTitle: 'Detalles del cliente',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="NewExerciceToTraineeScreen"
+          component={NewExerciceToTraineeScreen}
+          options={{
+            headerShown: true,
+            title: 'Nuevo Ejercicio',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="NewFoodToTraineeScreen"
+          component={NewFoodToTraineeScreen}
+          options={{
+            headerShown: true,
+            title: 'Nueva comida',
             detachPreviousScreen: false,
             headerStyle: {
               backgroundColor: '#d32f2f',

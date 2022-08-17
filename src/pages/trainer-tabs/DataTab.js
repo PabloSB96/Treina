@@ -113,7 +113,6 @@ const DataTab = ({ navigation, route }) => {
   let getMyExerciceList = () => {}
 
   let getMyFoodListAux = () => {
-    return [];
     let obj1 = {
       id: 1,
       title: 'Comida 3',
@@ -203,7 +202,9 @@ const DataTab = ({ navigation, route }) => {
             <Mytextbutton 
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Editar"
-              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalVisibility(true);}}
+              customClick={() => {
+                navigation.navigate('NewExerciceFoodScreen', {exercice: item});
+              }}
               />
           </View>
         </View>
@@ -241,7 +242,9 @@ const DataTab = ({ navigation, route }) => {
             <Mytextbutton 
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Editar"
-              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalVisibility(true);}}
+              customClick={() => {
+                navigation.navigate('NewExerciceFoodScreen', {food: item});
+              }}
               />
           </View>
         </View>

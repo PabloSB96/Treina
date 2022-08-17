@@ -20,11 +20,21 @@ const baseUrl = 'http://192.168.8.104:3000';
 
 const NewExerciceFoodScreen = ({ navigation, route }) => {
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (route != undefined && route.params != undefined && route.params.food != undefined) {
+      setIsEdition(true);
+      initializeFood(route.params.food);
+    }
+    if (route != undefined && route.params != undefined && route.params.exercice != undefined) {
+      setIsEdition(true);
+      initializeExercice(route.params.exercice);
+    }
+  }, []);
 
   //let {userToken} = route.params;
   let [loading, setLoading] = useState(false);
   let [isFood, setIsFood] = useState(false);
+  let [isEdition, setIsEdition] = useState(false);
   let [title, setTitle] = useState();
   let [description, setDescription] = useState();
   let [observation, setObservation] = useState();
@@ -40,6 +50,37 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
   let [repetitions, setRepetitions] = useState();
   let [rest, setRest] = useState();
   let [series, setSeries] = useState();
+
+  let initializeFood = (item) => {
+    setIsFood(true);
+    setTitle(item.title);
+    setDescription(item.description);
+    setAmount(item.amount);
+    setFoodType(item.foodType);
+    setOnMonday(item.onMonday);
+    setOnTuesday(item.onTuesday);
+    setOnWednesday(item.onWednesday);
+    setOnThursday(item.onThursday);
+    setOnFriday(item.onFriday);
+    setOnSaturday(item.onSaturday);
+    setOnSunday(item.onSunday);
+  }
+  let initializeExercice = (item) => {
+    setIsFood(false);
+    setTitle(item.title);
+    setDescription(item.description);
+    setObservation(item.observation);
+    setRepetitions(item.repetitions);
+    setRest(item.rest);
+    setSeries(item.series);
+    setOnMonday(item.onMonday);
+    setOnTuesday(item.onTuesday);
+    setOnWednesday(item.onWednesday);
+    setOnThursday(item.onThursday);
+    setOnFriday(item.onFriday);
+    setOnSaturday(item.onSaturday);
+    setOnSunday(item.onSunday);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -65,92 +106,127 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
               />
             )}
 
-            <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10, marginTop: 20}}>
-              <Switch
-                style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
-                trackColor={{ true: '#000', false: '#999' }}
-                thumbColor={isFood ? '#9a0007' : '#9a0007'}
-                ios_backgroundColor="#000"
-                value={isFood}
-                onValueChange={(value) => {
-                  setIsFood(value);
-                }}
-              />
-              {isFood ? (
-                <Text style={{fontStyle: 'normal',
-                fontFamily: 'Montserrat',
-                fontSize: 14,
-                color: '#000',
-                textAlign: 'left',
-                marginTop: 8}}>Comida</Text>
-              ) : (
-                <Text style={{fontStyle: 'normal',
-                fontFamily: 'Montserrat',
-                fontSize: 14,
-                color: '#000',
-                textAlign: 'left',
-                marginTop: 8}}>Ejercicio</Text>
-              )}
-            </View>
+            {isEdition ? null : (
+              <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10, marginTop: 20}}>
+                <Switch
+                  style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
+                  trackColor={{ true: '#000', false: '#999' }}
+                  thumbColor={isFood ? '#9a0007' : '#9a0007'}
+                  ios_backgroundColor="#000"
+                  value={isFood}
+                  onValueChange={(value) => {
+                    setIsFood(value);
+                  }}
+                />
+                {isFood ? (
+                  <Text style={{fontStyle: 'normal',
+                  fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  color: '#000',
+                  textAlign: 'left',
+                  marginTop: 8}}>Comida</Text>
+                ) : (
+                  <Text style={{fontStyle: 'normal',
+                  fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  color: '#000',
+                  textAlign: 'left',
+                  marginTop: 8}}>Ejercicio</Text>
+                )}
+              </View>
+            )}
 
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Título</Text></View>
             <Mytextinputred
-              placeholder="Titulo"
+              placeholder="Título"
               style={{ padding: 10 }}
+              estilos={{marginTop: 5}}
+              value={title}
               onChangeText={
                 (title) => setTitle(title)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Descripción</Text></View>
             <Mytextinputred
               placeholder="Descripción"
               style={{ padding: 10 }}
+              estilos={{marginTop: 5}}
+              multiline={true}
+              value={description}
               onChangeText={
                 (description) => setDescription(description)
               }
             />
             {!isFood ? (
-              <Mytextinputred
-                placeholder="Observación"
-                style={{ padding: 10 }}
-                onChangeText={
-                  (observation) => setObservation(observation)
-                }
-              />
+              <View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <Mytextinputred
+                  placeholder="Observación"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 5}}
+                  multiline={true}
+                  value={description}
+                  onChangeText={
+                    (observation) => setObservation(observation)
+                  }
+                />
+              </View>
             ) : null}
             {!isFood ? (
-              <Mytextinputred
-                placeholder="Repeticiones"
-                style={{ padding: 10 }}
-                onChangeText={
-                  (repetitions) => setRepetitions(repetitions)
-                }
-              />
+              <View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Repeticiones</Text></View>
+                <Mytextinputred
+                  placeholder="Repeticiones"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 5}}
+                  value={repetitions}
+                  onChangeText={
+                    (repetitions) => setRepetitions(repetitions)
+                  }
+                />
+              </View>
             ) : null}
             {!isFood ? (
-              <Mytextinputred
-                placeholder="Descanso"
-                style={{ padding: 10 }}
-                onChangeText={
-                  (rest) => setRest(rest)
-                }
-              />
+              <View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <Mytextinputred
+                  placeholder="Descanso"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 5}}
+                  value={rest}
+                  onChangeText={
+                    (rest) => setRest(rest)
+                  }
+                />
+              </View>
             ) : null}
             {!isFood ? (
-              <Mytextinputred
-                placeholder="Nº de series"
-                style={{ padding: 10 }}
-                onChangeText={
-                  (series) => setSeries(series)
-                }
-              />
+              <View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <Mytextinputred
+                  placeholder="Nº de series"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 5}}
+                  value={series}
+                  onChangeText={
+                    (series) => setSeries(series)
+                  }
+                />
+              </View>
             ) : null}
             {isFood ? (
-              <Mytextinputred
-                placeholder="Cantidad"
-                style={{ padding: 10 }}
-                onChangeText={
-                  (amount) => setAmount(amount)
-                }
-              />
+              <View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <Mytextinputred
+                  placeholder="Cantidad"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 5}}
+                  value={amount}
+                  onChangeText={
+                    (amount) => setAmount(amount)
+                  }
+                />
+              </View>
             ) : null}
             {isFood ? (
               <View>
@@ -165,6 +241,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                   <Picker
                     style={styles.selector}
                     selectedValue={foodType}
+                    value={foodType}
                     onValueChange={(itemValue, itemIndex) =>
                       setFoodType(itemValue)
                     }
@@ -366,7 +443,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         color: '#fff',
-        marginTop: 0,
+        marginTop: -10,
         marginLeft: 35,
         marginRight: 35,
         borderColor: '#d32f2f',
@@ -399,7 +476,7 @@ const styles = StyleSheet.create({
   },
   labelDay: {
     marginLeft: 35,
-    color: '#d32f2f',
+    color: '#000',
     fontWeight: 'bold'
   },
 });

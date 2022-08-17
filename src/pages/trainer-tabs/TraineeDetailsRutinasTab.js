@@ -110,6 +110,11 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
 
   let getMyExerciceList = () => {}
 
+  let deleteExercice = (item) => {
+    // TODO
+    console.log("servicio de eliminar");
+  }
+
   let exerciceListItemView = (item) => {
     return (
       <View
@@ -146,12 +151,21 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Eliminar"
-                customClick={() => {console.log("Eliminar");}}
+                customClick={() => {
+                  Alert.alert(
+                    '¡Atención!',
+                    'Va a eliminar el siguiente ejercicio: ' + item.title + '. ¿Está seguro?',
+                    [{text: 'Confirmar', onPress: () => {
+                      deleteExercice(item);
+                    }}, {text: 'Cancelar'}],
+                    { cancelable: false }
+                  );
+                }}
                 />
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Editar"
-                customClick={() => {console.log("Editar");}}
+                customClick={() => {navigation.navigate('NewExerciceToTraineeScreen', {exercice: item});}}
                 />
             </View>
           </View>

@@ -13,28 +13,20 @@ import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 import Mybutton from '../components/Mybutton';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Mytextinputred from '../components/Mytextinputred';
 
-const ProfileTab = ({ navigation, route }) => {
+const EditProfileScreen = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
 
   let [loading, setLoading] = useState(false);
   let [myProfile, setMyProfile] = useState();
+  let [name, setName] = useState();
+  let [goal, setGoal] = useState();
+  let [goalFull, setGoalFull] = useState();
+  let [height, setHeight] = useState();
+  let [weight, setWeight] = useState();
   let [userToken, setUserToken] = useState();
-  let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
-  let [detailsModalDescription, setDetailsModalDescription] = useState('');
-  let [detailsModalObservation, setDetailsModalObservation] = useState('');
-  let [currentDay, setCurrentDay] = useState(0);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Icon name='pencil' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
-          navigation.navigate('EditProfileScreen')
-        }}  />
-      )
-    });
-  }, [navigation]);
 
   useEffect(() => {
     setLoading(true);
@@ -46,7 +38,7 @@ const ProfileTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setMyProfile(getMyProfileInfoAux());
+    initProfileInfo(getMyProfileInfoAux());
     //getMyProfileInfo();
 
   }, [isFocused]);
@@ -61,11 +53,20 @@ const ProfileTab = ({ navigation, route }) => {
       height: 180,
       weight: 74
     };
-    setLoading(false);
     return result;
   }
 
   let getMyProfileInfo = () => {
+  }
+
+  let initProfileInfo = (item) => {
+    setName(item.name);
+    setGoal(item.goal);
+    setGoalFull(item.goalFull);
+    setHeight(item.height);
+    setWeight(item.weight);
+    setMyProfile(item);
+    setLoading(false);
   }
 
   return (
@@ -102,61 +103,74 @@ const ProfileTab = ({ navigation, route }) => {
                       }}/>
                   </View>
                 ): (
-                  <View style={{padding: 20}}>
+                  <View style={{paddingTop: 20}}>
                     <Image
                       style={styles.upperLogo}
                       source={logoProfile}
                     />
-                    <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
                     <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTarget}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTargetFull}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementPhisical}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Altura</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.height} cm</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementPhisical}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Peso</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.weight} Kg</Text>
-                      </View>
-                    </View>
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Nombre</Text></View>
+                    <Mytextinputred
+                      placeholder="Nombre"
+                      style={{ padding: 10 }}
+                      estilos={{marginTop: 0, paddingTop: 0}}
+                      value={name}
+                      onChangeText={
+                        (name) => setFoodType(name)
+                      }
+                    />
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Objetivo (resumen)</Text></View>
+                    <Mytextinputred
+                      placeholder="Objetivo (resumen)"
+                      style={{ padding: 10 }}
+                      estilos={{marginTop: 0, paddingTop: 0}}
+                      multiline={true}
+                      value={goal}
+                      onChangeText={
+                        (goal) => setGoal(goal)
+                      }
+                    />
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Objectivo (completo)</Text></View>
+                    <Mytextinputred
+                      placeholder="Objetivo (completo)"
+                      style={{ padding: 10 }}
+                      estilos={{marginTop: 0, paddingTop: 0}}
+                      multiline={true}
+                      value={goalFull}
+                      onChangeText={
+                        (goalFull) => setGoalFull(goalFull)
+                      }
+                    />
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Altura (cm)</Text></View>
+                    <Mytextinputred
+                      placeholder="Altura (cm)"
+                      style={{ padding: 10 }}
+                      estilos={{marginTop: 0, paddingTop: 0}}
+                      keyboardType='numeric'
+                      value={height}
+                      onChangeText={
+                        (height) => setHeight(height)
+                      }
+                    />
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Peso (kg)</Text></View>
+                    <Mytextinputred
+                      placeholder="Peso (kg)"
+                      style={{ padding: 10 }}
+                      estilos={{marginTop: 0, paddingTop: 0}}
+                      keyboardType="numeric"
+                      value={weight}
+                      onChangeText={
+                        (weight) => setWeight(weight)
+                      }
+                    />
                     <Mybutton
-                      text="Cerrar sesión"
-                      title="Cerrar sesión"
+                      text="Guardar"
+                      title="Guardar"
                       estilos={{
                           marginTop: 40,
                           marginBottom: 50
                       }}
-                      customClick={() => console.log("Close session")}
+                      customClick={() => console.log("Guardar")}
                     />
                   </View>
                 )}
@@ -186,8 +200,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   labelDay: {
-    marginLeft: 20,
-    color: '#d32f2f',
+    marginLeft: 35,
+    color: '#000',
     fontWeight: 'bold'
   },
   baseText: {
@@ -364,4 +378,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileTab;
+export default EditProfileScreen;

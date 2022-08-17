@@ -103,6 +103,11 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
 
   let getMyFoodList = () => {}
 
+  let deleteFood = (item) => {
+    // TODO
+    console.log("servicio de eliminar");
+  }
+
   let foodListItemView = (item) => {
     return (
       <View
@@ -135,12 +140,21 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Eliminar"
-                customClick={() => {console.log("Eliminar");}}
+                customClick={() => {
+                  Alert.alert(
+                    '¡Atención!',
+                    'Va a eliminar la siguiente comida: ' + item.title + '. ¿Está seguro?',
+                    [{text: 'Confirmar', onPress: () => {
+                      deleteExercice(item);
+                    }}, {text: 'Cancelar'}],
+                    { cancelable: false }
+                  );
+                }}
                 />
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Editar"
-                customClick={() => {console.log("Editar");}}
+                customClick={() => {navigation.navigate('NewFoodToTraineeScreen', {food: item});}}
                 />
             </View>
           </View>
