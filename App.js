@@ -178,7 +178,7 @@ const App = () => {
           component={NewExerciceToTraineeScreen}
           options={{
             headerShown: true,
-            title: 'Nuevo Ejercicio',
+            title: 'Administrar ejercicios',
             detachPreviousScreen: false,
             headerStyle: {
               backgroundColor: '#d32f2f',
@@ -191,7 +191,7 @@ const App = () => {
           component={NewFoodToTraineeScreen}
           options={{
             headerShown: true,
-            title: 'Nueva comida',
+            title: 'Administrar comidas',
             detachPreviousScreen: false,
             headerStyle: {
               backgroundColor: '#d32f2f',

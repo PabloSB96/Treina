@@ -2,6 +2,7 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Picker } from '@react-native-picker/picker';
 
 import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import logoProfile from '../assets/icons/treina_undraw_profile.png';
@@ -22,6 +23,7 @@ const EditProfileScreen = ({ navigation, route }) => {
   let [loading, setLoading] = useState(false);
   let [myProfile, setMyProfile] = useState();
   let [name, setName] = useState();
+  let [sex, setSex] = useState();
   let [goal, setGoal] = useState();
   let [goalFull, setGoalFull] = useState();
   let [height, setHeight] = useState();
@@ -46,8 +48,9 @@ const EditProfileScreen = ({ navigation, route }) => {
   let getMyProfileInfoAux = () => {
     let result = {
       id: 1,
-      name: 'Noelia Sopeña',
-      email: 'lamejornoviaqueexiste@gmail.com',
+      name: 'Pablo Sánchez',
+      email: 'pablosanchez@gmail.com',
+      sex: 'H',
       goal: 'Perder peso',
       goalFull: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumpeso.',
       height: 180,
@@ -61,10 +64,18 @@ const EditProfileScreen = ({ navigation, route }) => {
 
   let initProfileInfo = (item) => {
     setName(item.name);
+    setSex(item.sex);
     setGoal(item.goal);
     setGoalFull(item.goalFull);
-    setHeight(item.height);
-    setWeight(item.weight);
+    setHeight(item.height.toString());
+    setWeight(item.weight.toString());
+    console.log("initProfileInfo - 1");
+    console.log("item.height: " + item.height);
+    console.log("item.weight: " + item.weight);
+    console.log("initProfileInfo - 2");
+    console.log("height: " + height);
+    console.log("weight: " + weight);
+    console.log("initProfileInfo - 3");
     setMyProfile(item);
     setLoading(false);
   }
@@ -119,6 +130,21 @@ const EditProfileScreen = ({ navigation, route }) => {
                         (name) => setFoodType(name)
                       }
                     />
+                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Sexo</Text></View>
+                    <View style={styles.selectorView}>
+                      <Picker
+                        style={styles.selector}
+                        selectedValue={sex}
+                        onValueChange={(itemValue, itemIndex) =>
+                          setSex(itemValue)
+                        }
+                        itemStyle={{color: '#000', backgroundColor: '#fff', borderRadius: 8}} >
+                        <Picker.Item label="Selecciona tu sexo..." value="-" />
+                        <Picker.Item label="Hombre" value="H" />
+                        <Picker.Item label="Mujer" value="M" />
+                        <Picker.Item label="Otro/a" value="X" />
+                      </Picker>
+                    </View>
                     <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Objetivo (resumen)</Text></View>
                     <Mytextinputred
                       placeholder="Objetivo (resumen)"
@@ -266,21 +292,39 @@ const styles = StyleSheet.create({
     //backgroundColor:'black'
   },
   selectorView: {
-    alignItems: 'flex-start',
-    color: '#ffa726',
-    marginTop: 16,
-    marginLeft: 35,
-    marginRight: 35,
-    borderColor: '#ffa726',
-    borderWidth: 1,
-    borderRadius: 10,
+    ...Platform.select({
+      ios: {
+        color: '#fff',
+        marginTop: 0,
+        marginLeft: 35,
+        marginRight: 35,
+        borderColor: '#d32f2f',
+        borderWidth: 1,
+        borderRadius: 10,
+      },
+      android: {
+        alignItems: 'flex-start',
+        color: '#fff',
+        marginTop: 16,
+        marginLeft: 35,
+        marginRight: 35,
+        borderColor: '#d32f2f',
+        borderWidth: 1,
+        borderRadius: 10,
+      }
+    })
   },
   selector: {
-    alignItems: 'flex-start',
-    color: '#ffa726',
-    width: '100%',
-    padding: 0,
-    margin: 0
+    color: '#fff',
+    ...Platform.select({
+      android: {
+        alignItems: 'flex-start',
+        color: '#fff',
+        width: '10%',
+        padding: 0,
+        margin: 0
+      }
+    })
   },
   textContainer: {
     fontSize: 18,

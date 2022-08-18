@@ -259,8 +259,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
             ) : null}
             <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Días</Text></View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnMonday(!onMonday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}}>
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onMonday}}
@@ -270,11 +269,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onMonday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Lunes</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnMonday(!onMonday)}}>Lunes</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnTuesday(!onTuesday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onTuesday}}
@@ -284,11 +282,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onTuesday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Martes</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnTuesday(!onTuesday)}}>Martes</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnWednesday(!onWednesday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onWednesday}}
@@ -298,11 +295,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onWednesday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Miércoles</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnWednesday(!onWednesday)}}>Miércoles</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnThursday(!onThursday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onThursday}}
@@ -312,11 +308,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onThursday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Jueves</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnThursday(!onThursday)}}>Jueves</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnFriday(!onFriday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onFriday}}
@@ -326,11 +321,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onFriday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Viernes</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnFriday(!onFriday)}}>Viernes</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnSaturday(!onSaturday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onSaturday}}
@@ -340,11 +334,10 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onSaturday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Sábado</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnSaturday(!onSaturday)}}>Sábado</Text>
             </View>
             <View 
-              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
-              onTouchEnd={() => {setOnSunday(!onSunday)}}>
+              style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} >
               <Checkbox
                 style={{backgroundColor: '#f00'}}
                 value={{onSunday}}
@@ -354,7 +347,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 color={onSunday ? '#d32f2f' : '#aaa'}
               />
               <Text 
-                style={{marginLeft: 10}}>Domingo</Text>
+                style={{marginLeft: 10}} onPress={() => {setOnSunday(!onSunday)}}>Domingo</Text>
             </View>
 
             <Mybutton

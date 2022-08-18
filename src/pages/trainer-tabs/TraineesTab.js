@@ -64,7 +64,7 @@ const TraineesTab = ({ navigation, route }) => {
     };
     let obj3 = {
       id: 1,
-      name: 'Noelia Sopeña',
+      name: 'Pablo Sánchez',
       email: 'noeliasopenha@gmail.com',
       lastMeasuresUpdate: 1646136000000
     };

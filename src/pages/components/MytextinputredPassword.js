@@ -1,21 +1,21 @@
 import React from 'react';
 import { View, TextInput } from 'react-native';
 
-const Mytextinput = (props) => {
+const MytextinputPassword = (props) => {
   return (
     <View
       style={[{
         marginLeft: 35,
         marginRight: 35,
         marginTop: 10,
-        borderColor: '#ffffff',
+        borderColor: '#d32f2f',
         borderWidth: 1,
         borderRadius: 10
       }, props.estilos]}>
       <TextInput
         underlineColorAndroid="transparent"
         placeholder={props.placeholder}
-        placeholderTextColor="#ffffff"
+        placeholderTextColor="#d32f2f"
         keyboardType={props.keyboardType}
         onChangeText={props.onChangeText}
         returnKeyType={props.returnKeyType}
@@ -25,9 +25,10 @@ const Mytextinput = (props) => {
         style={props.style}
         blurOnSubmit={false}
         value={props.value}
+        secureTextEntry={true}
       />
     </View>
   );
 };
 
-export default Mytextinput;
+export default MytextinputPassword;

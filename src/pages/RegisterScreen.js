@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, Switch } from 'react-native';
 import { DatabaseConnection } from '../database/database-connection';
-import Mytextinput from './components/Mytextinput';
+import Mytextinputred from './components/Mytextinputred';
 import Mytext from './components/Mytext';
 import Mybutton from './components/Mybutton';
-import MytextinputPassword from './components/MytextinputPassword';
+import MytextinputredPassword from './components/MytextinputredPassword';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Button } from 'react-native';
@@ -61,6 +61,8 @@ const RegisterScreen = ({ navigation }) => {
   let [name, setName] = useState('');
   let [height, setHeight] = useState();
   let [weight, setWeight] = useState();
+  let [goal, setGoal] = useState();
+  let [goalFull, setGoalFull] = useState();
 
   const getDeviceId = async () => {
     if (Platform.OS === 'android') {
@@ -183,13 +185,10 @@ const RegisterScreen = ({ navigation }) => {
           <ActivityIndicator size="large" color="#d32f2f" />
         </View>
       ): null}
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
-            <Image
-              style={styles.gymImageLogo}
-              source={logoGymImage}
-            />
+            
             <KeyboardAwareScrollView>
             <Image
               style={styles.upperLogo}
@@ -198,7 +197,7 @@ const RegisterScreen = ({ navigation }) => {
             <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10}}>
               <Switch
                 style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
-                trackColor={{ false: '#000', true: '#fff' }}
+                trackColor={{ false: '#000', true: '#ccc' }}
                 thumbColor={isTrainer ? '#9a0007' : '#000000'}
                 ios_backgroundColor="#fff"
                 value={isTrainer}
@@ -210,42 +209,42 @@ const RegisterScreen = ({ navigation }) => {
                 <Text style={{fontStyle: 'normal',
                 fontFamily: 'Montserrat',
                 fontSize: 14,
-                color: '#fff',
+                color: '#000',
                 textAlign: 'left',
                 marginTop: 8}}>Soy entrenador</Text>
               ) : (
                 <Text style={{fontStyle: 'normal',
                 fontFamily: 'Montserrat',
                 fontSize: 14,
-                color: '#fff',
+                color: '#000',
                 textAlign: 'left',
                 marginTop: 8}}>Soy cliente / deportista</Text>
               )}
             </View>
             {isTrainer ? (
               <View>
-                <Mytextinput
+                <Mytextinputred
                   placeholder="Email"
                   style={{ padding: 10 }}
                   onChangeText={
                     (email) => setEmail(email)
                   }
                 />
-                <MytextinputPassword
+                <MytextinputredPassword
                   placeholder="Password"
                   style={{ padding: 10 }}
                   onChangeText={
                     (password) => setPassword(password)
                   }
                 />
-                <MytextinputPassword
+                <MytextinputredPassword
                   placeholder="Repeat password"
                   style={{ padding: 10 }}
                   onChangeText={
                     (repeatPassword) => setRepeatPassword(repeatPassword)
                   }
                 />
-                <Mytextinput
+                <Mytextinputred
                   placeholder="Nombre"
                   style={{ padding: 10 }}
                   onChangeText={
@@ -255,28 +254,36 @@ const RegisterScreen = ({ navigation }) => {
               </View>
             ) : (
               <View>
-                <Mytextinput
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Email</Text></View>
+                <Mytextinputred
                   placeholder="Email"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   onChangeText={
                     (email) => setEmail(email)
                   }
                 />
-                <MytextinputPassword
-                  placeholder="Password"
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Contraseña</Text></View>
+                <MytextinputredPassword
+                  placeholder="Contraseña"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   onChangeText={
                     (password) => setPassword(password)
                   }
                 />
-                <MytextinputPassword
-                  placeholder="Repeat password"
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Repetir contraseña</Text></View>
+                <MytextinputredPassword
+                  placeholder="Repetir contraseña"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   onChangeText={
                     (repeatPassword) => setRepeatPassword(repeatPassword)
                   }
                 />
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Fecha de nacimiento</Text></View>
                 <MyDatePickerButton customClick={showDatePicker} title={birthDateTitle}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                 />            
                 <DateTimePicker
                   isVisible={isDatePickerVisible}
@@ -286,12 +293,7 @@ const RegisterScreen = ({ navigation }) => {
                   accentColor='#fff'
                   locale='es_ES'
                 />
-                { Platform.OS == 'ios' ? (
-                  <Mytext
-                    text="Sexo"
-                    estilos={{fontSize: 14, marginBottom: -16, color: '#fff'}}
-                  />
-                )  : null}
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Sexo</Text></View>
                 <View style={styles.selectorView}>
                   <Picker
                     style={styles.selector}
@@ -306,32 +308,60 @@ const RegisterScreen = ({ navigation }) => {
                     <Picker.Item label="Otro/a" value="X" />
                   </Picker>
                 </View>
-                <Mytextinput
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Nombre</Text></View>
+                <Mytextinputred
                   placeholder="Nombre"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   onChangeText={
                     (name) => setName(name)
                   }
                 />
-                <Mytextinput
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Altura (cm)</Text></View>
+                <Mytextinputred
                   placeholder="Altura (cm)"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   keyboardType="numeric"
                   onChangeText={
                     (height) => setHeight(height)
                   }
                 />
-                <Mytextinput
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Peso (kg)</Text></View>
+                <Mytextinputred
                   placeholder="Peso (kg)"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   keyboardType="numeric"
                   onChangeText={
                     (weight) => setWeight(weight)
                   }
                 />
-                <Mytextinput
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Objetivo (resumen)</Text></View>
+                <Mytextinputred
+                  placeholder="Objetivo (resumen)"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
+                  multiline={true}
+                  onChangeText={
+                    (goal) => setGoal(goal)
+                  }
+                />
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Objetivo (completo)</Text></View>
+                <Mytextinputred
+                  placeholder="Objetivo (completo)"
+                  style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
+                  multiline={true}
+                  onChangeText={
+                    (goalFull) => setGoalFull(goalFull)
+                  }
+                />
+                <View><Text style={[styles.labelInput, {flex: 1, marginTop: 10}]}>Código de entrenador</Text></View>
+                <Mytextinputred
                   placeholder="Código de entrenador"
                   style={{ padding: 10 }}
+                  estilos={{marginTop: 0, paddingTop: 0}}
                   onChangeText={
                     (trainerCode) => setTrainerCode(trainerCode)
                   }
@@ -382,6 +412,11 @@ const styles = StyleSheet.create({
     marginRight: 36,
     color: '#fff'
   },
+  labelInput: {
+    marginLeft: 35,
+    color: '#000',
+    fontWeight: 'bold'
+  },
   upperLogo: {
     marginTop: 0,
     paddingTop: 0,
@@ -406,10 +441,10 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         color: '#fff',
-        marginTop: 16,
+        marginTop: 0,
         marginLeft: 35,
         marginRight: 35,
-        borderColor: '#fff',
+        borderColor: '#d32f2f',
         borderWidth: 1,
         borderRadius: 10,
       },
@@ -419,7 +454,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
         marginLeft: 35,
         marginRight: 35,
-        borderColor: '#fff',
+        borderColor: '#d32f2f',
         borderWidth: 1,
         borderRadius: 10,
       }

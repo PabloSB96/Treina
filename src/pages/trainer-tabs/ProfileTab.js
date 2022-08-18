@@ -52,8 +52,8 @@ const ProfileTab = ({ navigation, route }) => {
   let getMyProfileInfoAux = () => {
     let result = {
       id: 1,
-      name: 'Noelia Sopeña',
-      email: 'lamejoentrenadoraqueexiste@gmail.com',
+      name: 'Pablo Sánchez',
+      email: 'pablosancheztrainer@gmail.com',
       trainerCode: 'ABC1234',
       traineeNumber: 3,
       plan: 'BASICO'
@@ -154,7 +154,7 @@ const ProfileTab = ({ navigation, route }) => {
                           marginTop: 40,
                           marginBottom: 50
                       }}
-                      customClick={() => console.log("Close session")}
+                      customClick={() => navigation.replace('LoginScreen')}
                     />
                   </View>
                 )}

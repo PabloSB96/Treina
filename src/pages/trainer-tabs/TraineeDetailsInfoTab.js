@@ -8,7 +8,9 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import logoProfile from '../assets/icons/treina_undraw_profile.png';
 import logoElementTarget from '../assets/icons/treina_undraw_profile_element_target.png';
 import logoElementTargetFull from '../assets/icons/treina_undraw_profile_element_targetfull.png';
-import logoElementPhisical from '../assets/icons/treina_undraw_profile_element_phisical.png';
+import logoSexH from '../assets/icons/treina_undraw_man.png';
+import logoSexM from '../assets/icons/treina_undraw_woman.png';
+import logoSexX from '../assets/icons/treina_undraw_othergender.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
@@ -99,8 +101,9 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   let getMyProfileInfoAux = () => {
     let result = {
       id: 1,
-      name: 'Noelia Sopeña',
-      email: 'lamejornoviaqueexiste@gmail.com',
+      name: 'Pablo Sánchez',
+      email: 'pablosanchez@gmail.com',
+      sex: 'H',
       goal: 'Perder peso',
       goalFull: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsumpeso.',
       height: 180,
@@ -164,6 +167,38 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                     />
                     <View><Text style={[styles.profileTitleText, {flex: 1}]}>{myProfile.name}</Text></View>
                     <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                    <View style={{flex: 1, flexDirection: 'row'}}>
+                      {myProfile.sex == 'H' ? (
+                        <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoSexH}
+                      />
+                      ) : null}
+                      {myProfile.sex == 'M' ? (
+                        <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoSexM}
+                      />
+                      ) : null}
+                      {myProfile.sex == 'X' ? (
+                        <Image
+                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                        source={logoSexX}
+                      />
+                      ) : null}
+                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                        <Text style={[styles.elementTitle, {}]}>Sexo</Text>
+                        {myProfile.sex == 'H' ? (
+                          <Text style={[styles.elementText,]}>Hombre</Text>
+                        ) : null }
+                        {myProfile.sex == 'M' ? (
+                          <Text style={[styles.elementText,]}>Mujer</Text>
+                        ) : null }
+                        {myProfile.sex == 'X' ? (
+                          <Text style={[styles.elementText,]}>Otro/a</Text>
+                        ) : null }
+                      </View>
+                    </View>
                     <View style={{flex: 1, flexDirection: 'row'}}>
                       <Image
                         style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}

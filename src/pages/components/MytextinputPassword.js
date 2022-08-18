@@ -4,14 +4,14 @@ import { View, TextInput } from 'react-native';
 const MytextinputPassword = (props) => {
   return (
     <View
-      style={{
+      style={[{
         marginLeft: 35,
         marginRight: 35,
         marginTop: 10,
         borderColor: '#ffffff',
         borderWidth: 1,
         borderRadius: 10
-      }}>
+      }, props.estilos]}>
       <TextInput
         underlineColorAndroid="transparent"
         placeholder={props.placeholder}

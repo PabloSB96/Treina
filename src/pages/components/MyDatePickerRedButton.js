@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-const MyDatePickerButton = (props) => {
+const MyDatePickerRedButton = (props) => {
   return (
     <TouchableOpacity
       style={[styles.button, props.estilos]}
@@ -45,4 +45,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MyDatePickerButton;
+export default MyDatePickerRedButton;
