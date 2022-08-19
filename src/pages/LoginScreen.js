@@ -57,11 +57,15 @@ const LoginScreen = ({ navigation }) => {
 
   let doLogin = () => {
 
+    navigation.replace('TraineeMainScreen');
+
     // TODO quitar la siguiente linea y descomentar y completar
-    if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
-    /*setLoading(true);
+    //if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
+    setLoading(true);
     if (email == undefined || email.trim() == "" || 
-      password == undefined || password.trim() == "") {
+      password == undefined || password.trim() == "" || (
+        !isTrainer && (trainerCode == undefined || trainerCode.trim() == "")
+      )) {
       setLoading(false);
       Alert.alert(
         'Error',
@@ -72,10 +76,14 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
+    console.log("do login");
+
     // Call REST API Login
     axios.post(`${baseUrl}/login`, {
+      isTrainer,
       email,
-      password
+      password,
+      trainerCode
     }).then((response) => {
       saveToken(response.data.token);
     }).catch((error) => {
@@ -90,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
           );
         }
       }
-    });*/
+    });
   }
 
   return (

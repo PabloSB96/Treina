@@ -83,9 +83,10 @@ const RegisterScreen = ({ navigation }) => {
     }
   }
 
-  let saveToken = async (token) => {
+  let saveToken = async (token, isTrainer) => {
     try {
       await AsyncStorage.setItem('treina.token', token);
+      await AsyncStorage.setItem('treina.isTrainer', isTrainer);
     } catch(e){
       console.log("asynstorage - 1");
       console.log(e);
@@ -93,12 +94,16 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     setLoading(false);
-    navigation.replace('MainScreen', {userToken: token});
+    if (isTrainer) {
+      navigation.replace('TrainerMainScreen', {userToken: token});
+    } else {
+      navigation.replace('TraineeMainScreen', {userToken: token});
+    }
   }
 
   let doRegister = () => {
 
-    /*setLoading(true);
+    setLoading(true);
 
     // Check device ID
     let deviceId = null;
@@ -110,9 +115,18 @@ const RegisterScreen = ({ navigation }) => {
       if (email == undefined || email.trim() == "" || 
         password == undefined || password.trim() == "" || 
         repeatPassword == undefined || repeatPassword.trim() == "" || 
-        sex == undefined || sex.trim() == "" || sex.trim() == "-" ||
-        birthDate == undefined ||
-        name == undefined || name.trim() == "") {
+        name == undefined || name.trim() == "" ||
+        isTrainer == undefined || 
+        (!isTrainer && (
+          sex == undefined || sex.trim() == "" || sex.trim() == "-" ||
+          birthDate == undefined || 
+          goal == undefined || goal.trim() == "" ||
+          goalFull == undefined || goalFull.trim() == "" ||
+          height == undefined ||
+          weight == undefined || 
+          trainerCode == undefined
+        ))
+        ) {
         
         setLoading(false);
         Alert.alert(
@@ -148,15 +162,21 @@ const RegisterScreen = ({ navigation }) => {
 
       // Call REST API Register
       axios.post(`${baseUrl}/register`, {
+        isTrainer,
         email,
         password,
         repeatPassword,
+        name,
+        deviceId,
         sex,
         birthDate,
-        name,
-        deviceId
+        goal,
+        goalFull,
+        height,
+        weight,
+        trainerCode
       }).then((response) => {
-        saveToken(response.data.token);
+        saveToken(response.data.token, isTrainer);
       }).catch((error) => {
         setLoading(false);
         console.log("Register - App - 1");
@@ -175,7 +195,7 @@ const RegisterScreen = ({ navigation }) => {
           }
         }
       });
-    });*/
+    });
   }
 
   return (
