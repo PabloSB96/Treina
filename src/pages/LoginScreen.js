@@ -57,10 +57,8 @@ const LoginScreen = ({ navigation }) => {
 
   let doLogin = () => {
 
-    navigation.replace('TraineeMainScreen');
-
     // TODO quitar la siguiente linea y descomentar y completar
-    //if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
+    if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
     setLoading(true);
     if (email == undefined || email.trim() == "" || 
       password == undefined || password.trim() == "" || (
