@@ -16,7 +16,7 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const NewExerciceFoodScreen = ({ navigation, route }) => {
 
@@ -37,26 +37,27 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
   let [isEdition, setIsEdition] = useState(false);
   let [title, setTitle] = useState();
   let [description, setDescription] = useState();
-  let [observation, setObservation] = useState();
-  let [onMonday, setOnMonday] = useState();
-  let [onTuesday, setOnTuesday] = useState();
-  let [onWednesday, setOnWednesday] = useState();
-  let [onThursday, setOnThursday] = useState();
-  let [onFriday, setOnFriday] = useState();
-  let [onSaturday, setOnSaturday] = useState();
-  let [onSunday, setOnSunday] = useState();
-  let [foodType, setFoodType] = useState();
+  let [observations, setObservations] = useState();
+  let [onMonday, setOnMonday] = useState(false);
+  let [onTuesday, setOnTuesday] = useState(false);
+  let [onWednesday, setOnWednesday] = useState(false);
+  let [onThursday, setOnThursday] = useState(false);
+  let [onFriday, setOnFriday] = useState(false);
+  let [onSaturday, setOnSaturday] = useState(false);
+  let [onSunday, setOnSunday] = useState(false);
+  let [foodType, setFoodType] = useState('-');
   let [amount, setAmount] = useState();
   let [repetitions, setRepetitions] = useState();
   let [rest, setRest] = useState();
   let [series, setSeries] = useState();
+  let [shoppingList, setShoppingList] = useState([]);
 
   let initializeFood = (item) => {
     setIsFood(true);
     setTitle(item.title);
     setDescription(item.description);
     setAmount(item.amount);
-    setFoodType(item.foodType);
+    setFoodType(item.FoodType.code);
     setOnMonday(item.onMonday);
     setOnTuesday(item.onTuesday);
     setOnWednesday(item.onWednesday);
@@ -69,7 +70,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
     setIsFood(false);
     setTitle(item.title);
     setDescription(item.description);
-    setObservation(item.observation);
+    setObservations(item.observations);
     setRepetitions(item.repetitions);
     setRest(item.rest);
     setSeries(item.series);
@@ -80,6 +81,264 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
     setOnFriday(item.onFriday);
     setOnSaturday(item.onSaturday);
     setOnSunday(item.onSunday);
+  }
+
+  let saveFood = () => {
+    setLoading(true);
+
+    if (title == undefined || title.trim() == "" || 
+        description == undefined || description.trim() == "" || 
+        foodType == undefined || foodType.trim() == "-" || 
+        amount == undefined || amount.trim() == "" ) {
+      setLoading(false);
+      Alert.alert(
+        'Atención',
+        '¡Completa los campos y revisa que sean correctos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    let url = undefined;
+    let data = undefined;
+    if (isEdition) {
+      url = `${baseUrl}/trainer/data/food/edit`;
+      data = {
+        id: route.params.food.id,
+        title,
+        description,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        foodType,
+        amount
+      }
+    } else {
+      url = `${baseUrl}/trainer/data/food/new`;
+      data = {
+        title,
+        description,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        foodType,
+        amount,
+        shoppingList
+      }
+    }
+    axios.post(url, data, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+    }).catch((error) => {
+      setLoading(false);
+      if (error.response.data != undefined && error.response.data.message != undefined) {
+        if(error.response.data.message == 'BAD_INFORMATION') {
+          Alert.alert(
+            'Atención',
+            'La información es incorrecta. Comprueba que todos los campos estén cubiertos y son correctos.',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
+        }
+      }
+    });
+  }
+
+  let saveExercice = () => {
+    setLoading(true);
+    if (title == undefined || title.trim() == "" || 
+        description == undefined || description.trim() == "" || 
+        observations == undefined || observations.trim() == "" || 
+        repetitions == undefined || repetitions.trim() == "-" || 
+        rest == undefined || rest.trim() == "" || 
+        series == undefined || series.trim() == "" ) {
+      setLoading(false);
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los campos y revisa que sean correctos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    let url = undefined;
+    let data = undefined;
+    if (isEdition) {
+      url = `${baseUrl}/trainer/data/exercices/edit`;
+      data = {
+        id: route.params.exercice.id,
+        title,
+        description,
+        observations,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        repetitions,
+        rest,
+        series
+      }
+    } else {
+      url = `${baseUrl}/trainer/data/exercices/new`;
+      data = {
+        title,
+        description,
+        observations,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        repetitions,
+        rest,
+        series
+      }
+    }
+    console.log("exercices - edit - new - 1");
+    console.log(route.params);
+    console.log("exercices - edit - new - 2");
+    axios.post(url, data, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+    }).catch((error) => {
+      setLoading(false);
+      if (error.response.data != undefined && error.response.data.message != undefined) {
+        if(error.response.data.message == 'BAD_INFORMATION') {
+          Alert.alert(
+            'Atención',
+            'La información es incorrecta. Comprueba que todos los campos estén cubiertos y son correctos.',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
+        }
+      }
+    });
+  }
+
+  let saveData = () => {
+    if (isFood) {
+      saveFood();
+    } else {
+      saveExercice();
+    }
+  }
+
+  let addShoppingListElement = () => {
+    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+    shoppingListCopy.push({
+      id: shoppingList.length + 1,
+      title: undefined,
+      description: undefined
+    });
+    setShoppingList(shoppingListCopy);
+  }
+
+  let removeShoppingListElement = (item) => {
+    let index = -1;
+    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+    for (let i = 0; i < shoppingListCopy.length; i++) {
+      if (shoppingListCopy[i].id == item.id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != -1) {
+      shoppingListCopy.splice(index, 1);
+      setShoppingList(shoppingListCopy);
+    }
+  }
+
+  let shoppingListItemView = (item) => {
+    return (
+      <View
+        key={item.id}
+        style={{}}>
+        <View style={{flex: 3, margin: 0}}>
+          <View>
+            <View>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Título</Text>
+                <MyActionButton 
+                  btnIcon="minus"
+                  iconSize={14}
+                  iconColor="#d32f2f"
+                  estilos={{
+                    margin: 50,
+                    marginTop: 20
+                  }}
+                  customClick={() => {
+                    removeShoppingListElement(item)
+                  }}
+                  />
+              </View>
+              <Mytextinputred
+                placeholder="Título"
+                style={{ padding: 10 }}
+                estilos={{marginTop: 5, marginLeft: 15}}
+                multiline={true}
+                value={item.title}
+                onChangeText={
+                  (title) => {
+                    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                    for (let i = 0; i < shoppingListCopy.length; i++) {
+                      if (shoppingListCopy[i].id == item.id) {
+                        shoppingListCopy[i].title = title;
+                      }
+                    }
+                    setShoppingList(shoppingListCopy);
+                  }
+                }
+              />
+            </View>
+            <View>
+              <View><Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Descripción</Text></View>
+              <Mytextinputred
+                placeholder="Descripción"
+                style={{ padding: 10 }}
+                estilos={{marginTop: 5, marginLeft: 15}}
+                multiline={true}
+                value={item.description}
+                onChangeText={
+                  (description) => {
+                    // TODO update value by the COPY strategy
+                    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                    for (let i = 0; i < shoppingListCopy.length; i++) {
+                      if (shoppingListCopy[i].id == item.id) {
+                        shoppingListCopy[i].description = description;
+                      }
+                    }
+                    setShoppingList(shoppingListCopy);
+                  }
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+    );
   }
 
   return (
@@ -165,9 +424,9 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                   style={{ padding: 10 }}
                   estilos={{marginTop: 5}}
                   multiline={true}
-                  value={description}
+                  value={observations}
                   onChangeText={
-                    (observation) => setObservation(observation)
+                    (observations) => setObservations(observations)
                   }
                 />
               </View>
@@ -188,7 +447,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
             ) : null}
             {!isFood ? (
               <View>
-                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Descanso</Text></View>
                 <Mytextinputred
                   placeholder="Descanso"
                   style={{ padding: 10 }}
@@ -202,7 +461,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
             ) : null}
             {!isFood ? (
               <View>
-                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Nº de series</Text></View>
                 <Mytextinputred
                   placeholder="Nº de series"
                   style={{ padding: 10 }}
@@ -216,7 +475,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
             ) : null}
             {isFood ? (
               <View>
-                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Observación</Text></View>
+                <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Cantidad</Text></View>
                 <Mytextinputred
                   placeholder="Cantidad"
                   style={{ padding: 10 }}
@@ -350,6 +609,37 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 style={{marginLeft: 10}} onPress={() => {setOnSunday(!onSunday)}}>Domingo</Text>
             </View>
 
+            {isFood ? (
+              <View>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lista de la compra</Text>
+                  <MyActionButton 
+                    btnIcon="plus"
+                    iconSize={20}
+                    iconColor="#d32f2f"
+                    estilos={{
+                      margin: 50,
+                      marginTop: 20
+                    }}
+                    customClick={addShoppingListElement}
+                    />
+                </View>
+                {(shoppingList != undefined && shoppingList.length > 0) ? (
+                  <FlatList
+                    style={{marginTop: 0, marginBottom: 20}}
+                    contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                    data={shoppingList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => shoppingListItemView(item)}
+                    />
+                ) : (
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <Text style={[styles.labelNoElements, {flex: 1, marginTop: 20}]}>Todavía no hay ningún elemento.</Text>
+                  </View>
+                )}
+              </View>
+            ) : null}
+
             <Mybutton
               text="Guardar"
               title="Guardar"
@@ -357,7 +647,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
                 marginTop: 40,
                 marginBottom: 50
               }}
-              customClick={() => console.log("Guardar")}
+              customClick={() => saveData()}
             />
 
             </KeyboardAwareScrollView>
@@ -456,12 +746,12 @@ const styles = StyleSheet.create({
     })
   },
   selector: {
-    color: '#fff',
+    color: '#000',
     ...Platform.select({
       android: {
         alignItems: 'flex-start',
-        color: '#fff',
-        width: '10%',
+        color: '#000',
+        width: '100%',
         padding: 0,
         margin: 0
       }
@@ -472,6 +762,17 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold'
   },
+  labelDayShoppingList: {
+    marginLeft: 15,
+    color: '#000',
+    fontWeight: 'bold'
+  },
+  labelNoElements: {
+    color: '#000',
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginLeft: 35
+  }
 });
 
 export default NewExerciceFoodScreen;

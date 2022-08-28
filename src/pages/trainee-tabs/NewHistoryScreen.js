@@ -13,7 +13,7 @@ import Mytextinputred from '../components/Mytextinputred';
 
 import logoData from '../assets/treina_data.png';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const NewHistoryScreen = ({ navigation, route }) => {
 
@@ -28,6 +28,75 @@ const NewHistoryScreen = ({ navigation, route }) => {
   let [hip, setHip]= useState();
   let [gluteus, setGluteus]= useState();
   let [thigh, setThigh]= useState();
+
+  let saveData = () => {
+    if (weight == undefined || 
+        chest == undefined || 
+        arm == undefined || 
+        waist == undefined || 
+        hip == undefined || 
+        gluteus == undefined || 
+        thigh == undefined) {
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los campos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      return ;
+    }
+    let weightNumber = undefined;
+    let chestNumber = undefined;
+    let armNumber = undefined;
+    let waistNumber = undefined;
+    let hipNumber = undefined;
+    let gluteusNumber = undefined;
+    let thighNumber = undefined;
+    try {
+      weightNumber = Number(weight);
+      chestNumber = Number(chest);
+      armNumber = Number(arm);
+      waistNumber = Number(waist);
+      hipNumber = Number(hip);
+      gluteusNumber = Number(gluteus);
+      thighNumber = Number(thigh);
+    } catch(e){
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los y revisa que sean correctos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    }
+    axios.post(`${baseUrl}/trainee/history/new`, {
+      weight: weightNumber,
+      chest: chestNumber,
+      arm: armNumber,
+      waist: waistNumber,
+      hip: hipNumber,
+      gluteus: gluteusNumber,
+      thigh: thighNumber
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("NewHistoryScreen - saveData - error - 1");
+      console.log(error);
+      console.log("NewHistoryScreen - saveData - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -46,58 +115,72 @@ const NewHistoryScreen = ({ navigation, route }) => {
               source={logoData}
             />
 
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Peso (kg)</Text></View>
             <Mytextinputred
               placeholder="Peso (kg)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (weight) => setWeight(weight)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Pecho (cm)</Text></View>
             <Mytextinputred
               placeholder="Pecho (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (chest) => setChest(chest)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Brazo (cm)</Text></View>
             <Mytextinputred
               placeholder="Brazo (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (arm) => setArm(arm)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Cintura (cm)</Text></View>
             <Mytextinputred
               placeholder="Cintura (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (waist) => setWaist(waist)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Cadera (cm)</Text></View>
             <Mytextinputred
               placeholder="Cadera (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (hip) => setHip(hip)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Glúteo (cm)</Text></View>
             <Mytextinputred
               placeholder="Glúteo (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (gluteus) => setGluteus(gluteus)
               }
             />
+            <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Muslo (cm)</Text></View>
             <Mytextinputred
               placeholder="Muslo (cm)"
               keyboardType="numeric"
               style={{ padding: 10 }}
+              estilos={{marginTop: 0, paddingTop: 0}}
               onChangeText={
                 (thigh) => setThigh(thigh)
               }
@@ -109,7 +192,7 @@ const NewHistoryScreen = ({ navigation, route }) => {
               estilos={{
                   marginBottom: 50
               }}
-              customClick={() => console.log("Enviar datos")}
+              customClick={() => saveData()}
             />
 
             </KeyboardAwareScrollView>
@@ -200,6 +283,11 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 0,
     margin: 0
+  },
+  labelDay: {
+    marginLeft: 35,
+    color: '#000',
+    fontWeight: 'bold'
   },
 });
 

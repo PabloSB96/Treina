@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity, Switch } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,6 +9,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const TraineeDetailsRutinasTab = ({ navigation, route }) => {
 
@@ -44,9 +47,10 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setExerciceList(getMyExerciceListAux());
+    //setExerciceList(getMyExerciceListAux());
     
     //setExerciceList(getMyExerciceList());
+    getMyExerciceList();
   }, [isFocused]);
 
   let getMyExerciceListAux = () => {
@@ -108,11 +112,57 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyExerciceList = () => {}
+  let getMyExerciceList = () => {
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setExerciceList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let deleteExercice = (item) => {
-    // TODO
-    console.log("servicio de eliminar");
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/delete`, {
+      id: item.id
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      const indexOfObject = exerciceList.findIndex((object) => {
+        return object.id === item.id;
+      });
+      let exerciceListCopy = JSON.parse(JSON.stringify(exerciceList));
+      exerciceListCopy.splice(indexOfObject, 1);
+      setExerciceList(exerciceListCopy);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let exerciceListItemView = (item) => {
@@ -165,7 +215,7 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Editar"
-                customClick={() => {navigation.navigate('NewExerciceToTraineeScreen', {exercice: item});}}
+                customClick={() => {navigation.navigate('NewExerciceToTraineeScreen', {exercice: item, userToken: route.params.userToken, userId: route.params.userId});}}
                 />
             </View>
           </View>
@@ -219,7 +269,7 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
               </KeyboardAwareScrollView>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {navigation.navigate('NewExerciceToTraineeScreen')}}
+                onPress={() => {navigation.navigate('NewExerciceToTraineeScreen', {userToken: route.params.userToken, userId: route.params.userId})}}
                 style={styles.touchableOpacityStyle}>
                 <View style={{flex: 1}}>
                   <Icon style={{top: 0}} name='circle' size={60} color='#fff'  />
@@ -350,7 +400,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

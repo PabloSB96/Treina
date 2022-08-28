@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -7,6 +8,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const RutinasTab = ({ navigation, route }) => {
 
@@ -22,17 +25,7 @@ const RutinasTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    setMyRoutines(orderMyRoutines(getMyRoutinesAux()));
-    //getMyRoutines();
-
+    getMyRoutines();
   }, [isFocused]);
 
   let getMyRoutinesAux = () => {
@@ -95,6 +88,28 @@ const RutinasTab = ({ navigation, route }) => {
   }
 
   let getMyRoutines = () => {
+    axios.post(`${baseUrl}/trainee/exercices`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("\n\n\nRutinasTab - getMyRoutines - 1");
+      console.log(response.data);
+      console.log("RutinasTab - getMyRoutines - 2\n\n\n");
+      orderMyRoutines(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainee - getMyRoutines - error - 1");
+      console.log(error);
+      console.log("trainee - getMyRoutines - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let orderMyRoutines = (routines) => {
@@ -157,7 +172,8 @@ const RutinasTab = ({ navigation, route }) => {
         result.set('Sunday', items);
       }
     }
-    return result;
+    setMyRoutines(result);
+    setLoading(false);
   }
 
   let listItemView = (item) => {
@@ -183,7 +199,7 @@ const RutinasTab = ({ navigation, route }) => {
             <Mytextbutton 
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Detalles"
-              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalObservation(item.observation); setDetailsModalVisibility(true);}}
+              customClick={() => {setDetailsModalDescription(item.description); setDetailsModalObservation(item.observations); setDetailsModalVisibility(true);}}
               />
           </View>
         </View>
@@ -198,152 +214,153 @@ const RutinasTab = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myRoutines==undefined || myRoutines.length == 0) && loading == false ) ? (
-                  <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
-                      <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
-                      />
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                  {((myRoutines==undefined || myRoutines.size == 0) && loading == false ) ? (
+                    <View style={{flex: 1}}>
+                      <View style={{flex: 1, height: 300, marginTop: 40}}>
+                        <Image
+                          source={noResultsLogo}
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain', 
+                            width: '60%',
+                            alignSelf: 'center'}}
+                        />
+                      </View>
+                      <Mytext 
+                        text="Todavía no tienes ningún ejercicio asignado." 
+                        estilos={{
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#d32f2f',
+                          textAlign: 'center',
+                        }}/>
                     </View>
-                    <Mytext 
-                      text="Todavía no tienes ningún ejercicio asignado." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View>
-                    <Modal
-                      visible={detailsModalVisibility}
-                      transparent={true}
-                      >
-                        <View style={styles.centeredView}>
-                          <View style={styles.modalView}>
-                            <Text style={styles.modalTitle}>Detalles</Text>
-                            <Text style={styles.modalSubtitle}>Descripción</Text>
-                            {detailsModalDescription != '' ? (
-                              <Text style={styles.modalText}>{detailsModalDescription}</Text>
-                            ) : (
-                              <Text style={styles.modalTextNothing}>No hay ninguna descripción todavía.</Text>
-                            )}
-                            <Text style={styles.modalSubtitle}>Observaciones</Text>
-                            {detailsModalObservation != '' ? (
-                              <Text style={styles.modalText}>{detailsModalObservation}</Text>
-                            ) : (
-                              <Text style={styles.modalTextNothing}>No hay ninguna observación todavía.</Text>
-                            )}
-                            
-                            <Pressable
-                              style={[styles.modalButton, styles.modalButtonClose]}
-                              onPress={() => setDetailsModalVisibility(false)}>
-                              <Text style={styles.modalCloseText}>Cerrar</Text>
-                            </Pressable>
+                  ): (
+                    <View>
+                      <Modal
+                        visible={detailsModalVisibility}
+                        transparent={true}
+                        >
+                          <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                              <Text style={styles.modalTitle}>Detalles</Text>
+                              <Text style={styles.modalSubtitle}>Descripción</Text>
+                              {detailsModalDescription != '' ? (
+                                <Text style={styles.modalText}>{detailsModalDescription}</Text>
+                              ) : (
+                                <Text style={styles.modalTextNothing}>No hay ninguna descripción todavía.</Text>
+                              )}
+                              <Text style={styles.modalSubtitle}>Observaciones</Text>
+                              {detailsModalObservation != '' ? (
+                                <Text style={styles.modalText}>{detailsModalObservation}</Text>
+                              ) : (
+                                <Text style={styles.modalTextNothing}>No hay ninguna observación todavía.</Text>
+                              )}
+                              
+                              <Pressable
+                                style={[styles.modalButton, styles.modalButtonClose]}
+                                onPress={() => setDetailsModalVisibility(false)}>
+                                <Text style={styles.modalCloseText}>Cerrar</Text>
+                              </Pressable>
+                            </View>
                           </View>
+                      </Modal>
+                      {myRoutines.get('Monday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lunes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Monday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
                         </View>
-                    </Modal>
-                    {myRoutines.get('Monday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lunes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Monday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Tuesday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Martes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Tuesday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Wednesday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Miércoles</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Wednesday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Thursday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Jueves</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Thursday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Friday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Viernes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Friday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Saturday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Sábado</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Sábado')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myRoutines.get('Sunday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Domingo</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myRoutines.get('Sunday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                  </View>
-                )}
-              </KeyboardAwareScrollView>
+                      ) : null}
+                      {myRoutines.get('Tuesday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Martes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Tuesday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myRoutines.get('Wednesday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Miércoles</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Wednesday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myRoutines.get('Thursday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Jueves</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Thursday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myRoutines.get('Friday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Viernes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Friday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myRoutines.get('Saturday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Sábado</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Sábado')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myRoutines.get('Sunday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Domingo</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myRoutines.get('Sunday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                    </View>
+                  )}
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -465,12 +482,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 
     elevation: 10, 
-    shadowColor: '#000'
+    shadowColor: '#000',
+    ...Platform.select({
+      android: {
+        elevation: 50
+      }
+    })
   },
   modalTitle: {
     fontSize: 18,
@@ -498,6 +520,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     elevation: 2,
+    ...Platform.select({
+      android: {
+        elevation: 0
+      }
+    })
   },
   modalButtonClose: {
     alignSelf: 'flex-end',

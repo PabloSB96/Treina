@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, Switch } from 'react-native';
+import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, Switch, Platform } from 'react-native';
 import { DatabaseConnection } from '../database/database-connection';
 import Mytextinput from './components/Mytextinput';
 import Mybutton from './components/Mybutton';
@@ -14,7 +14,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const LoginScreen = ({ navigation }) => {
   useEffect(() => {
@@ -25,13 +25,17 @@ const LoginScreen = ({ navigation }) => {
   let [isTrainer, setIsTrainer] = useState(false);
   let [email, setEmail] = useState('');
   let [password, setPassword] = useState('');
-  let [trainerCode, setTrainerCode] = useState('');
 
   let checkToken = async () => {
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
-      if (tokenValue != null && tokenValue != undefined) {
-        navigation.replace('MainScreen', {userToken: tokenValue});
+      const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
+      if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
+        if (isTrainerAS) {
+          navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+        } else {
+          navigation.replace('TraineeMainScreen', {userToken: tokenValue});
+        }
       } else {
         setLoading(false);
       }
@@ -45,6 +49,7 @@ const LoginScreen = ({ navigation }) => {
   let saveToken = async (token) => {
     try {
       await AsyncStorage.setItem('treina.token', token);
+      await AsyncStorage.setItem('treina.isTrainer', JSON.stringify(isTrainer));
     } catch(e){
       console.log("asynstorage - 1");
       console.log(e);
@@ -52,21 +57,24 @@ const LoginScreen = ({ navigation }) => {
     }
 
     setLoading(false);
-    navigation.replace('MainScreen', {userToken: token});
+    if (isTrainer) {
+      navigation.replace('TrainerMainScreen', {userToken: token});
+    } else {
+      navigation.replace('TraineeMainScreen', {userToken: token});
+    }
   }
 
   let doLogin = () => {
 
     // TODO quitar la siguiente linea y descomentar y completar
-    if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
+    // if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
+    
     setLoading(true);
     if (email == undefined || email.trim() == "" || 
-      password == undefined || password.trim() == "" || (
-        !isTrainer && (trainerCode == undefined || trainerCode.trim() == "")
-      )) {
+      password == undefined || password.trim() == "") {
       setLoading(false);
       Alert.alert(
-        'Error',
+        'Atención',
         '¡Completa todos los campos!',
         [{text: 'Ok'},],
         { cancelable: false }
@@ -80,20 +88,32 @@ const LoginScreen = ({ navigation }) => {
     axios.post(`${baseUrl}/login`, {
       isTrainer,
       email,
-      password,
-      trainerCode
+      password
     }).then((response) => {
+      console.log("\n\nlogin - ok - 1");
+      console.log(response.data);
+      console.log("login - ok - 2\n\n");
       saveToken(response.data.token);
     }).catch((error) => {
+      console.log("login - error - 1");
+      console.log(error.response.data);
+      console.log("login - error - 2");
       setLoading(false);
       if (error.response.data != undefined && error.response.data.message != undefined) {
         if(error.response.data.message == 'PASSWORD_INCORRECT') {
           Alert.alert(
-            'Error',
+            'Atención',
             '¡La contraseña es incorrecta!',
             [{text: 'Ok'},],
             { cancelable: false }
           );
+        } else if (error.response.data.message == 'USER_NOT_EXISTS') {
+          Alert.alert(
+            'Atención',
+            '¡El usuario no existe!',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );          
         }
       }
     });
@@ -135,14 +155,14 @@ const LoginScreen = ({ navigation }) => {
                 fontSize: 14,
                 color: '#fff',
                 textAlign: 'left',
-                marginTop: 8}}>Soy entrenador</Text>
+                marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy entrenador</Text>
               ) : (
                 <Text style={{fontStyle: 'normal',
                 fontFamily: 'Montserrat',
                 fontSize: 14,
                 color: '#fff',
                 textAlign: 'left',
-                marginTop: 8}}>Soy cliente / deportista</Text>
+                marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy cliente / deportista</Text>
               )}
             </View>
             {isTrainer ? (
@@ -176,13 +196,6 @@ const LoginScreen = ({ navigation }) => {
                   style={{ padding: 10, color: 'white' }}
                   onChangeText={
                     (password) => setPassword(password)
-                  }
-                />
-                <Mytextinput
-                  placeholder="Código de entrenador"
-                  style={{ padding: 10, color: 'white' }}
-                  onChangeText={
-                    (trainerCode) => setTrainerCode(trainerCode)
                   }
                 />
               </View>

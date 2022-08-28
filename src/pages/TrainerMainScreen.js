@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { DatabaseConnection } from '../database/database-connection';
 
@@ -14,14 +14,13 @@ const Drawer = createDrawerNavigator();
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 function TrainerMainScreen({ navigation, route }) {
 
   const Tab = createBottomTabNavigator();
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <Tab.Navigator
@@ -60,6 +59,7 @@ function TrainerMainScreen({ navigation, route }) {
             backgroundColor: '#d32f2f',
           }
         }}
+        initialParams={{userToken: route.params.userToken}}
         />
       <Tab.Screen 
         name="Datos" 
@@ -72,6 +72,7 @@ function TrainerMainScreen({ navigation, route }) {
             backgroundColor: '#d32f2f',
           }
         }}
+        initialParams={{userToken: route.params.userToken}}
         />
       <Tab.Screen 
         name="Perfil" 
@@ -84,6 +85,7 @@ function TrainerMainScreen({ navigation, route }) {
             backgroundColor: '#d32f2f',
           }
         }}
+        initialParams={{userToken: route.params.userToken}}
         />
     </Tab.Navigator>
   );

@@ -20,7 +20,7 @@ const Drawer = createDrawerNavigator();
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 function CloseSessionFrame({ navigation, route }) {
 

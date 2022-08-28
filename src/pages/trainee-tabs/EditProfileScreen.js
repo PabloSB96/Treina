@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -16,6 +17,8 @@ import Mybutton from '../components/Mybutton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Mytextinputred from '../components/Mytextinputred';
 
+const baseUrl = 'http://192.168.8.102:8066';
+
 const EditProfileScreen = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
@@ -32,16 +35,7 @@ const EditProfileScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    initProfileInfo(getMyProfileInfoAux());
-    //getMyProfileInfo();
+    getMyProfileInfo();
 
   }, [isFocused]);
 
@@ -60,6 +54,25 @@ const EditProfileScreen = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
+    axios.post(`${baseUrl}/trainee/profile`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      initProfileInfo(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("ProfileTab - getMyProfileInfo - error - 1");
+      console.log(error);
+      console.log("ProfileTab - getMyProfileInfo - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let initProfileInfo = (item) => {
@@ -69,15 +82,65 @@ const EditProfileScreen = ({ navigation, route }) => {
     setGoalFull(item.goalFull);
     setHeight(item.height.toString());
     setWeight(item.weight.toString());
-    console.log("initProfileInfo - 1");
-    console.log("item.height: " + item.height);
-    console.log("item.weight: " + item.weight);
-    console.log("initProfileInfo - 2");
-    console.log("height: " + height);
-    console.log("weight: " + weight);
-    console.log("initProfileInfo - 3");
     setMyProfile(item);
     setLoading(false);
+  }
+
+  let saveProfile = () => {
+    if (name == undefined || name.trim() == '' ||
+        sex == undefined || sex.trim() == '' || (sex.trim() != 'X' && sex.trim() != 'M' && sex.trim() != 'H') ||
+        goal == undefined || goal.trim() == '' ||
+        goalFull == undefined || goalFull.trim() == '' ||
+        height == undefined ||
+        weight == undefined) {
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los campos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      return ;
+    }
+    let heightNumber = undefined;
+    let weightNumber = undefined;
+    try {
+      heightNumber = Number(height);
+      weightNumber = Number(weight);
+    } catch(e){
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los y revisa que sean correctos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    }
+    axios.post(`${baseUrl}/trainee/profile/edit`, {
+      name,
+      sex,
+      goal,
+      goalFull,
+      height: heightNumber,
+      weight: weightNumber
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("EditProfileScreen - saveExercice - error - 1");
+      console.log(error);
+      console.log("trainer - saveExercice - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   return (
@@ -87,123 +150,124 @@ const EditProfileScreen = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
-                  <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                  {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
+                    <View style={{flex: 1}}>
+                      <View style={{flex: 1, height: 300, marginTop: 40}}>
+                        <Image
+                          source={noResultsLogo}
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain', 
+                            width: '60%',
+                            alignSelf: 'center'}}
+                        />
+                      </View>
+                      <Mytext 
+                        text="Todavía no tienes ningún ejercicio asignado." 
+                        estilos={{
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#d32f2f',
+                          textAlign: 'center',
+                        }}/>
+                    </View>
+                  ): (
+                    <View style={{paddingTop: 20}}>
                       <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
+                        style={styles.upperLogo}
+                        source={logoProfile}
+                      />
+                      <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Nombre</Text></View>
+                      <Mytextinputred
+                        placeholder="Nombre"
+                        style={{ padding: 10 }}
+                        estilos={{marginTop: 0, paddingTop: 0}}
+                        value={name}
+                        onChangeText={
+                          (name) => setName(name)
+                        }
+                      />
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Sexo</Text></View>
+                      <View style={styles.selectorView}>
+                        <Picker
+                          style={styles.selector}
+                          selectedValue={sex}
+                          onValueChange={(itemValue, itemIndex) =>
+                            setSex(itemValue)
+                          }
+                          itemStyle={{color: '#000', backgroundColor: '#fff', borderRadius: 8}} >
+                          <Picker.Item label="Selecciona tu sexo..." value="-" />
+                          <Picker.Item label="Hombre" value="H" />
+                          <Picker.Item label="Mujer" value="M" />
+                          <Picker.Item label="Otro/a" value="X" />
+                        </Picker>
+                      </View>
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Objetivo (resumen)</Text></View>
+                      <Mytextinputred
+                        placeholder="Objetivo (resumen)"
+                        style={{ padding: 10 }}
+                        estilos={{marginTop: 0, paddingTop: 0}}
+                        multiline={true}
+                        value={goal}
+                        onChangeText={
+                          (goal) => setGoal(goal)
+                        }
+                      />
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Objectivo (completo)</Text></View>
+                      <Mytextinputred
+                        placeholder="Objetivo (completo)"
+                        style={{ padding: 10 }}
+                        estilos={{marginTop: 0, paddingTop: 0}}
+                        multiline={true}
+                        value={goalFull}
+                        onChangeText={
+                          (goalFull) => setGoalFull(goalFull)
+                        }
+                      />
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Altura (cm)</Text></View>
+                      <Mytextinputred
+                        placeholder="Altura (cm)"
+                        style={{ padding: 10 }}
+                        estilos={{marginTop: 0, paddingTop: 0}}
+                        keyboardType='numeric'
+                        value={height}
+                        onChangeText={
+                          (height) => setHeight(height)
+                        }
+                      />
+                      <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Peso (kg)</Text></View>
+                      <Mytextinputred
+                        placeholder="Peso (kg)"
+                        style={{ padding: 10 }}
+                        estilos={{marginTop: 0, paddingTop: 0}}
+                        keyboardType="numeric"
+                        value={weight}
+                        onChangeText={
+                          (weight) => setWeight(weight)
+                        }
+                      />
+                      <Mybutton
+                        text="Guardar"
+                        title="Guardar"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 50
+                        }}
+                        customClick={() => saveProfile()}
                       />
                     </View>
-                    <Mytext 
-                      text="Todavía no tienes ningún ejercicio asignado." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View style={{paddingTop: 20}}>
-                    <Image
-                      style={styles.upperLogo}
-                      source={logoProfile}
-                    />
-                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Nombre</Text></View>
-                    <Mytextinputred
-                      placeholder="Nombre"
-                      style={{ padding: 10 }}
-                      estilos={{marginTop: 0, paddingTop: 0}}
-                      value={name}
-                      onChangeText={
-                        (name) => setFoodType(name)
-                      }
-                    />
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Sexo</Text></View>
-                    <View style={styles.selectorView}>
-                      <Picker
-                        style={styles.selector}
-                        selectedValue={sex}
-                        onValueChange={(itemValue, itemIndex) =>
-                          setSex(itemValue)
-                        }
-                        itemStyle={{color: '#000', backgroundColor: '#fff', borderRadius: 8}} >
-                        <Picker.Item label="Selecciona tu sexo..." value="-" />
-                        <Picker.Item label="Hombre" value="H" />
-                        <Picker.Item label="Mujer" value="M" />
-                        <Picker.Item label="Otro/a" value="X" />
-                      </Picker>
-                    </View>
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Objetivo (resumen)</Text></View>
-                    <Mytextinputred
-                      placeholder="Objetivo (resumen)"
-                      style={{ padding: 10 }}
-                      estilos={{marginTop: 0, paddingTop: 0}}
-                      multiline={true}
-                      value={goal}
-                      onChangeText={
-                        (goal) => setGoal(goal)
-                      }
-                    />
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Objectivo (completo)</Text></View>
-                    <Mytextinputred
-                      placeholder="Objetivo (completo)"
-                      style={{ padding: 10 }}
-                      estilos={{marginTop: 0, paddingTop: 0}}
-                      multiline={true}
-                      value={goalFull}
-                      onChangeText={
-                        (goalFull) => setGoalFull(goalFull)
-                      }
-                    />
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Altura (cm)</Text></View>
-                    <Mytextinputred
-                      placeholder="Altura (cm)"
-                      style={{ padding: 10 }}
-                      estilos={{marginTop: 0, paddingTop: 0}}
-                      keyboardType='numeric'
-                      value={height}
-                      onChangeText={
-                        (height) => setHeight(height)
-                      }
-                    />
-                    <View><Text style={[styles.labelDay, {flex: 1, marginTop: 10}]}>Peso (kg)</Text></View>
-                    <Mytextinputred
-                      placeholder="Peso (kg)"
-                      style={{ padding: 10 }}
-                      estilos={{marginTop: 0, paddingTop: 0}}
-                      keyboardType="numeric"
-                      value={weight}
-                      onChangeText={
-                        (weight) => setWeight(weight)
-                      }
-                    />
-                    <Mybutton
-                      text="Guardar"
-                      title="Guardar"
-                      estilos={{
-                          marginTop: 40,
-                          marginBottom: 50
-                      }}
-                      customClick={() => console.log("Guardar")}
-                    />
-                  </View>
-                )}
-              </KeyboardAwareScrollView>
+                  )}
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -315,12 +379,12 @@ const styles = StyleSheet.create({
     })
   },
   selector: {
-    color: '#fff',
+    color: '#000',
     ...Platform.select({
       android: {
         alignItems: 'flex-start',
-        color: '#fff',
-        width: '10%',
+        color: '#000',
+        width: '100%',
         padding: 0,
         margin: 0
       }
@@ -344,7 +408,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

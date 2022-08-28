@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, FlatList, ListViewBase, Switch, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, TextInput, Text, StyleSheet, Image, KeyboardAvoidingView, Alert, ActivityIndicator, FlatList, ListViewBase, Switch, TouchableOpacity, Platform } from 'react-native';
 import Mytextinput from '../components/Mytextinput';
 import Mybutton from '../components/Mybutton';
 import Mytext from '../components/Mytext';
@@ -13,7 +13,7 @@ import Mytextinputred from '../components/Mytextinputred';
 
 import logoShopping from '../assets/icons/treina_undraw_shopping.png';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const FoodListScreen = ({ navigation, route }) => {
 
@@ -84,7 +84,7 @@ const FoodListScreen = ({ navigation, route }) => {
           shadowRadius: 5, 
           elevation: 3, 
           shadowColor: '#222' }, 
-          item.checked ? {borderLeftColor: '#d32f2f', borderLeftWidth: 5} : null]}>
+          item.checked ? {borderLeftColor: '#d32f2f', borderLeftWidth: 5, ...Platform.select({android: {borderStartColor: '#d32f2f'}})} : null]}>
         <View style={{flex: 1, flexDirection: 'row'}}>
           <View style={{flex: 3}}>
             <Text style={styles.boldText}>{item.title}</Text>

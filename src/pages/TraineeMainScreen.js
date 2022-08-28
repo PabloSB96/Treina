@@ -30,7 +30,7 @@ const Stack = createStackNavigator();
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 function TraineeMainScreen({ navigation, route }) {
 
@@ -78,6 +78,7 @@ function TraineeMainScreen({ navigation, route }) {
               backgroundColor: '#d32f2f',
             }
           }}
+          initialParams={{userToken: route.params.userToken}}
           />
         <Tab.Screen 
           name="Dieta" 
@@ -89,7 +90,9 @@ function TraineeMainScreen({ navigation, route }) {
             headerStyle: {
               backgroundColor: '#d32f2f',
             }
-          }} />
+          }} 
+          initialParams={{userToken: route.params.userToken}}
+          />
         <Tab.Screen 
           name="Historial" 
           component={MeasuresHistoryTab}
@@ -100,7 +103,9 @@ function TraineeMainScreen({ navigation, route }) {
             headerStyle: {
               backgroundColor: '#d32f2f',
             }
-          }} />
+          }} 
+          initialParams={{userToken: route.params.userToken}}
+          />
         <Tab.Screen 
           name="Perfil" 
           component={ProfileTab} 
@@ -112,6 +117,7 @@ function TraineeMainScreen({ navigation, route }) {
               backgroundColor: '#d32f2f',
             }
           }}
+          initialParams={{userToken: route.params.userToken}}
           />
       </Tab.Navigator>
   );

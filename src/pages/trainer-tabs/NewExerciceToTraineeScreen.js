@@ -17,22 +17,23 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const NewExerciceToTraineeScreen = ({ navigation, route }) => {
 
   //let {userToken} = route.params;
   let [loading, setLoading] = useState(false);
+  let [isEdition, setIsEdition] = useState(false);
   let [title, setTitle] = useState();
   let [description, setDescription] = useState();
-  let [observation, setObservation] = useState();
-  let [onMonday, setOnMonday] = useState();
-  let [onTuesday, setOnTuesday] = useState();
-  let [onWednesday, setOnWednesday] = useState();
-  let [onThursday, setOnThursday] = useState();
-  let [onFriday, setOnFriday] = useState();
-  let [onSaturday, setOnSaturday] = useState();
-  let [onSunday, setOnSunday] = useState();
+  let [observations, setObservation] = useState();
+  let [onMonday, setOnMonday] = useState(false);
+  let [onTuesday, setOnTuesday] = useState(false);
+  let [onWednesday, setOnWednesday] = useState(false);
+  let [onThursday, setOnThursday] = useState(false);
+  let [onFriday, setOnFriday] = useState(false);
+  let [onSaturday, setOnSaturday] = useState(false);
+  let [onSunday, setOnSunday] = useState(false);
   let [repetitions, setRepetitions] = useState();
   let [rest, setRest] = useState();
   let [series, setSeries] = useState();
@@ -42,8 +43,10 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-    setExerciceList(getMyExerciceListAux());
+    //setExerciceList(getMyExerciceListAux());
+    getMyExerciceList();
     if (route != undefined && route.params != undefined && route.params.exercice != undefined) {
+      setIsEdition(true);
       selectExerciceFromModal(route.params.exercice);
     }
   }, []);
@@ -53,7 +56,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
       id: 1,
       title: 'Ejercicio 1',
       description: 'Descripcion jkdsfñlkasdjfñ lakjdsfk ajsdklf añslkdfj añlskdf jkñlasd flñkasdj fñlkas dfñ asdf.',
-      observation: 'Observation jkdsfñlkasdjfñ lakjdsfk ajsdklf añslkdfj añlskdf jkñlasd flñkasdj fñlkas dfñ asdf.',
+      observations: 'Observation jkdsfñlkasdjfñ lakjdsfk ajsdklf añslkdfj añlskdf jkñlasd flñkasdj fñlkas dfñ asdf.',
       repetitions: '10 - 15',
       rest: '1 min',
       series: '5',
@@ -71,7 +74,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
       id: 2,
       title: 'Ejercicio 2',
       description: '',
-      observation: '',
+      observations: '',
       repetitions: '5 - 10',
       rest: '30 sec',
       series: '4',
@@ -87,7 +90,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
       id: 3,
       title: 'Ejercicio 3',
       description: '',
-      observation: '',
+      observations: '',
       repetitions: '20 - 30',
       rest: '2 mins',
       series: '3 - 5',
@@ -107,10 +110,36 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
     return result;
   }
 
+  let getMyExerciceList = () => {
+    axios.post(`${baseUrl}/trainer/data/exercices`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("\n\n\nNewExerciceToTraineeScreen - getMyExerciceList - 1");
+      console.log(response.data);
+      console.log("NewExerciceToTraineeScreen - getMyExerciceList - 2\n\n\n");
+      setExerciceList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("NewExerciceToTraineeScreen - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("NewExerciceToTraineeScreen - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
+
   let selectExerciceFromModal = (item) => {
     setTitle(item.title);
     setDescription(item.description);
-    setObservation(item.observation);
+    setObservation(item.observations);
     setRepetitions(item.repetitions);
     setRest(item.rest);
     setSeries(item.series);
@@ -121,6 +150,68 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
     setOnFriday(item.onFriday);
     setOnSaturday(item.onSaturday);
     setOnSunday(item.onSunday);
+  }
+
+  let saveExercice = () => {
+    let url = undefined;
+    let data = undefined;
+    if (isEdition) {
+      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/edit`;
+      data = {
+        id: route.params.exercice.id,
+        title,
+        description,
+        observations,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        repetitions,
+        rest,
+        series
+      };
+    } else {
+      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/new`;
+      data = {
+        title,
+        description,
+        observations,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        repetitions,
+        rest,
+        series
+      };
+    }
+
+    axios.post(url, data, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - saveExercice - error - 1");
+      console.log(error);
+      console.log("trainer - saveExercice - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let exerciceListItemView = (item) => {
@@ -189,7 +280,9 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
                   marginTop: 10,
                   marginBottom: 10,
                 }}
-                customClick={() => setPickModalVisibility(true)}
+                customClick={() => {
+                  console.log("SELECCIONAR DE DATOS - 1");
+                  setPickModalVisibility(true);}}
               />
 
               <Modal
@@ -254,9 +347,9 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
                 style={{ padding: 10 }}
                 estilos={{marginTop: 0, paddingTop: 0}}
                 multiline={true}
-                value={observation}
+                value={observations}
                 onChangeText={
-                  (observation) => setObservation(observation)
+                  (observations) => setObservation(observations)
                 }
               />
               <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Repeticiones</Text></View>
@@ -389,7 +482,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
                   marginTop: 40,
                   marginBottom: 50
                 }}
-                customClick={() => console.log("Guardar")}
+                customClick={() => saveExercice()}
               />
 
             </KeyboardAwareScrollView>
@@ -517,12 +610,17 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 15,
     paddingBottom: 5,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 
     elevation: 10, 
-    shadowColor: '#000'
+    shadowColor: '#000',
+    ...Platform.select({
+      android: {
+        elevation: 50
+      }
+    })
   },
   modalTitle: {
     fontSize: 18,
@@ -550,6 +648,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     elevation: 2,
+    ...Platform.select({
+      android: {
+        elevation: 0
+      }
+    })
   },
   modalButtonClose: {
     alignSelf: 'flex-end',

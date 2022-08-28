@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity, Switch } from 'react-native';
+import axios from 'axios';
+import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity, Switch, Platform } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -8,6 +9,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const DataTab = ({ navigation, route }) => {
 
@@ -44,11 +47,12 @@ const DataTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setFoodList(getMyFoodListAux());
-    setExerciceList(getMyExerciceListAux());
+    //setFoodList(getMyFoodListAux());
+    //setExerciceList(getMyExerciceListAux());
     
     //setFoodList(getMyFoodList());
     //setExerciceList(getMyExerciceList());
+    getMyFoodList();
   }, [isFocused]);
 
   let getMyExerciceListAux = () => {
@@ -110,7 +114,29 @@ const DataTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyExerciceList = () => {}
+  let getMyExerciceList = () => {
+    axios.post(`${baseUrl}/trainer/data/exercices`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log(response.data);
+      setExerciceList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyTrainees - error - 1");
+      console.log(error);
+      console.log("trainer - getMyTrainees - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let getMyFoodListAux = () => {
     let obj1 = {
@@ -165,7 +191,29 @@ const DataTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyFoodList = () => {}
+  let getMyFoodList = () => {
+    axios.post(`${baseUrl}/trainer/data/food`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log(response.data);
+      setFoodList(response.data);
+      getMyExerciceList();
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyTrainees - error - 1");
+      console.log(error);
+      console.log("trainer - getMyTrainees - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let exerciceListItemView = (item) => {
     return (
@@ -203,7 +251,7 @@ const DataTab = ({ navigation, route }) => {
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Editar"
               customClick={() => {
-                navigation.navigate('NewExerciceFoodScreen', {exercice: item});
+                navigation.navigate('NewExerciceFoodScreen', {exercice: item, userToken: route.params.userToken});
               }}
               />
           </View>
@@ -225,7 +273,7 @@ const DataTab = ({ navigation, route }) => {
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Tipo</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.foodType}</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.FoodType.title}</Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Días</Text>
@@ -243,7 +291,7 @@ const DataTab = ({ navigation, route }) => {
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Editar"
               customClick={() => {
-                navigation.navigate('NewExerciceFoodScreen', {food: item});
+                navigation.navigate('NewExerciceFoodScreen', {food: item, userToken: route.params.userToken});
               }}
               />
           </View>
@@ -304,14 +352,14 @@ const DataTab = ({ navigation, route }) => {
                         fontSize: 14,
                         color: '#000',
                         textAlign: 'left',
-                        marginTop: 8}}>Comidas</Text>
+                        marginTop: 8, ...Platform.select({android: {marginTop: 14}})}}>Comidas</Text>
                       ) : (
                         <Text style={{fontStyle: 'normal',
                         fontFamily: 'Montserrat',
                         fontSize: 14,
                         color: '#000',
                         textAlign: 'left',
-                        marginTop: 8}}>Ejercicios</Text>
+                        marginTop: 8, ...Platform.select({android: {marginTop: 14}})}}>Ejercicios</Text>
                       )}
                     </View>
                     {showFood ? (
@@ -386,7 +434,7 @@ const DataTab = ({ navigation, route }) => {
               </KeyboardAwareScrollView>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {navigation.navigate('NewExerciceFoodScreen')}}
+                onPress={() => {navigation.navigate('NewExerciceFoodScreen', {userToken: route.params.userToken})}}
                 style={styles.touchableOpacityStyle}>
                 <View style={{flex: 1}}>
                   <Icon style={{top: 0}} name='circle' size={60} color='#fff'  />
@@ -517,7 +565,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity, Switch } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,6 +9,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const TraineeDetailsDietTab = ({ navigation, route }) => {
 
@@ -43,9 +46,10 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setFoodList(getMyFoodListAux());
+    //setFoodList(getMyFoodListAux());
     
     //setFoodList(getMyFoodList());
+    getMyFoodList();
   }, [isFocused]);
 
   let getMyFoodListAux = () => {
@@ -54,7 +58,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       title: 'Comida 3',
       description: 'Description ñalk asdklfj añsdkf aklñsdf ñalskdjf ñaklds faklñ dsfasdf.',
       amount: '300 gr',
-      foodType: 'Comida',
+      foodType: 'comida',
       onMonday: true,
       onTuesday: true,
       onWednesday: true,
@@ -70,7 +74,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       title: 'Desayuno 2',
       description: '',
       amount: '300 gr',
-      foodType: 'Desayuno',
+      foodType: 'desayuno',
       onMonday: true,
       onTuesday: true,
       onWednesday: true,
@@ -84,7 +88,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       title: 'Cena 3',
       description: '',
       amount: '300 gr',
-      foodType: 'Cena',
+      foodType: 'cena',
       onMonday: false,
       onTuesday: true,
       onWednesday: true,
@@ -101,11 +105,57 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyFoodList = () => {}
+  let getMyFoodList = () => {
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/food`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setFoodList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyFoodList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyFoodList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let deleteFood = (item) => {
-    // TODO
-    console.log("servicio de eliminar");
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/food/delete`, {
+      id: item.id
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      const indexOfObject = foodList.findIndex((object) => {
+        return object.id === item.id;
+      });
+      let foodListCopy = JSON.parse(JSON.stringify(foodList));
+      foodListCopy.splice(indexOfObject, 1);
+      setFoodList(foodListCopy);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let foodListItemView = (item) => {
@@ -122,7 +172,24 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Tipo</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.foodType}</Text>
+              {item.FoodType.code == 'desayuno' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Desayuno</Text>
+              ) : null}
+              {item.FoodType.code == 'almuerzo' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Almuerzo</Text>
+              ) : null}
+              {item.FoodType.code == 'comida' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Comida</Text>
+              ) : null}
+              {item.FoodType.code == 'merienda' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Merienda</Text>
+              ) : null}
+              {item.FoodType.code == 'cena' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Cena</Text>
+              ) : null}
+              {item.FoodType.code == 'suplemento' ? (
+                <Text style={[styles.baseText, {flex: 1}]}>Suplemento / Otros</Text>
+              ) : null}
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Días</Text>
@@ -145,7 +212,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
                     '¡Atención!',
                     'Va a eliminar la siguiente comida: ' + item.title + '. ¿Está seguro?',
                     [{text: 'Confirmar', onPress: () => {
-                      deleteExercice(item);
+                      deleteFood(item);
                     }}, {text: 'Cancelar'}],
                     { cancelable: false }
                   );
@@ -154,7 +221,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
               <Mytextbutton 
                 estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
                 title="Editar"
-                customClick={() => {navigation.navigate('NewFoodToTraineeScreen', {food: item});}}
+                customClick={() => {navigation.navigate('NewFoodToTraineeScreen', {food: item, userToken: route.params.userToken, userId: route.params.userId});}}
                 />
             </View>
           </View>
@@ -208,7 +275,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
               </KeyboardAwareScrollView>
               <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {navigation.navigate('NewFoodToTraineeScreen')}}
+                onPress={() => {navigation.navigate('NewFoodToTraineeScreen', {userToken: route.params.userToken, userId: route.params.userId})}}
                 style={styles.touchableOpacityStyle}>
                 <View style={{flex: 1}}>
                   <Icon style={{top: 0}} name='circle' size={60} color='#fff'  />
@@ -339,7 +406,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

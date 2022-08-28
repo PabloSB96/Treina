@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -15,6 +16,10 @@ import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 import Mybutton from '../components/Mybutton';
 import MyActionButton from '../components/MyActionButton';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const ProfileTab = ({ navigation, route }) => {
 
@@ -44,8 +49,8 @@ const ProfileTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setMyProfile(getMyProfileInfoAux());
-    //getMyProfileInfo();
+    //setMyProfile(getMyProfileInfoAux());
+    getMyProfileInfo();
 
   }, [isFocused]);
 
@@ -63,6 +68,27 @@ const ProfileTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
+    axios.post(`${baseUrl}/trainer/profile`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log(response.data);
+      setLoading(false);
+      setMyProfile(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyProfile - error - 1");
+      console.log(error);
+      console.log("trainer - getMyProfile - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   return (
@@ -72,96 +98,107 @@ const ProfileTab = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
-                  <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
-                      <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
-                      />
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                  {(myProfile==undefined && loading == false ) ? (
+                    <View style={{flex: 1}}>
+                      <View style={{flex: 1, height: 300, marginTop: 40}}>
+                        <Image
+                          source={noResultsLogo}
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain', 
+                            width: '60%',
+                            alignSelf: 'center'}}
+                        />
+                      </View>
+                      <Mytext 
+                        text="Todavía no tienes información de perfil." 
+                        estilos={{
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#d32f2f',
+                          textAlign: 'center',
+                        }}/>
                     </View>
-                    <Mytext 
-                      text="Todavía no tienes información de perfil." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View style={{padding: 20}}>
-                    <Image
-                      style={styles.upperLogo}
-                      source={logoProfile}
-                    />
-                    <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
-                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
-                    <View style={{flex: 1, flexDirection: 'row', marginTop: 30}}>
+                  ): (
+                    <View style={{padding: 20}}>
                       <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementCode}
+                        style={styles.upperLogo}
+                        source={logoProfile}
                       />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto',}}>
-                        <Text style={[styles.elementTitle, {}]}>Código de entrenador</Text>
-                        <View style={{flexDirection: 'row', }}>
-                          <Text style={[styles.elementText,{}]}>{myProfile.trainerCode}</Text>
-                          <MyActionButton
-                            iconColor='#d32f2f'
-                            btnIcon="copy"
-                            estilos={[styles.elementText, styles.actionMiniButton]}
-                            iconSize={18}
-                            customClick={() => {
-                              Clipboard.setStringAsync(myProfile.trainerCode);
-                            }}
-                          />
+                      <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
+                      <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                      <View style={{flex: 1, flexDirection: 'row', marginTop: 30}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementCode}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto',}}>
+                          <Text style={[styles.elementTitle, {}]}>Código de entrenador</Text>
+                          <View style={{flexDirection: 'row', }}>
+                            <Text style={[styles.elementText,{}]}>{myProfile.trainerCode}</Text>
+                            <MyActionButton
+                              iconColor='#d32f2f'
+                              btnIcon="copy"
+                              estilos={[styles.elementText, styles.actionMiniButton]}
+                              iconSize={18}
+                              customClick={() => {
+                                Clipboard.setStringAsync(myProfile.trainerCode);
+                              }}
+                            />
+                          </View>
                         </View>
                       </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementPhisical}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Número de clientes</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.traineeNumber}</Text>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementPhisical}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Número de clientes</Text>
+                          <Text style={[styles.elementText,]}>{myProfile.traineeNumber}</Text>
+                        </View>
                       </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementLogo}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Plan de la cuenta</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.plan}</Text>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementLogo}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Plan de la cuenta</Text>
+                          {myProfile.plan == undefined ? (
+                            <Text style={[styles.elementText,]}>Ninguno.</Text>
+                          ) : (
+                            <Text style={[styles.elementText,]}>{myProfile.plan.title}</Text>
+                          )}
+                        </View>
                       </View>
+                      <Mybutton
+                        text="Cerrar sesión"
+                        title="Cerrar sesión"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 50
+                        }}
+                        customClick={async () => {
+                          try {
+                            await AsyncStorage.removeItem('treina.token');
+                            await AsyncStorage.removeItem('treina.isTrainer');
+                          } catch(e){}
+                          navigation.replace('LoginScreen');
+                        }}
+                      />
                     </View>
-                    <Mybutton
-                      text="Cerrar sesión"
-                      title="Cerrar sesión"
-                      estilos={{
-                          marginTop: 40,
-                          marginBottom: 50
-                      }}
-                      customClick={() => navigation.replace('LoginScreen')}
-                    />
-                  </View>
-                )}
-              </KeyboardAwareScrollView>
+                  )}
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -282,7 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

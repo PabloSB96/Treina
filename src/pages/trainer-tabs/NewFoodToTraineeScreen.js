@@ -17,21 +17,22 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const NewFoodToTraineeScreen = ({ navigation, route }) => {
 
   //let {userToken} = route.params;
   let [loading, setLoading] = useState(false);
+  let [isEdition, setIsEdition] = useState(false);
   let [title, setTitle] = useState();
   let [description, setDescription] = useState();
-  let [onMonday, setOnMonday] = useState();
-  let [onTuesday, setOnTuesday] = useState();
-  let [onWednesday, setOnWednesday] = useState();
-  let [onThursday, setOnThursday] = useState();
-  let [onFriday, setOnFriday] = useState();
-  let [onSaturday, setOnSaturday] = useState();
-  let [onSunday, setOnSunday] = useState();
+  let [onMonday, setOnMonday] = useState(false);
+  let [onTuesday, setOnTuesday] = useState(false);
+  let [onWednesday, setOnWednesday] = useState(false);
+  let [onThursday, setOnThursday] = useState(false);
+  let [onFriday, setOnFriday] = useState(false);
+  let [onSaturday, setOnSaturday] = useState(false);
+  let [onSunday, setOnSunday] = useState(false);
   let [amount, setAmount] = useState();
   let [foodType, setFoodType] = useState();
   let [pickModalVisibility, setPickModalVisibility] = useState(false);
@@ -40,8 +41,10 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-    setFoodList(getMyFoodListAux());
+    //setFoodList(getMyFoodListAux());
+    getMyFoodList();
     if (route != undefined && route.params != undefined && route.params.food != undefined) {
+      setIsEdition(true);
       selectFoodFromModal(route.params.food);
     }
   }, []);
@@ -52,7 +55,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
       title: 'Comida 3',
       description: 'Description ñalk asdklfj añsdkf aklñsdf ñalskdjf ñaklds faklñ dsfasdf.',
       amount: '300 gr',
-      foodType: 'Comida',
+      foodType: 'comida',
       onMonday: true,
       onTuesday: true,
       onWednesday: true,
@@ -68,7 +71,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
       title: 'Desayuno 2',
       description: '',
       amount: '300 gr',
-      foodType: 'Desayuno',
+      foodType: 'desayuno',
       onMonday: true,
       onTuesday: true,
       onWednesday: true,
@@ -82,7 +85,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
       title: 'Cena 3',
       description: '',
       amount: '300 gr',
-      foodType: 'Cena',
+      foodType: 'cena',
       onMonday: false,
       onTuesday: true,
       onWednesday: true,
@@ -99,11 +102,37 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
     return result;
   }
 
+  let getMyFoodList = () => {
+    axios.post(`${baseUrl}/trainer/data/food`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("\n\n\nNewFoodToTraineeScreen - getMyFoodList - 1");
+      console.log(response.data);
+      console.log("NewFoodToTraineeScreen - getMyFoodList - 1\n\n\n");
+      setFoodList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyTrainees - error - 1");
+      console.log(error);
+      console.log("trainer - getMyTrainees - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
+
   let selectFoodFromModal = (item) => {
     setTitle(item.title);
     setDescription(item.description);
     setAmount(item.amount)
-    setFoodType(item.foodType);
+    setFoodType(item.FoodType.code);
     setOnMonday(item.onMonday);
     setOnTuesday(item.onTuesday);
     setOnWednesday(item.onWednesday);
@@ -111,6 +140,65 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
     setOnFriday(item.onFriday);
     setOnSaturday(item.onSaturday);
     setOnSunday(item.onSunday);
+  }
+
+  let saveFood = () => {
+
+    let url = undefined;
+    let data = undefined;
+    if (isEdition) {
+      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/food/edit`;
+      data = {
+        id: route.params.food.id,
+        title,
+        description,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        foodType,
+        amount
+      };
+    } else {
+      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/food/new`;
+      data = {
+        title,
+        description,
+        onMonday,
+        onTuesday,
+        onWednesday,
+        onThursday,
+        onFriday,
+        onSaturday,
+        onSunday,
+        foodType,
+        amount
+      };
+    }
+
+    axios.post(url, data, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setLoading(false);
+      navigation.goBack(null);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let foodListItemView = (item) => {
@@ -144,7 +232,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
             <Mytextbutton
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Seleccionar"
-              customClick={() => {selectFoodFromModal(item); setPickModalVisibility(false);}}
+              customClick={() => {selectFoodFromModal(item); setPickModalVisibility(false); setFoodListName('');}}
               />
           </View>
         </View>
@@ -206,7 +294,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
                         />
                       <Pressable
                         style={[styles.modalButton, styles.modalButtonClose]}
-                        onPress={() => setPickModalVisibility(false)}>
+                        onPress={() => {setPickModalVisibility(false); setFoodListName('');}}>
                         <Text style={styles.modalCloseText}>Cancelar</Text>
                       </Pressable>
                     </View>
@@ -234,7 +322,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
                   (description) => setDescription(description)
                 }
               />
-              <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Repeticiones</Text></View>
+              <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Cantidad</Text></View>
               <Mytextinputred
                 placeholder="Cantidad"
                 style={{ padding: 10 }}
@@ -244,16 +332,25 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
                   (amount) => setAmount(amount)
                 }
               />
-              <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Descanso</Text></View>
-              <Mytextinputred
-                placeholder="Tipo de comida"
-                style={{ padding: 10 }}
-                estilos={{marginTop: 0, paddingTop: 0}}
-                value={foodType}
-                onChangeText={
-                  (foodType) => setFoodType(foodType)
-                }
-              />
+              <View><Text style={[styles.labelDay, {flex: 1, marginTop: 5}]}>Tipo de comida</Text></View>
+              <View style={styles.selectorView}>
+                <Picker
+                  style={styles.selector}
+                  selectedValue={foodType}
+                  value={foodType}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setFoodType(itemValue)
+                  }
+                  itemStyle={{color: '#000', backgroundColor: '#fff', borderRadius: 8}} >
+                  <Picker.Item label="Selecciona el tipo de comida..." value="-" />
+                  <Picker.Item label="Desayuno" value="desayuno" />
+                  <Picker.Item label="Almuerzo" value="almuerzo" />
+                  <Picker.Item label="Comida" value="comida" />
+                  <Picker.Item label="Merienda" value="merienda" />
+                  <Picker.Item label="Cena" value="cena" />
+                  <Picker.Item label="Suplemento / Otros" value="suplemento" />
+                </Picker>
+              </View>
               <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Días</Text></View>
               <View 
                 style={{flex: 1, flexDirection: 'row', margin: 5, marginLeft: 35, alignItems: 'center',}} 
@@ -361,7 +458,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
                   marginTop: 40,
                   marginBottom: 50
                 }}
-                customClick={() => console.log("Guardar")}
+                customClick={() => saveFood()}
               />
 
             </KeyboardAwareScrollView>
@@ -460,12 +557,12 @@ const styles = StyleSheet.create({
     })
   },
   selector: {
-    color: '#fff',
+    color: '#000',
     ...Platform.select({
       android: {
         alignItems: 'flex-start',
-        color: '#fff',
-        width: '10%',
+        color: '#000',
+        width: '100%',
         padding: 0,
         margin: 0
       }
@@ -489,12 +586,17 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 15,
     paddingBottom: 5,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 
     elevation: 10, 
-    shadowColor: '#000'
+    shadowColor: '#000',
+    ...Platform.select({
+      android: {
+        elevation: 50
+      }
+    })
   },
   modalTitle: {
     fontSize: 18,
@@ -522,6 +624,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     elevation: 2,
+    ...Platform.select({
+      android: {
+        elevation: 0
+      }
+    })
   },
   modalButtonClose: {
     alignSelf: 'flex-end',

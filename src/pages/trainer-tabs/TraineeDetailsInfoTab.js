@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -17,6 +18,8 @@ import Mytextbutton from '../components/Mytextbutton';
 import { DataTable } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { set } from 'react-native-reanimated';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const TraineeDetailsInfoTab = ({ navigation, route }) => {
 
@@ -43,8 +46,8 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    getMyHistoryAux();
-    //getMyHistory();
+    //getMyHistoryAux();
+    getMyHistory();
 
     // setMyProfile(getMyProfileInfo());
 
@@ -96,6 +99,26 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   }
 
   let getMyHistory = () => {
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/history`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log(response.data);
+      updateWeightChartData(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyHistory - error - 1");
+      console.log(error);
+      console.log("trainer - getMyHistory - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let getMyProfileInfoAux = () => {
@@ -113,20 +136,53 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
+    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/profile`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("trainer - getMyProfile - response - 1");
+      console.log(response.data);
+      console.log("trainer - getMyProfile - response - 2");
+      console.log(response.data);
+      setMyProfile(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyProfile - error - 1");
+      console.log(error);
+      console.log("trainer - getMyProfile - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   let updateWeightChartData = (historyData) => {
+    console.log("updateWeightChartData - 1");
     if (historyData != undefined) {
+      console.log("updateWeightChartData - 2");
       var labels = [];
       var values = [];
       for (var i = 0; i < historyData.length; i++) {
+        console.log("updateWeightChartData - 3");
         labels.push((new Date(historyData[i].created_at)).toLocaleDateString());
         values.push(historyData[i].weight_kg);
       }
+      console.log("updateWeightChartData - 4");
       setWeightChartLabels(labels);
       setWeightChartValues(values);
       setMyHistory(historyData);
-      setMyProfile(getMyProfileInfoAux());
+      console.log("updateWeightChartData - 5");
+      console.log(myProfile);
+      console.log("updateWeightChartData - 6");
+      getMyProfileInfo();
+      console.log("updateWeightChartData - 7");
+      console.log(myProfile);
+      console.log("updateWeightChartData - 8");
       setLoading(false);
     }
   }
@@ -154,205 +210,209 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {myProfile==undefined ? null : (
-                  <View style={{padding: 20}}>
-                    <Image
-                      style={styles.upperLogo}
-                      source={logoProfile}
-                    />
-                    <View><Text style={[styles.profileTitleText, {flex: 1}]}>{myProfile.name}</Text></View>
-                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      {myProfile.sex == 'H' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexH}
-                      />
-                      ) : null}
-                      {myProfile.sex == 'M' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexM}
-                      />
-                      ) : null}
-                      {myProfile.sex == 'X' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexX}
-                      />
-                      ) : null}
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Sexo</Text>
-                        {myProfile.sex == 'H' ? (
-                          <Text style={[styles.elementText,]}>Hombre</Text>
-                        ) : null }
-                        {myProfile.sex == 'M' ? (
-                          <Text style={[styles.elementText,]}>Mujer</Text>
-                        ) : null }
-                        {myProfile.sex == 'X' ? (
-                          <Text style={[styles.elementText,]}>Otro/a</Text>
-                        ) : null }
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTarget}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTargetFull}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
-                      </View>
-                    </View>
-                  </View>
-                )}
-                {((myHistory==undefined || myHistory.length == 0) && loading == false ) ? (
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
                   <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
-                      <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
-                      />
-                    </View>
-                    <Mytext 
-                      text="Todavía no hay datos de historial." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View style={{margin: 30, marginTop: 10}}>
-                    <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
-                    <View style={{flex: 1}}>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Altura (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].height_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Peso (kg)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].weight_kg}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Pecho (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].chest_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Brazo (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].arm_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Cintura (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].waist_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Cadera (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].hip_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Glúteo (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].gluteus_cm}</Text>
-                      </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Text style={[styles.labelText, {flex: 1}]}>Muslo (cm)</Text>
-                        <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].thigh_cm}</Text>
-                      </View>
-                    </View>
-                    <View><Text style={[styles.titleText, {flex: 1, marginTop: 20}]}>Información física - Historial</Text></View>
-                    <View>
-                      <ScrollView horizontal={true}>
-                        <DataTable>
-                          <DataTable.Header>
-                            <DataTable.Title style={{minWidth: 80}}>Fecha</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Altura (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Peso (kg)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Pecho (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Brazo (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Cintura (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Cadera (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Glúteo (cm)</DataTable.Title>
-                            <DataTable.Title style={{minWidth: 100}}>Muslo (cm)</DataTable.Title>
-                          </DataTable.Header>
-                          <FlatList
-                            style={{marginTop: 0, marginBottom: 20}}
-                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                            data={myHistory}
-                            keyExtractor={(item, index) => index.toString()}
-                            renderItem={({ item }) => listItemView(item)}
-                            />
-                        </DataTable>
-                      </ScrollView>
-                    </View>
-                    {weightChartValues != undefined ? (
-                      <View>
-                        <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Evolución peso</Text></View>
-                        <ScrollView horizontal={true}>
-                          <LineChart 
-                            data={{
-                              labels: weightChartLabels,
-                              datasets: [
-                                {
-                                  data: weightChartValues
-                                }
-                              ]
-                            }}
-                            width={Dimensions.get("window").width} // from react-native
-                            height={220}
-                            yAxisLabel=""
-                            yAxisSuffix="kg"
-                            yAxisInterval={1} // optional, defaults to 1
-                            chartConfig={{
-                              backgroundColor: "#e26a00",
-                              backgroundGradientFrom: "#d32f2f",
-                              backgroundGradientTo: "#d32f2f",
-                              decimalPlaces: 2, // optional, defaults to 2dp
-                              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                              style: {
-                                borderRadius: 16
-                              },
-                              propsForDots: {
-                                r: "4",
-                                strokeWidth: "2",
-                                stroke: "#000000"
-                              }
-                            }}
-                            bezier
-                            style={{
-                              marginVertical: 8,
-                              borderRadius: 16,
-                            }}
+                    {(myProfile != undefined && loading == false ) ? (
+                      <View style={{padding: 20}}>
+                        <Image
+                          style={styles.upperLogo}
+                          source={logoProfile}
+                        />
+                        <View><Text style={[styles.profileTitleText, {flex: 1}]}>{myProfile.name}</Text></View>
+                        <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                          {myProfile.sex == 'H' ? (
+                            <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoSexH}
                           />
-                        </ScrollView>
+                          ) : null}
+                          {myProfile.sex == 'M' ? (
+                            <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoSexM}
+                          />
+                          ) : null}
+                          {myProfile.sex == 'X' ? (
+                            <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoSexX}
+                          />
+                          ) : null}
+                          <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <Text style={[styles.elementTitle, {}]}>Sexo</Text>
+                            {myProfile.sex == 'H' ? (
+                              <Text style={[styles.elementText,]}>Hombre</Text>
+                            ) : null }
+                            {myProfile.sex == 'M' ? (
+                              <Text style={[styles.elementText,]}>Mujer</Text>
+                            ) : null }
+                            {myProfile.sex == 'X' ? (
+                              <Text style={[styles.elementText,]}>Otro/a</Text>
+                            ) : null }
+                          </View>
+                        </View>
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                          <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoElementTarget}
+                          />
+                          <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
+                          </View>
+                        </View>
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                          <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoElementTargetFull}
+                          />
+                          <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
+                          </View>
+                        </View>
                       </View>
                     ) : null}
+                    {(myHistory==undefined || myHistory.length == 0) ? (
+                      <View style={{flex: 1, margin: 30}}>
+                        <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
+                        <View style={{flex: 1, height: 300, marginTop: 40}}>
+                          <Image
+                            source={noResultsLogo}
+                            style={{
+                              flex: 1,
+                              resizeMode: 'contain', 
+                              width: '60%',
+                              alignSelf: 'center'}}
+                          />
+                        </View>
+                        <Mytext 
+                          text="Todavía no hay datos de historial." 
+                          estilos={{
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            color: '#d32f2f',
+                            textAlign: 'center',
+                          }}/>
+                      </View>
+                    ): (
+                      <View style={{margin: 30, marginTop: 10}}>
+                        <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
+                        <View style={{flex: 1}}>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Altura (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].height_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Peso (kg)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].weight_kg}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Pecho (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].chest_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Brazo (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].arm_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Cintura (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].waist_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Cadera (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].hip_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Glúteo (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].gluteus_cm}</Text>
+                          </View>
+                          <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Text style={[styles.labelText, {flex: 1}]}>Muslo (cm)</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].thigh_cm}</Text>
+                          </View>
+                        </View>
+                        <View><Text style={[styles.titleText, {flex: 1, marginTop: 20}]}>Información física - Historial</Text></View>
+                        <View>
+                          <ScrollView horizontal={true}>
+                            <DataTable>
+                              <DataTable.Header>
+                                <DataTable.Title style={{minWidth: 80}}>Fecha</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Altura (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Peso (kg)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Pecho (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Brazo (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Cintura (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Cadera (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Glúteo (cm)</DataTable.Title>
+                                <DataTable.Title style={{minWidth: 100}}>Muslo (cm)</DataTable.Title>
+                              </DataTable.Header>
+                              <FlatList
+                                style={{marginTop: 0, marginBottom: 20}}
+                                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                                data={myHistory}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => listItemView(item)}
+                                />
+                            </DataTable>
+                          </ScrollView>
+                        </View>
+                        {weightChartValues != undefined ? (
+                          <View>
+                            <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Evolución peso</Text></View>
+                            <ScrollView horizontal={true}>
+                              <LineChart 
+                                data={{
+                                  labels: weightChartLabels,
+                                  datasets: [
+                                    {
+                                      data: weightChartValues
+                                    }
+                                  ]
+                                }}
+                                width={Dimensions.get("window").width} // from react-native
+                                height={220}
+                                yAxisLabel=""
+                                yAxisSuffix="kg"
+                                yAxisInterval={1} // optional, defaults to 1
+                                chartConfig={{
+                                  backgroundColor: "#e26a00",
+                                  backgroundGradientFrom: "#d32f2f",
+                                  backgroundGradientTo: "#d32f2f",
+                                  decimalPlaces: 2, // optional, defaults to 2dp
+                                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                  labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                  style: {
+                                    borderRadius: 16
+                                  },
+                                  propsForDots: {
+                                    r: "4",
+                                    strokeWidth: "2",
+                                    stroke: "#000000"
+                                  }
+                                }}
+                                bezier
+                                style={{
+                                  marginVertical: 8,
+                                  borderRadius: 16,
+                                }}
+                              />
+                            </ScrollView>
+                          </View>
+                        ) : null}
+                      </View>
+                    )}
                   </View>
-                )}
-              </KeyboardAwareScrollView>
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -500,7 +560,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,6 +9,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const DietTab = ({ navigation, route }) => {
 
@@ -31,17 +34,7 @@ const DietTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    setMyDiet(orderMyDiet(getMyDietAux()));
-    //getMyDiet();
-
+    getMyDiet();
   }, [isFocused]);
 
   let getMyDietAux = () => {
@@ -97,7 +90,30 @@ const DietTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyDiet = () => {}
+  let getMyDiet = () => {
+    axios.post(`${baseUrl}/trainee/food`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("\n\n\nDietTab - getMyDiet - 1");
+      console.log(response.data);
+      console.log("DietTab - getMyDiet - 2\n\n\n");
+      orderMyDiet(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("DietTab - getMyDiet - error - 1");
+      console.log(error);
+      console.log("DietTab - getMyDiet - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let orderMyDiet = (diet) => {
     var result = new Map();
@@ -159,7 +175,8 @@ const DietTab = ({ navigation, route }) => {
         result.set('Sunday', items);
       }
     }
-    return result;
+    setMyDiet(result);
+    setLoading(false);
   }
 
   let listItemView = (item) => {
@@ -196,145 +213,146 @@ const DietTab = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myDiet==undefined || myDiet.length == 0) && loading == false ) ? (
-                  <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
-                      <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
-                      />
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                  {((myDiet==undefined || myDiet.size == 0) && loading == false ) ? (
+                    <View style={{flex: 1}}>
+                      <View style={{flex: 1, height: 300, marginTop: 40}}>
+                        <Image
+                          source={noResultsLogo}
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain', 
+                            width: '60%',
+                            alignSelf: 'center'}}
+                        />
+                      </View>
+                      <Mytext 
+                        text="Todavía no tienes ninguna dieta asignada." 
+                        estilos={{
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#d32f2f',
+                          textAlign: 'center',
+                        }}/>
                     </View>
-                    <Mytext 
-                      text="Todavía no tienes ninguna dieta asignada." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View>
-                    <Modal
-                      visible={detailsModalVisibility}
-                      transparent={true}
-                      >
-                        <View style={styles.centeredView}>
-                          <View style={styles.modalView}>
-                            <Text style={styles.modalTitle}>Detalles</Text>
-                            <Text style={styles.modalSubtitle}>Descripción</Text>
-                            {detailsModalDescription != '' ? (
-                              <Text style={styles.modalText}>{detailsModalDescription}</Text>
-                            ) : (
-                              <Text style={styles.modalTextNothing}>No hay ninguna descripción todavía.</Text>
-                            )}
-                            <Pressable
-                              style={[styles.modalButton, styles.modalButtonClose]}
-                              onPress={() => setDetailsModalVisibility(false)}>
-                              <Text style={styles.modalCloseText}>Cerrar</Text>
-                            </Pressable>
+                  ): (
+                    <View>
+                      <Modal
+                        visible={detailsModalVisibility}
+                        transparent={true}
+                        >
+                          <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                              <Text style={styles.modalTitle}>Detalles</Text>
+                              <Text style={styles.modalSubtitle}>Descripción</Text>
+                              {detailsModalDescription != '' ? (
+                                <Text style={styles.modalText}>{detailsModalDescription}</Text>
+                              ) : (
+                                <Text style={styles.modalTextNothing}>No hay ninguna descripción todavía.</Text>
+                              )}
+                              <Pressable
+                                style={[styles.modalButton, styles.modalButtonClose]}
+                                onPress={() => setDetailsModalVisibility(false)}>
+                                <Text style={styles.modalCloseText}>Cerrar</Text>
+                              </Pressable>
+                            </View>
                           </View>
+                      </Modal>
+                      {myDiet.get('Monday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lunes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Monday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
                         </View>
-                    </Modal>
-                    {myDiet.get('Monday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lunes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Monday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Tuesday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Martes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Tuesday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Wednesday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Miércoles</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Wednesday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Thursday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Jueves</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Thursday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Friday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Viernes</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Friday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Saturday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Sábado</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Saturday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                    {myDiet.get('Sunday') != undefined ? (
-                      <View>
-                        <View><Text style={[styles.labelDay, {flex: 1}]}>Domingo</Text></View>
-                        <FlatList
-                          style={{marginTop: 0, marginBottom: 20}}
-                          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                          data={myDiet.get('Sunday')}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item }) => listItemView(item)}
-                          />
-                      </View>
-                    ) : null}
-                  </View>
-                )}
-              </KeyboardAwareScrollView>
+                      ) : null}
+                      {myDiet.get('Tuesday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Martes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Tuesday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myDiet.get('Wednesday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Miércoles</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Wednesday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myDiet.get('Thursday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Jueves</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Thursday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myDiet.get('Friday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Viernes</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Friday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myDiet.get('Saturday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Sábado</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Saturday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                      {myDiet.get('Sunday') != undefined ? (
+                        <View>
+                          <View><Text style={[styles.labelDay, {flex: 1}]}>Domingo</Text></View>
+                          <FlatList
+                            style={{marginTop: 0, marginBottom: 20}}
+                            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                            data={myDiet.get('Sunday')}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => listItemView(item)}
+                            />
+                        </View>
+                      ) : null}
+                    </View>
+                  )}
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -456,12 +474,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 
     elevation: 10, 
-    shadowColor: '#000'
+    shadowColor: '#000',
+    ...Platform.select({
+      android: {
+        elevation: 50
+      }
+    })
   },
   modalTitle: {
     fontSize: 18,
@@ -489,6 +512,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     elevation: 2,
+    ...Platform.select({
+      android: {
+        elevation: 0
+      }
+    })
   },
   modalButtonClose: {
     alignSelf: 'flex-end',

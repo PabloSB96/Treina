@@ -24,7 +24,7 @@ import logoGymImage from './assets/login_gym.jpeg';
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 const RegisterScreen = ({ navigation }) => {
   let [loading, setLoading] = useState(false);
@@ -43,7 +43,7 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleConfirm = (date) => {
-    birthDate = (new Date(date)).getTime()
+    birthDate = (new Date(date)).getTime();
     setBirthDate(birthDate);
     console.log(birthDate);
     setBirthDateTitle(birthDateTitleInit + (new Date(birthDate)).toLocaleDateString());
@@ -86,7 +86,7 @@ const RegisterScreen = ({ navigation }) => {
   let saveToken = async (token, isTrainer) => {
     try {
       await AsyncStorage.setItem('treina.token', token);
-      await AsyncStorage.setItem('treina.isTrainer', isTrainer);
+      await AsyncStorage.setItem('treina.isTrainer', JSON.stringify(isTrainer));
     } catch(e){
       console.log("asynstorage - 1");
       console.log(e);
@@ -130,7 +130,7 @@ const RegisterScreen = ({ navigation }) => {
         
         setLoading(false);
         Alert.alert(
-          'Error',
+          'Atención',
           '¡Completa todos los campos!',
           [{text: 'Ok'},],
           { cancelable: false }
@@ -140,20 +140,28 @@ const RegisterScreen = ({ navigation }) => {
       if (password.trim() != repeatPassword.trim()) {
         setLoading(false);
         Alert.alert(
-          'Error',
+          'Atención',
           '¡Las contraseñas no coinciden!',
           [{text: 'Ok'},],
           { cancelable: false }
         );
+        return ;
       }
-      if (birthDate < (new Date).getDate()) {
+      console.log("birthDate - 1");
+      console.log(birthDate);
+      console.log("birthDate - 2");
+      console.log(((new Date()).getTime()));
+      console.log("birthDate - 3");
+
+      if (!isTrainer && birthDate > ((new Date()).getTime())) {
         setLoading(false);
         Alert.alert(
-          'Error',
+          'Atención',
           '¡Fecha de nacimiento incorrecta!',
           [{text: 'Ok'},],
           { cancelable: false }
         );
+        return ;
       }
 
       console.log("go-to-post - 1");
@@ -187,7 +195,7 @@ const RegisterScreen = ({ navigation }) => {
         if (error.response.data != undefined && error.response.data.message != undefined) {
           if(error.response.data.message == 'PASSWORD_INCORRECT') {
             Alert.alert(
-              'Error',
+              'Atención',
               '¡La contraseña es incorrecta!',
               [{text: 'Ok'},],
               { cancelable: false }
@@ -231,14 +239,14 @@ const RegisterScreen = ({ navigation }) => {
                 fontSize: 14,
                 color: '#000',
                 textAlign: 'left',
-                marginTop: 8}}>Soy entrenador</Text>
+                marginTop: 8, ...Platform.select({android: {marginTop: 14}})}}>Soy entrenador</Text>
               ) : (
                 <Text style={{fontStyle: 'normal',
                 fontFamily: 'Montserrat',
                 fontSize: 14,
                 color: '#000',
                 textAlign: 'left',
-                marginTop: 8}}>Soy cliente / deportista</Text>
+                marginTop: 8, ...Platform.select({android: {marginTop: 14}})}}>Soy cliente / deportista</Text>
               )}
             </View>
             {isTrainer ? (
@@ -481,12 +489,12 @@ const styles = StyleSheet.create({
     })
   },
   selector: {
-    color: '#fff',
+    color: '#000',
     ...Platform.select({
       android: {
         alignItems: 'flex-start',
-        color: '#fff',
-        width: '10%',
+        color: '#000',
+        width: '100%',
         padding: 0,
         margin: 0
       }

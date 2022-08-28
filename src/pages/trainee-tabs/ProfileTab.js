@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -17,6 +18,10 @@ import Mytextbutton from '../components/Mytextbutton';
 import Mybutton from '../components/Mybutton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const baseUrl = 'http://192.168.8.102:8066';
+
 const ProfileTab = ({ navigation, route }) => {
 
   let isFocused = useIsFocused();
@@ -33,7 +38,7 @@ const ProfileTab = ({ navigation, route }) => {
     navigation.setOptions({
       headerRight: () => (
         <Icon name='pencil' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
-          navigation.navigate('EditProfileScreen')
+          navigation.navigate('EditProfileScreen', {userToken: route.params.userToken});
         }}  />
       )
     });
@@ -41,16 +46,7 @@ const ProfileTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    setMyProfile(getMyProfileInfoAux());
-    //getMyProfileInfo();
+    getMyProfileInfo();
 
   }, [isFocused]);
 
@@ -70,6 +66,29 @@ const ProfileTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
+    axios.post(`${baseUrl}/trainee/profile`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log("\n\n\nProfileTab - getMyProfileInfo - 1");
+      console.log(response.data);
+      console.log("ProfileTab - getMyProfileInfo - 2\n\n\n");
+      setMyProfile(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("ProfileTab - getMyProfileInfo - error - 1");
+      console.log(error);
+      console.log("ProfileTab - getMyProfileInfo - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
   return (
@@ -79,127 +98,134 @@ const ProfileTab = ({ navigation, route }) => {
           <View style={[styles.container, styles.horizontal]}>
             <ActivityIndicator size="large" color="#d32f2f" />
           </View>
-        ): null}
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
-          <View style={{ flex: 1 }}>
+        ): (
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ flex: 1 }}>
-              <KeyboardAwareScrollView nestedScrollEnabled={true}>
-                {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
-                  <View style={{flex: 1}}>
-                    <View style={{flex: 1, height: 300, marginTop: 40}}>
-                      <Image
-                        source={noResultsLogo}
-                        style={{
-                          flex: 1,
-                          resizeMode: 'contain', 
-                          width: '60%',
-                          alignSelf: 'center'}}
-                      />
+              <View style={{ flex: 1 }}>
+                <KeyboardAwareScrollView nestedScrollEnabled={true}>
+                  {((myProfile==undefined || myProfile.length == 0) && loading == false ) ? (
+                    <View style={{flex: 1}}>
+                      <View style={{flex: 1, height: 300, marginTop: 40}}>
+                        <Image
+                          source={noResultsLogo}
+                          style={{
+                            flex: 1,
+                            resizeMode: 'contain', 
+                            width: '60%',
+                            alignSelf: 'center'}}
+                        />
+                      </View>
+                      <Mytext 
+                        text="Todavía no tienes ningún ejercicio asignado." 
+                        estilos={{
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          color: '#d32f2f',
+                          textAlign: 'center',
+                        }}/>
                     </View>
-                    <Mytext 
-                      text="Todavía no tienes ningún ejercicio asignado." 
-                      estilos={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        color: '#d32f2f',
-                        textAlign: 'center',
-                      }}/>
-                  </View>
-                ): (
-                  <View style={{padding: 20}}>
-                    <Image
-                      style={styles.upperLogo}
-                      source={logoProfile}
-                    />
-                    <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
-                    <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      {myProfile.sex == 'H' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexH}
+                  ): (
+                    <View style={{padding: 20}}>
+                      <Image
+                        style={styles.upperLogo}
+                        source={logoProfile}
                       />
-                      ) : null}
-                      {myProfile.sex == 'M' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexM}
-                      />
-                      ) : null}
-                      {myProfile.sex == 'X' ? (
-                        <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoSexX}
-                      />
-                      ) : null}
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Sexo</Text>
+                      <View><Text style={[styles.titleText, {flex: 1}]}>{myProfile.name}</Text></View>
+                      <View><Text style={[styles.emailText, {flex: 1}]}>{myProfile.email}</Text></View>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
                         {myProfile.sex == 'H' ? (
-                          <Text style={[styles.elementText,]}>Hombre</Text>
-                        ) : null }
+                          <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoSexH}
+                        />
+                        ) : null}
                         {myProfile.sex == 'M' ? (
-                          <Text style={[styles.elementText,]}>Mujer</Text>
-                        ) : null }
+                          <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoSexM}
+                        />
+                        ) : null}
                         {myProfile.sex == 'X' ? (
-                          <Text style={[styles.elementText,]}>Otro/a</Text>
-                        ) : null }
+                          <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoSexX}
+                        />
+                        ) : null}
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Sexo</Text>
+                          {myProfile.sex == 'H' ? (
+                            <Text style={[styles.elementText,]}>Hombre</Text>
+                          ) : null }
+                          {myProfile.sex == 'M' ? (
+                            <Text style={[styles.elementText,]}>Mujer</Text>
+                          ) : null }
+                          {myProfile.sex == 'X' ? (
+                            <Text style={[styles.elementText,]}>Otro/a</Text>
+                          ) : null }
+                        </View>
                       </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTarget}
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementTarget}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
+                          <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
+                        </View>
+                      </View>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementTargetFull}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
+                          <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
+                        </View>
+                      </View>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementPhisical}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Altura</Text>
+                          <Text style={[styles.elementText,]}>{myProfile.height} cm</Text>
+                        </View>
+                      </View>
+                      <View style={{flex: 1, flexDirection: 'row'}}>
+                        <Image
+                          style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                          source={logoElementPhisical}
+                        />
+                        <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                          <Text style={[styles.elementTitle, {}]}>Peso</Text>
+                          <Text style={[styles.elementText,]}>{myProfile.weight} Kg</Text>
+                        </View>
+                      </View>
+                      <Mybutton
+                        text="Cerrar sesión"
+                        title="Cerrar sesión"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 50
+                        }}
+                        customClick={async () => {
+                          try {
+                            await AsyncStorage.removeItem('treina.token');
+                            await AsyncStorage.removeItem('treina.isTrainer');
+                          } catch(e){}
+                          navigation.replace('LoginScreen');
+                        }}
                       />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (resumen)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goal}</Text>
-                      </View>
                     </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementTargetFull}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementPhisical}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Altura</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.height} cm</Text>
-                      </View>
-                    </View>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                      <Image
-                        style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
-                        source={logoElementPhisical}
-                      />
-                      <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
-                        <Text style={[styles.elementTitle, {}]}>Peso</Text>
-                        <Text style={[styles.elementText,]}>{myProfile.weight} Kg</Text>
-                      </View>
-                    </View>
-                    <Mybutton
-                      text="Cerrar sesión"
-                      title="Cerrar sesión"
-                      estilos={{
-                          marginTop: 40,
-                          marginBottom: 50
-                      }}
-                      customClick={() => navigation.replace('LoginScreen')}
-                    />
-                  </View>
-                )}
-              </KeyboardAwareScrollView>
+                  )}
+                </KeyboardAwareScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -322,7 +348,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

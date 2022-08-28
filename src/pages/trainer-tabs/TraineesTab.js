@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 import { Button, View, SafeAreaView, StyleSheet, Image, Text, FlatList, Alert, Modal, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Mytext from '../components/Mytext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -8,6 +9,8 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+
+const baseUrl = 'http://192.168.8.102:8066';
 
 const TraineesTab = ({ navigation, route }) => {
 
@@ -36,6 +39,9 @@ const TraineesTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
+    console.log("TraineesTab - 1");
+    console.log(route);
+    console.log("TraineesTab - 2");
 
     /*console.log(userToken);
     console.log("adfasdfajdkfljaslkñdf ---- 2");
@@ -44,8 +50,8 @@ const TraineesTab = ({ navigation, route }) => {
     setUserToken(route.params.route.params.userToken);*/
 
     // TODO
-    setTrainees(getMyTraineesAux());
-    //getMyTrainees();
+    //setTrainees(getMyTraineesAux());
+    getMyTrainees();
 
   }, [isFocused]);
 
@@ -76,12 +82,64 @@ const TraineesTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyTrainees = () => {}
+  let getMyTrainees = () => {
+    axios.post(`${baseUrl}/trainer/trainees`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      console.log(response.data);
+      setLoading(false);
+      setTrainees(response.data);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyTrainees - error - 1");
+      console.log(error);
+      console.log("trainer - getMyTrainees - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
+
+  let deleteTrainee = (item) => {
+    axios.post(`${baseUrl}/trainer/trainees/delete`, {
+      id: item.id
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      const indexOfObject = trainees.findIndex((object) => {
+        return object.id === item.id;
+      });
+      let traineesCopy = JSON.parse(JSON.stringify(trainees));
+      traineesCopy.splice(indexOfObject, 1);
+      setTrainees(traineesCopy);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("trainer - getMyExerciceList - error - 1");
+      console.log(error);
+      console.log("trainer - getMyExerciceList - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let listItemView = (item) => {
     return (
       <View
-        key={item.producto_id}
+        key={item.id}
         style={{ backgroundColor: '#fff', borderColor: '#eee', borderRadius: 20, borderWidth: 1, marginTop: 10, padding: 16, borderRadius: 10, flex: 3, flexDirection: "row", shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 5, elevation: 3, shadowColor: '#222', }}>
         <View style={{flex: 3, margin: 0}}>
           <Text style={styles.boldText}>{item.name}</Text>
@@ -92,15 +150,35 @@ const TraineesTab = ({ navigation, route }) => {
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Última revisión</Text>
-              <Text style={[styles.baseText, {flex: 2}]}>{(new Date(item.lastMeasuresUpdate)).toLocaleDateString()}</Text>
+              {(item.lastMeasuresUpdate == undefined) ? (
+                <Text style={[styles.labelText, {flex: 2}]}>Pendiente</Text>
+              ) : (
+                <Text style={[styles.baseText, {flex: 2}]}>{(new Date(item.lastMeasuresUpdate)).toLocaleDateString()}</Text>
+              )}
             </View>
-            <Mytextbutton 
-              estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
-              title="Ver"
-              customClick={() => {
-                navigation.navigate('TraineeDetailsMainScreen');
-              }}
-              />
+            <View style={{flex: 1, flexDirection: 'row', alignSelf: 'flex-end'}}>
+              <Mytextbutton 
+                estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
+                title="Eliminar"
+                customClick={() => {
+                  Alert.alert(
+                    '¡Atención!',
+                    'Va a eliminar la siguiente comida: ' + item.title + '. ¿Está seguro?',
+                    [{text: 'Confirmar', onPress: () => {
+                      deleteTrainee(item);
+                    }}, {text: 'Cancelar'}],
+                    { cancelable: false }
+                  );
+                }}
+                />
+              <Mytextbutton 
+                estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
+                title="Ver"
+                customClick={() => {
+                  navigation.navigate('TraineeDetailsMainScreen', {userToken: route.params.userToken, userId: item.id});
+                }}
+                />
+            </View>
           </View>
         </View>
       </View>
@@ -276,7 +354,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     paddingBottom: 20,
-    alignItems: 'left',
+    alignItems: 'flex-start',
     shadowOffset: {width: -2, height: 5}, 
     shadowOpacity: 1, 
     shadowRadius: 150, 

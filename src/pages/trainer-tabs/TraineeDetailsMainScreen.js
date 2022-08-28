@@ -11,7 +11,7 @@ import TraineeDetailsInfoTab from './TraineeDetailsInfoTab';
 import TraineeDetailsRutinasTab from './TraineeDetailsRutinasTab';
 import TraineeDetailsDietTab from './TraineeDetailsDietTab';
 
-const baseUrl = 'http://192.168.8.104:3000';
+const baseUrl = 'http://192.168.8.102:8066';
 
 function TraineeDetailsMainScreen({ navigation, route }) {
 
@@ -49,14 +49,17 @@ function TraineeDetailsMainScreen({ navigation, route }) {
       <Tab.Screen 
         name="Detalles" 
         component={TraineeDetailsInfoTab}
+        initialParams={{userToken: route.params.userToken, userId: route.params.userId}}
         />
       <Tab.Screen 
         name="Rutinas" 
         component={TraineeDetailsRutinasTab} 
+        initialParams={{userToken: route.params.userToken, userId: route.params.userId}}
         />
       <Tab.Screen 
         name="Dieta" 
         component={TraineeDetailsDietTab} 
+        initialParams={{userToken: route.params.userToken, userId: route.params.userId}}
         />
     </Tab.Navigator>
   );
