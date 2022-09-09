@@ -17,7 +17,7 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const NewFoodToTraineeScreen = ({ navigation, route }) => {
 
@@ -38,6 +38,8 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
   let [pickModalVisibility, setPickModalVisibility] = useState(false);
   let [foodList, setFoodList] = useState();
   let [foodListName, setFoodListName] = useState();
+  let [shoppingList, setShoppingList] = useState([]);
+  let [shoppingListIndex, setShoppingListIndex] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -63,8 +65,6 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: true,
       onSunday: true
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -103,7 +103,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
   }
 
   let getMyFoodList = () => {
-    axios.post(`${baseUrl}/trainer/data/food`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/data/food`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -111,7 +111,9 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
       console.log("\n\n\nNewFoodToTraineeScreen - getMyFoodList - 1");
       console.log(response.data);
       console.log("NewFoodToTraineeScreen - getMyFoodList - 1\n\n\n");
-      setFoodList(response.data);
+      let food = JSON.stringify(response.data);
+      food = food.replaceAll('ShoppingElementTrainerFoods', 'ShoppingElementTraineeFoods');
+      setFoodList(JSON.parse(food));
       setLoading(false);
       return ;
     }).catch((error) => {
@@ -129,6 +131,9 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
   }
 
   let selectFoodFromModal = (item) => {
+    console.log("\n\n\n\nselectFoodFromModal - 1");
+    console.log(item);
+    console.log("selectFoodFromModal - 2\n\n\n\n");
     setTitle(item.title);
     setDescription(item.description);
     setAmount(item.amount)
@@ -140,14 +145,41 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
     setOnFriday(item.onFriday);
     setOnSaturday(item.onSaturday);
     setOnSunday(item.onSunday);
+    let shopList = [];
+    
+    if (item.ShoppingElementTraineeFoods != undefined) {
+      for (let i = 0; i < item.ShoppingElementTraineeFoods.length; i++) {
+        let elem = item.ShoppingElementTraineeFoods[i];
+        elem.delete = false;
+        elem.new = false;
+        shopList.push(elem);
+        if (elem.id >= shoppingListIndex) {
+          setShoppingListIndex(elem.id);
+        }
+      }
+      setShoppingList(shopList);
+    }
   }
 
   let saveFood = () => {
 
     let url = undefined;
     let data = undefined;
+    if (title == undefined || title.trim() == ''|| 
+        description == undefined || description.trim() == '' || 
+        foodType == undefined || foodType.trim() == '-' || 
+        amount == undefined || amount.trim() == '' ) {
+      setLoading(false);
+      Alert.alert(
+        'Atención',
+        '¡Completa todos los campos!',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      return ; 
+    } 
     if (isEdition) {
-      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/food/edit`;
+      url = `${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/food/edit`;
       data = {
         id: route.params.food.id,
         title,
@@ -160,10 +192,11 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
         onSaturday,
         onSunday,
         foodType,
-        amount
+        amount,
+        shoppingList
       };
     } else {
-      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/food/new`;
+      url = `${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/food/new`;
       data = {
         title,
         description,
@@ -175,7 +208,8 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
         onSaturday,
         onSunday,
         foodType,
-        amount
+        amount,
+        shoppingList
       };
     }
 
@@ -199,6 +233,107 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
         { cancelable: false }
       );
     });
+  }
+
+  let addShoppingListElement = () => {
+    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+    shoppingListCopy.push({
+      id: shoppingListIndex + 1,
+      title: undefined,
+      description: undefined,
+      delete: false,
+      new: true
+    });
+    setShoppingListIndex(shoppingListIndex + 1);
+    setShoppingList(shoppingListCopy);
+  }
+
+  let removeShoppingListElement = (item) => {
+    let index = -1;
+    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+    for (let i = 0; i < shoppingListCopy.length; i++) {
+      if (shoppingListCopy[i].id == item.id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != -1) {
+      shoppingListCopy[index].delete = true;
+      setShoppingList(shoppingListCopy);
+    }
+  }
+
+  let shoppingListItemView = (item) => {
+    return (
+      <View>
+        {item.delete ? null : (
+          <View
+            key={item.id}
+            style={{}}>
+            <View style={{flex: 3, margin: 0}}>
+              <View>
+                <View>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Título</Text>
+                    <MyActionButton 
+                      btnIcon="minus"
+                      iconSize={14}
+                      iconColor="#d32f2f"
+                      estilos={{
+                        margin: 50,
+                        marginTop: 20
+                      }}
+                      customClick={() => {
+                        removeShoppingListElement(item)
+                      }}
+                      />
+                  </View>
+                  <Mytextinputred
+                    placeholder="Título"
+                    style={{ padding: 10 }}
+                    estilos={{marginTop: 5, marginLeft: 15}}
+                    multiline={true}
+                    value={item.title}
+                    onChangeText={
+                      (title) => {
+                        let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                        for (let i = 0; i < shoppingListCopy.length; i++) {
+                          if (shoppingListCopy[i].id == item.id) {
+                            shoppingListCopy[i].title = title;
+                          }
+                        }
+                        setShoppingList(shoppingListCopy);
+                      }
+                    }
+                  />
+                </View>
+                <View>
+                  <View><Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Descripción</Text></View>
+                  <Mytextinputred
+                    placeholder="Descripción"
+                    style={{ padding: 10 }}
+                    estilos={{marginTop: 5, marginLeft: 15}}
+                    multiline={true}
+                    value={item.description}
+                    onChangeText={
+                      (description) => {
+                        let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                        for (let i = 0; i < shoppingListCopy.length; i++) {
+                          if (shoppingListCopy[i].id == item.id) {
+                            shoppingListCopy[i].description = description;
+                          }
+                        }
+                        setShoppingList(shoppingListCopy);
+                      }
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+      </View>
+    );
   }
 
   let foodListItemView = (item) => {
@@ -232,7 +367,7 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
             <Mytextbutton
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 
               title="Seleccionar"
-              customClick={() => {selectFoodFromModal(item); setPickModalVisibility(false); setFoodListName('');}}
+              customClick={() => { selectFoodFromModal(item); setPickModalVisibility(false); setFoodListName('');}}
               />
           </View>
         </View>
@@ -450,6 +585,34 @@ const NewFoodToTraineeScreen = ({ navigation, route }) => {
                 <Text 
                   style={{marginLeft: 10}}>Domingo</Text>
               </View>
+              <View>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                  <Text style={[styles.labelDay, {flex: 1, marginTop: 20}]}>Lista de la compra</Text>
+                  <MyActionButton 
+                    btnIcon="plus"
+                    iconSize={20}
+                    iconColor="#d32f2f"
+                    estilos={{
+                      margin: 50,
+                      marginTop: 20
+                    }}
+                    customClick={addShoppingListElement}
+                    />
+                </View>
+                {(shoppingList != undefined && shoppingList.length > 0) ? (
+                  <FlatList
+                    style={{marginTop: 0, marginBottom: 20}}
+                    contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
+                    data={shoppingList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => shoppingListItemView(item)}
+                    />
+                ) : (
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <Text style={[styles.labelNoElements, {flex: 1, marginTop: 20}]}>Todavía no hay ningún elemento.</Text>
+                  </View>
+                )}
+              </View>
 
               <Mybutton
                 text="Guardar"
@@ -642,6 +805,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textTransform: 'uppercase'
   },
+  labelDayShoppingList: {
+    marginLeft: 15,
+    color: '#000',
+    fontWeight: 'bold'
+  },
+  labelNoElements: {
+    color: '#000',
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginLeft: 35
+  }
 });
 
 export default NewFoodToTraineeScreen;

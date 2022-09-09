@@ -19,7 +19,7 @@ import { DataTable } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { set } from 'react-native-reanimated';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const TraineeDetailsInfoTab = ({ navigation, route }) => {
 
@@ -38,19 +38,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //getMyHistoryAux();
     getMyHistory();
-
-    // setMyProfile(getMyProfileInfo());
-
   }, [isFocused]);
 
   let getMyHistoryAux = () => {
@@ -99,7 +87,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   }
 
   let getMyHistory = () => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/history`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/history`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -112,9 +100,13 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
       console.log("trainer - getMyHistory - error - 1");
       console.log(error);
       console.log("trainer - getMyHistory - error - 2");
+      console.log(JSON.stringify(error));
+      console.log("trainer - getMyHistory - error - 3");
+      console.log(error.response);
+      console.log("trainer - getMyHistory - error - 4");
       Alert.alert(
         'Atención',
-        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'a) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
         [{text: 'Ok'},],
         { cancelable: false }
       );
@@ -136,7 +128,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/profile`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/profile`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -146,6 +138,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
       console.log("trainer - getMyProfile - response - 2");
       console.log(response.data);
       setMyProfile(response.data);
+      setLoading(false);
       return ;
     }).catch((error) => {
       setLoading(false);
@@ -154,7 +147,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
       console.log("trainer - getMyProfile - error - 2");
       Alert.alert(
         'Atención',
-        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'b) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
         [{text: 'Ok'},],
         { cancelable: false }
       );
@@ -164,24 +157,30 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   let updateWeightChartData = (historyData) => {
     console.log("updateWeightChartData - 1");
     if (historyData != undefined) {
-      console.log("updateWeightChartData - 2");
+      console.log("updateWeightChartData - 2a");
+      console.log(historyData);
+      console.log("updateWeightChartData - 2b");
       var labels = [];
       var values = [];
       for (var i = 0; i < historyData.length; i++) {
-        console.log("updateWeightChartData - 3");
-        labels.push((new Date(historyData[i].created_at)).toLocaleDateString());
-        values.push(historyData[i].weight_kg);
+        console.log("updateWeightChartData - 3a");
+        console.log((new Date(historyData[i].createdAt)));
+        console.log("updateWeightChartData - 3b");
+        console.log((new Date(historyData[i].createdAt)).toLocaleDateString());
+        console.log("updateWeightChartData - 3c");
+        labels.unshift((new Date(historyData[i].createdAt)).toLocaleDateString());
+        values.unshift(historyData[i].weightKg);
       }
       console.log("updateWeightChartData - 4");
       setWeightChartLabels(labels);
       setWeightChartValues(values);
       setMyHistory(historyData);
       console.log("updateWeightChartData - 5");
-      console.log(myProfile);
+      console.log(labels);
       console.log("updateWeightChartData - 6");
       getMyProfileInfo();
       console.log("updateWeightChartData - 7");
-      console.log(myProfile);
+      console.log(values);
       console.log("updateWeightChartData - 8");
       setLoading(false);
     }
@@ -190,15 +189,14 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   let listItemView = (item) => {
     return (
       <DataTable.Row>
-        <DataTable.Cell style={{minWidth: 80, left: -20}} >{(new Date(item.created_at)).toLocaleDateString()}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -70}} numeric>{item.height_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -80}} numeric>{item.weight_kg}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -70}} numeric>{item.chest_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -80}} numeric>{item.arm_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -60}} numeric>{item.waist_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -60}} numeric>{item.hip_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -50}} numeric>{item.gluteus_cm}</DataTable.Cell>
-        <DataTable.Cell style={{minWidth: 100, left: -40}} numeric>{item.thigh_cm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 80, left: -20}} >{(new Date(item.createdAt)).toLocaleDateString()}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -80}} numeric>{item.weightKg}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -70}} numeric>{item.chestCm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -80}} numeric>{item.armCm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -60}} numeric>{item.waistCm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -60}} numeric>{item.hipCm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -50}} numeric>{item.gluteusCm}</DataTable.Cell>
+        <DataTable.Cell style={{minWidth: 100, left: -40}} numeric>{item.thighCm}</DataTable.Cell>
       </DataTable.Row>
     );
   }
@@ -278,7 +276,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                         </View>
                       </View>
                     ) : null}
-                    {(myHistory==undefined || myHistory.length == 0) ? (
+                    {((myHistory==undefined || myHistory.length == 0) && loading == false ) ? (
                       <View style={{flex: 1, margin: 30}}>
                         <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
                         <View style={{flex: 1, height: 300, marginTop: 40}}>
@@ -305,36 +303,32 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                         <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Actual</Text></View>
                         <View style={{flex: 1}}>
                           <View style={{flex: 1, flexDirection: 'row'}}>
-                            <Text style={[styles.labelText, {flex: 1}]}>Altura (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].height_cm}</Text>
-                          </View>
-                          <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Peso (kg)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].weight_kg}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].weightKg}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Pecho (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].chest_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].chestCm}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Brazo (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].arm_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].armCm}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Cintura (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].waist_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].waistCm}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Cadera (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].hip_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].hipCm}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Glúteo (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].gluteus_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].gluteusCm}</Text>
                           </View>
                           <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={[styles.labelText, {flex: 1}]}>Muslo (cm)</Text>
-                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[myHistory.length - 1].thigh_cm}</Text>
+                            <Text style={[styles.baseText, {flex: 1}]}>{myHistory[0].thighCm}</Text>
                           </View>
                         </View>
                         <View><Text style={[styles.titleText, {flex: 1, marginTop: 20}]}>Información física - Historial</Text></View>
@@ -343,7 +337,6 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                             <DataTable>
                               <DataTable.Header>
                                 <DataTable.Title style={{minWidth: 80}}>Fecha</DataTable.Title>
-                                <DataTable.Title style={{minWidth: 100}}>Altura (cm)</DataTable.Title>
                                 <DataTable.Title style={{minWidth: 100}}>Peso (kg)</DataTable.Title>
                                 <DataTable.Title style={{minWidth: 100}}>Pecho (cm)</DataTable.Title>
                                 <DataTable.Title style={{minWidth: 100}}>Brazo (cm)</DataTable.Title>

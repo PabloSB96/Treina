@@ -10,7 +10,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const DataTab = ({ navigation, route }) => {
 
@@ -39,19 +39,6 @@ const DataTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //setFoodList(getMyFoodListAux());
-    //setExerciceList(getMyExerciceListAux());
-    
-    //setFoodList(getMyFoodList());
-    //setExerciceList(getMyExerciceList());
     getMyFoodList();
   }, [isFocused]);
 
@@ -71,8 +58,6 @@ const DataTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: false,
       onSunday: false
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -115,7 +100,7 @@ const DataTab = ({ navigation, route }) => {
   }
 
   let getMyExerciceList = () => {
-    axios.post(`${baseUrl}/trainer/data/exercices`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/data/exercices`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -152,8 +137,6 @@ const DataTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: true,
       onSunday: true
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -192,7 +175,7 @@ const DataTab = ({ navigation, route }) => {
   }
 
   let getMyFoodList = () => {
-    axios.post(`${baseUrl}/trainer/data/food`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/data/food`, {}, {
       headers: {
         token: route.params.userToken
       }

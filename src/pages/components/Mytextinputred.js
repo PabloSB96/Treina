@@ -25,6 +25,7 @@ const Mytextinputred = (props) => {
         style={props.style}
         blurOnSubmit={false}
         value={props.value}
+        editable={props.editable}
       />
     </View>
   );

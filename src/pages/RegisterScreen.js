@@ -22,9 +22,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import logoTreina from './assets/icon.png';
 import logoGymImage from './assets/login_gym.jpeg';
 
-const db = DatabaseConnection.getConnection();
+import { configuration } from './configuration';
 
-const baseUrl = 'http://192.168.8.102:8066';
+const db = DatabaseConnection.getConnection();
 
 const RegisterScreen = ({ navigation }) => {
   let [loading, setLoading] = useState(false);
@@ -45,7 +45,6 @@ const RegisterScreen = ({ navigation }) => {
   const handleConfirm = (date) => {
     birthDate = (new Date(date)).getTime();
     setBirthDate(birthDate);
-    console.log(birthDate);
     setBirthDateTitle(birthDateTitleInit + (new Date(birthDate)).toLocaleDateString());
     hideDatePicker();
   };
@@ -87,11 +86,7 @@ const RegisterScreen = ({ navigation }) => {
     try {
       await AsyncStorage.setItem('treina.token', token);
       await AsyncStorage.setItem('treina.isTrainer', JSON.stringify(isTrainer));
-    } catch(e){
-      console.log("asynstorage - 1");
-      console.log(e);
-      console.log("asynstorage - 2");
-    }
+    } catch(e){ }
 
     setLoading(false);
     if (isTrainer) {
@@ -127,7 +122,6 @@ const RegisterScreen = ({ navigation }) => {
           trainerCode == undefined
         ))
         ) {
-        
         setLoading(false);
         Alert.alert(
           'Atención',
@@ -147,11 +141,6 @@ const RegisterScreen = ({ navigation }) => {
         );
         return ;
       }
-      console.log("birthDate - 1");
-      console.log(birthDate);
-      console.log("birthDate - 2");
-      console.log(((new Date()).getTime()));
-      console.log("birthDate - 3");
 
       if (!isTrainer && birthDate > ((new Date()).getTime())) {
         setLoading(false);
@@ -164,14 +153,25 @@ const RegisterScreen = ({ navigation }) => {
         return ;
       }
 
-      console.log("go-to-post - 1");
-      console.log(birthDate);
-      console.log("go-to-post - 2");
-
+      let heightNumber = undefined;
+      let weightNumber = undefined;
+      if (!isTrainer) {
+        try {
+          heightNumber = Number(height.replace(',', '.'));
+          weightNumber = Number(weight.replace(',', '.'));
+        } catch(e){
+          Alert.alert(
+            'Atención',
+            '¡Completa todos los y revisa que sean correctos!',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
+        }
+      }
       // Call REST API Register
-      axios.post(`${baseUrl}/register`, {
+      axios.post(`${configuration.BASE_URL}/register`, {
         isTrainer,
-        email,
+        email: email.trim().toLowerCase(),
         password,
         repeatPassword,
         name,
@@ -180,26 +180,51 @@ const RegisterScreen = ({ navigation }) => {
         birthDate,
         goal,
         goalFull,
-        height,
-        weight,
+        height: heightNumber,
+        weight: weightNumber,
         trainerCode
       }).then((response) => {
         saveToken(response.data.token, isTrainer);
       }).catch((error) => {
         setLoading(false);
-        console.log("Register - App - 1");
-        console.log(error);
-        console.log("Register - App - 2");
-        console.log(JSON.stringify(error));
-        console.log("Register - App - 3");
         if (error.response.data != undefined && error.response.data.message != undefined) {
-          if(error.response.data.message == 'PASSWORD_INCORRECT') {
+          if (error.response.data.message == 'TRAINER_CODE_NOT_EXISTS') {
             Alert.alert(
               'Atención',
-              '¡La contraseña es incorrecta!',
+              'El código de entrenador no es correcto.',
               [{text: 'Ok'},],
               { cancelable: false }
             );
+            return ;
+          } else if (error.response.data.message == 'USER_NOT_ACTIVE') {
+            Alert.alert(
+              'Atención',
+              'Te has registrado como entrenador/a correctamente. Recuerda que para activar tu cuenta debes ponerte en contacto con nosotros en: treina.ayuda@gmail.com',
+              [{text: 'Ok'},],
+              { cancelable: false }
+            );
+            navigation.goBack(null);
+          } else if (error.response.data.message == 'NOT_ABLE_TO_GENERATE_CODE') { 
+            Alert.alert(
+              'Atención',
+              'No hemos podido generar un código de entrenador para ti. Por favor, espera unos minutos e inténtalo de nuevo. En caso de que el problema persista, ponte en contacto con nuestro soporte técnico en: treina.ayuda@gmail.com',
+              [{text: 'Ok'},],
+              { cancelable: false }
+            );
+            return ;
+          } else {
+            console.log("error - 1");
+            console.log(error);
+            console.log("error - 2");
+            console.log(error.response);
+            console.log("error - 3");
+            Alert.alert(
+              'Atención',
+              'Comprueba de nuevo todos los campos o inténtalo más tarde.',
+              [{text: 'Ok'},],
+              { cancelable: false }
+            );
+            return ;
           }
         }
       });

@@ -9,7 +9,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const RutinasTab = ({ navigation, route }) => {
 
@@ -44,8 +44,6 @@ const RutinasTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: false,
       onSunday: false
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -88,7 +86,7 @@ const RutinasTab = ({ navigation, route }) => {
   }
 
   let getMyRoutines = () => {
-    axios.post(`${baseUrl}/trainee/exercices`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainee/exercices`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -336,7 +334,7 @@ const RutinasTab = ({ navigation, route }) => {
                           <FlatList
                             style={{marginTop: 0, marginBottom: 20}}
                             contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
-                            data={myRoutines.get('Sábado')}
+                            data={myRoutines.get('Saturday')}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item }) => listItemView(item)}
                             />

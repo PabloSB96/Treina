@@ -16,7 +16,7 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const NewExerciceFoodScreen = ({ navigation, route }) => {
 
@@ -51,8 +51,12 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
   let [rest, setRest] = useState();
   let [series, setSeries] = useState();
   let [shoppingList, setShoppingList] = useState([]);
+  let [shoppingListIndex, setShoppingListIndex] = useState(0);
 
   let initializeFood = (item) => {
+    console.log("\n\nNewExerciceFoodScreen - initializeFood - 1");
+    console.log(item);
+    console.log("NewExerciceFoodScreen - initializeFood - 1\n\n");
     setIsFood(true);
     setTitle(item.title);
     setDescription(item.description);
@@ -65,6 +69,20 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
     setOnFriday(item.onFriday);
     setOnSaturday(item.onSaturday);
     setOnSunday(item.onSunday);
+    let shopList = [];
+    
+    if (item.ShoppingElementTrainerFoods != undefined) {
+      for (let i = 0; i < item.ShoppingElementTrainerFoods.length; i++) {
+        let elem = item.ShoppingElementTrainerFoods[i];
+        elem.delete = false;
+        elem.new = false;
+        shopList.push(elem);
+        if (elem.id >= shoppingListIndex) {
+          setShoppingListIndex(elem.id);
+        }
+      }
+      setShoppingList(shopList);
+    }
   }
   let initializeExercice = (item) => {
     setIsFood(false);
@@ -103,7 +121,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
     let url = undefined;
     let data = undefined;
     if (isEdition) {
-      url = `${baseUrl}/trainer/data/food/edit`;
+      url = `${configuration.BASE_URL}/trainer/data/food/edit`;
       data = {
         id: route.params.food.id,
         title,
@@ -116,10 +134,11 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
         onSaturday,
         onSunday,
         foodType,
-        amount
+        amount,
+        shoppingList
       }
     } else {
-      url = `${baseUrl}/trainer/data/food/new`;
+      url = `${configuration.BASE_URL}/trainer/data/food/new`;
       data = {
         title,
         description,
@@ -178,7 +197,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
     let url = undefined;
     let data = undefined;
     if (isEdition) {
-      url = `${baseUrl}/trainer/data/exercices/edit`;
+      url = `${configuration.BASE_URL}/trainer/data/exercices/edit`;
       data = {
         id: route.params.exercice.id,
         title,
@@ -196,7 +215,7 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
         series
       }
     } else {
-      url = `${baseUrl}/trainer/data/exercices/new`;
+      url = `${configuration.BASE_URL}/trainer/data/exercices/new`;
       data = {
         title,
         description,
@@ -249,10 +268,13 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
   let addShoppingListElement = () => {
     let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
     shoppingListCopy.push({
-      id: shoppingList.length + 1,
+      id: shoppingListIndex + 1,
       title: undefined,
-      description: undefined
+      description: undefined,
+      delete: false,
+      new: true
     });
+    setShoppingListIndex(shoppingListIndex + 1);
     setShoppingList(shoppingListCopy);
   }
 
@@ -266,78 +288,82 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
       }
     }
     if (index != -1) {
-      shoppingListCopy.splice(index, 1);
+      shoppingListCopy[index].delete = true;
       setShoppingList(shoppingListCopy);
     }
   }
 
   let shoppingListItemView = (item) => {
     return (
-      <View
-        key={item.id}
-        style={{}}>
-        <View style={{flex: 3, margin: 0}}>
-          <View>
-            <View>
-              <View style={{flex: 1, flexDirection: 'row'}}>
-                <Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Título</Text>
-                <MyActionButton 
-                  btnIcon="minus"
-                  iconSize={14}
-                  iconColor="#d32f2f"
-                  estilos={{
-                    margin: 50,
-                    marginTop: 20
-                  }}
-                  customClick={() => {
-                    removeShoppingListElement(item)
-                  }}
+      <View>
+        {item.delete ? null : (
+          <View
+            key={item.id}
+            style={{}}>
+            <View style={{flex: 3, margin: 0}}>
+              <View>
+                <View>
+                  <View style={{flex: 1, flexDirection: 'row'}}>
+                    <Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Título</Text>
+                    <MyActionButton 
+                      btnIcon="minus"
+                      iconSize={14}
+                      iconColor="#d32f2f"
+                      estilos={{
+                        margin: 50,
+                        marginTop: 20
+                      }}
+                      customClick={() => {
+                        removeShoppingListElement(item)
+                      }}
+                      />
+                  </View>
+                  <Mytextinputred
+                    placeholder="Título"
+                    style={{ padding: 10 }}
+                    estilos={{marginTop: 5, marginLeft: 15}}
+                    multiline={true}
+                    value={item.title}
+                    onChangeText={
+                      (title) => {
+                        let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                        for (let i = 0; i < shoppingListCopy.length; i++) {
+                          if (shoppingListCopy[i].id == item.id) {
+                            shoppingListCopy[i].title = title;
+                          }
+                        }
+                        setShoppingList(shoppingListCopy);
+                      }
+                    }
                   />
+                </View>
+                <View>
+                  <View><Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Descripción</Text></View>
+                  <Mytextinputred
+                    placeholder="Descripción"
+                    style={{ padding: 10 }}
+                    estilos={{marginTop: 5, marginLeft: 15}}
+                    multiline={true}
+                    value={item.description}
+                    onChangeText={
+                      (description) => {
+                        let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
+                        for (let i = 0; i < shoppingListCopy.length; i++) {
+                          if (shoppingListCopy[i].id == item.id) {
+                            shoppingListCopy[i].description = description;
+                          }
+                        }
+                        setShoppingList(shoppingListCopy);
+                      }
+                    }
+                  />
+                </View>
               </View>
-              <Mytextinputred
-                placeholder="Título"
-                style={{ padding: 10 }}
-                estilos={{marginTop: 5, marginLeft: 15}}
-                multiline={true}
-                value={item.title}
-                onChangeText={
-                  (title) => {
-                    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
-                    for (let i = 0; i < shoppingListCopy.length; i++) {
-                      if (shoppingListCopy[i].id == item.id) {
-                        shoppingListCopy[i].title = title;
-                      }
-                    }
-                    setShoppingList(shoppingListCopy);
-                  }
-                }
-              />
-            </View>
-            <View>
-              <View><Text style={[styles.labelDayShoppingList, {flex: 1, marginTop: 10}]}>Descripción</Text></View>
-              <Mytextinputred
-                placeholder="Descripción"
-                style={{ padding: 10 }}
-                estilos={{marginTop: 5, marginLeft: 15}}
-                multiline={true}
-                value={item.description}
-                onChangeText={
-                  (description) => {
-                    // TODO update value by the COPY strategy
-                    let shoppingListCopy = JSON.parse(JSON.stringify(shoppingList));
-                    for (let i = 0; i < shoppingListCopy.length; i++) {
-                      if (shoppingListCopy[i].id == item.id) {
-                        shoppingListCopy[i].description = description;
-                      }
-                    }
-                    setShoppingList(shoppingListCopy);
-                  }
-                }
-              />
             </View>
           </View>
-        </View>
+        )}
       </View>
+
     );
   }
 

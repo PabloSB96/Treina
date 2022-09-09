@@ -9,18 +9,20 @@ import logoProfile from '../assets/icons/treina_undraw_profile.png';
 import logoElementTarget from '../assets/icons/treina_undraw_profile_element_target.png';
 import logoElementTargetFull from '../assets/icons/treina_undraw_profile_element_targetfull.png';
 import logoElementPhisical from '../assets/icons/treina_undraw_profile_element_phisical.png';
+import logoElementTrainer from '../assets/icons/treina_undraw_profile_element_trainer.png';
 import logoSexH from '../assets/icons/treina_undraw_man.png';
 import logoSexM from '../assets/icons/treina_undraw_woman.png';
 import logoSexX from '../assets/icons/treina_undraw_othergender.png';
 
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
+import Mytextinputred from '../components/Mytextinputred';
 import Mybutton from '../components/Mybutton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const ProfileTab = ({ navigation, route }) => {
 
@@ -28,11 +30,9 @@ const ProfileTab = ({ navigation, route }) => {
 
   let [loading, setLoading] = useState(false);
   let [myProfile, setMyProfile] = useState();
+  let [code, setCode] = useState();
   let [userToken, setUserToken] = useState();
-  let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
-  let [detailsModalDescription, setDetailsModalDescription] = useState('');
-  let [detailsModalObservation, setDetailsModalObservation] = useState('');
-  let [currentDay, setCurrentDay] = useState(0);
+  let [changeTrainerModalVisibility, setChangeTrainerModalVisibility] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -66,7 +66,7 @@ const ProfileTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
-    axios.post(`${baseUrl}/trainee/profile`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainee/profile`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -88,6 +88,50 @@ const ProfileTab = ({ navigation, route }) => {
         [{text: 'Ok'},],
         { cancelable: false }
       );
+    });
+  }
+
+  let updateTrainer = () => {
+    setLoading(true);
+    axios.post(`${configuration.BASE_URL}/trainee/profile/updateCode`, {
+      code: code
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setChangeTrainerModalVisibility(false);
+      getMyProfileInfo();
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("ProfileTab - getMyProfileInfo - error - 1");
+      console.log(error);
+      console.log("ProfileTab - getMyProfileInfo - error - 2");
+      console.log(error.response);
+      console.log("ProfileTab - getMyProfileInfo - error - 3");
+      if (error!=undefined && error.response != undefined && error.response.data == 'BAD_REQUEST') {
+        Alert.alert(
+          'Atención',
+          '¡Asegurate de que el campo del código sea correcto!',
+          [{text: 'Ok'},],
+          { cancelable: false }
+        );
+      } else if (error.response.data == 'TRAINER_CODE_NOT_EXISTS') {
+        Alert.alert(
+          'Atención',
+          '¡El código de entrenador introducido no existe!',
+          [{text: 'Ok'},],
+          { cancelable: false }
+        );
+      } else {
+        Alert.alert(
+          'Atención',
+          'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+          [{text: 'Ok'},],
+          { cancelable: false }
+        );
+      }
     });
   }
 
@@ -126,6 +170,39 @@ const ProfileTab = ({ navigation, route }) => {
                     </View>
                   ): (
                     <View style={{padding: 20}}>
+                      <Modal
+                        visible={changeTrainerModalVisibility}
+                        transparent={true}
+                        >
+                          <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                              <Text style={styles.modalTitle}>Cambiar de entrenador/a</Text>
+                              <Text style={styles.modalSubtitle}>Para cambiar de entrenador/a introduce su código de entrenador. Ten en cuenta que si cambias de entrenador, se reiniciarán tu información de rutinas y dietas.</Text>
+                              <Mytextinputred
+                                placeholder="Código"
+                                style={{padding: 10, minWidth: '100%' }}
+                                estilos={{marginTop: 20, paddingTop: 0}}
+                                value={code}
+                                onChangeText={
+                                  (code) => setCode(code)
+                                }
+                              />
+                              <View style={{flexDirection: 'row'}}>
+                                <Pressable
+                                  style={[styles.modalButton, styles.modalButtonClose]}
+                                  onPress={() => updateTrainer()}>
+                                  <Text style={styles.modalCloseText}>Cambiar entrenador</Text>
+                                </Pressable>
+                                <Pressable
+                                  style={[styles.modalButton, styles.modalButtonClose]}
+                                  onPress={() => setChangeTrainerModalVisibility(false)}>
+                                  <Text style={styles.modalCloseText}>Cerrar</Text>
+                                </Pressable>
+                              </View>
+
+                            </View>
+                          </View>
+                      </Modal>
                       <Image
                         style={styles.upperLogo}
                         source={logoProfile}
@@ -204,11 +281,36 @@ const ProfileTab = ({ navigation, route }) => {
                           <Text style={[styles.elementText,]}>{myProfile.weight} Kg</Text>
                         </View>
                       </View>
+                      {myProfile.trainer != undefined ? (
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                          <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoElementTrainer}
+                          />
+                          <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <Text style={[styles.elementTitle, {}]}>Entrenador/a</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.trainer.email}</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.trainer.trainerCode}</Text>
+                          </View>
+                        </View>
+                      ) : null}
+                      <Mybutton
+                        text="Cambiar entrenador/a"
+                        title="Cambiar entrenador/a"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 50
+                        }}
+                        customClick={async () => {
+                          // show modal
+                          setChangeTrainerModalVisibility(true);
+                        }}
+                      />
                       <Mybutton
                         text="Cerrar sesión"
                         title="Cerrar sesión"
                         estilos={{
-                            marginTop: 40,
+                            marginTop: 10,
                             marginBottom: 50
                         }}
                         customClick={async () => {

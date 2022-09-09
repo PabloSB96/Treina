@@ -11,8 +11,6 @@ import TraineeDetailsInfoTab from './TraineeDetailsInfoTab';
 import TraineeDetailsRutinasTab from './TraineeDetailsRutinasTab';
 import TraineeDetailsDietTab from './TraineeDetailsDietTab';
 
-const baseUrl = 'http://192.168.8.102:8066';
-
 function TraineeDetailsMainScreen({ navigation, route }) {
 
   const Tab = createBottomTabNavigator();

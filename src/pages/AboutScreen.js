@@ -13,8 +13,6 @@ import Mytextinputred from './components/Mytextinputred';
 
 import logoTreina from './assets/icons/treina_undraw_profile_element_logo.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
-
 const AboutScreen = ({ navigation, route }) => {
 
   useEffect(() => {}, []);

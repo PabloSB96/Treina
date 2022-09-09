@@ -13,7 +13,7 @@ import { DataTable } from 'react-native-paper';
 import { LineChart } from 'react-native-chart-kit';
 import { set } from 'react-native-reanimated';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const MeasuresHistoryTab = ({ navigation, route }) => {
 
@@ -81,7 +81,7 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
   }
 
   let getMyHistory = () => {
-    axios.post(`${baseUrl}/trainee/history`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainee/history`, {}, {
       headers: {
         token: route.params.userToken
       }

@@ -13,7 +13,7 @@ import Mytextinputred from '../components/Mytextinputred';
 
 import logoData from '../assets/treina_data.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const NewHistoryScreen = ({ navigation, route }) => {
 
@@ -53,13 +53,13 @@ const NewHistoryScreen = ({ navigation, route }) => {
     let gluteusNumber = undefined;
     let thighNumber = undefined;
     try {
-      weightNumber = Number(weight);
-      chestNumber = Number(chest);
-      armNumber = Number(arm);
-      waistNumber = Number(waist);
-      hipNumber = Number(hip);
-      gluteusNumber = Number(gluteus);
-      thighNumber = Number(thigh);
+      weightNumber = Number(weight.replace(',', '.'));
+      chestNumber = Number(chest.replace(',', '.'));
+      armNumber = Number(arm.replace(',', '.'));
+      waistNumber = Number(waist.replace(',', '.'));
+      hipNumber = Number(hip.replace(',', '.'));
+      gluteusNumber = Number(gluteus.replace(',', '.'));
+      thighNumber = Number(thigh.replace(',', '.'));
     } catch(e){
       Alert.alert(
         'Atención',
@@ -68,7 +68,7 @@ const NewHistoryScreen = ({ navigation, route }) => {
         { cancelable: false }
       );
     }
-    axios.post(`${baseUrl}/trainee/history/new`, {
+    axios.post(`${configuration.BASE_URL}/trainee/history/new`, {
       weight: weightNumber,
       chest: chestNumber,
       arm: armNumber,

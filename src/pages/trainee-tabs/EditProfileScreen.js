@@ -17,7 +17,7 @@ import Mybutton from '../components/Mybutton';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Mytextinputred from '../components/Mytextinputred';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const EditProfileScreen = ({ navigation, route }) => {
 
@@ -54,7 +54,7 @@ const EditProfileScreen = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
-    axios.post(`${baseUrl}/trainee/profile`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainee/profile`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -114,7 +114,7 @@ const EditProfileScreen = ({ navigation, route }) => {
         { cancelable: false }
       );
     }
-    axios.post(`${baseUrl}/trainee/profile/edit`, {
+    axios.post(`${configuration.BASE_URL}/trainee/profile/edit`, {
       name,
       sex,
       goal,

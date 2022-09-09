@@ -10,12 +10,6 @@ import ProfileTab from './trainer-tabs/ProfileTab';
 import TraineesTab from './trainer-tabs/TraineesTab';
 import DataTab from './trainer-tabs/DataTab';
 
-const Drawer = createDrawerNavigator();
-
-const db = DatabaseConnection.getConnection();
-
-const baseUrl = 'http://192.168.8.102:8066';
-
 function TrainerMainScreen({ navigation, route }) {
 
   const Tab = createBottomTabNavigator();

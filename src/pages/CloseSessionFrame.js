@@ -16,12 +16,6 @@ import * as Clipboard from 'expo-clipboard';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 
-const Drawer = createDrawerNavigator();
-
-const db = DatabaseConnection.getConnection();
-
-const baseUrl = 'http://192.168.8.102:8066';
-
 function CloseSessionFrame({ navigation, route }) {
 
   useEffect(() => {}, []);

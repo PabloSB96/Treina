@@ -17,7 +17,7 @@ import Checkbox from 'expo-checkbox';
 import logoFood from '../assets/icons/treina_undraw_food.png';
 import logoGym from '../assets/icons/treina_undraw_gym.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const NewExerciceToTraineeScreen = ({ navigation, route }) => {
 
@@ -67,8 +67,6 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: false,
       onSunday: false
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -111,7 +109,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
   }
 
   let getMyExerciceList = () => {
-    axios.post(`${baseUrl}/trainer/data/exercices`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/data/exercices`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -156,7 +154,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
     let url = undefined;
     let data = undefined;
     if (isEdition) {
-      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/edit`;
+      url = `${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/exercices/edit`;
       data = {
         id: route.params.exercice.id,
         title,
@@ -174,7 +172,7 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
         series
       };
     } else {
-      url = `${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/new`;
+      url = `${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/exercices/new`;
       data = {
         title,
         description,

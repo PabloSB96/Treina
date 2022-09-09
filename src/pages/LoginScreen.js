@@ -11,20 +11,53 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import logoGymImage from './assets/login_gym.jpeg';
 import logoTreina from './assets/icon.png';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { configuration } from './configuration';
+
+import noResultsLogo from './assets/icons/treina_undraw_noresults.png';
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.102:8066';
-
 const LoginScreen = ({ navigation }) => {
   useEffect(() => {
-    checkToken();
+    checkConfig();
   }, []);
 
   let [loading, setLoading] = useState(true);
   let [isTrainer, setIsTrainer] = useState(false);
   let [email, setEmail] = useState('');
   let [password, setPassword] = useState('');
+  let [showErrorPage, setShowErrorPage] = useState(false);
+  let [errorPageText, setErrorPageText] = useState('');
+
+  let checkConfig = () => {
+    setLoading(true);
+    axios.post(`${configuration.BASE_URL}/config`, {
+      appVersion: configuration.APP_VERSION,
+    }).then((response) => {
+      console.log("\n\n\nlogin - checkConfig - 1");
+      console.log(response);
+      console.log("login - checkConfig - 2\n\n\n");
+      checkToken();
+    }).catch((error) => {
+      console.log("login - error - 1");
+      console.log(error.response.data);
+      console.log("login - error - 2");
+      
+      if (error.response.data != undefined && error.response.data != undefined) {
+        if(error.response.data == 'BAD_REQUEST') {
+          setLoading(false);
+          
+          setErrorPageText("Ha ocurrido un problema. Intentalo de nuevo más tarde o ponte en contacto con nuestro soporte.");
+          setShowErrorPage(true);
+          
+        } else if (error.response.data == 'INTERNAL_ERROR') {
+          setLoading(false);    
+          setErrorPageText("Ha ocurrido un problema. Por favor, comprueba que tengas la última versión de la aplicación instalada en tu dispositivo.");
+          setShowErrorPage(true);
+        }
+      }
+    });
+  }
 
   let checkToken = async () => {
     try {
@@ -65,10 +98,6 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let doLogin = () => {
-
-    // TODO quitar la siguiente linea y descomentar y completar
-    // if (isTrainer) navigation.replace('TrainerMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}); else navigation.replace('TraineeMainScreen', {userToken: 'e.y.aadstdsftsdartasdrftasrdftadrftarsdtfarsdft'}) ;
-    
     setLoading(true);
     if (email == undefined || email.trim() == "" || 
       password == undefined || password.trim() == "") {
@@ -85,9 +114,9 @@ const LoginScreen = ({ navigation }) => {
     console.log("do login");
 
     // Call REST API Login
-    axios.post(`${baseUrl}/login`, {
+    axios.post(`${configuration.BASE_URL}/login`, {
       isTrainer,
-      email,
+      email: email.trim().toLowerCase(),
       password
     }).then((response) => {
       console.log("\n\nlogin - ok - 1");
@@ -114,6 +143,13 @@ const LoginScreen = ({ navigation }) => {
             [{text: 'Ok'},],
             { cancelable: false }
           );          
+        } else if (error.response.data.message == 'USER_NOT_ACTIVE') {
+          Alert.alert(
+            'Atención',
+            'Tu cuenta no está activada. Para su activación ponte en contacto con nosotros a través de: treina.ayuda@gmail.com',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );          
         }
       }
     });
@@ -127,93 +163,120 @@ const LoginScreen = ({ navigation }) => {
         </View>
       ): null}
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <View style={{ flex: 1 }}>
-          <View style={{ flex: 1 }}>
-            <Image
-              style={styles.gymImageLogo}
-              source={logoGymImage}
-            />
-            <KeyboardAwareScrollView>
-            <Image
-              style={styles.upperLogo}
-              source={logoTreina}
-            />
-            <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10}}>
-              <Switch
-                style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
-                trackColor={{ false: '#000', true: '#fff' }}
-                thumbColor={isTrainer ? '#9a0007' : '#000000'}
-                ios_backgroundColor="#fff"
-                value={isTrainer}
-                onValueChange={(value) => {
-                  setIsTrainer(value);
-                }}
+        { showErrorPage ? (
+          <View style={{flex: 1}}>
+            <View style={{flex: 1, maxHeight: 300, marginTop: 100}}>
+              <Image
+                source={noResultsLogo}
+                style={{
+                  flex: 1,
+                  resizeMode: 'contain', 
+                  width: '60%',
+                  alignSelf: 'center'}}
               />
-              {isTrainer ? (
-                <Text style={{fontStyle: 'normal',
-                fontFamily: 'Montserrat',
-                fontSize: 14,
-                color: '#fff',
-                textAlign: 'left',
-                marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy entrenador</Text>
-              ) : (
-                <Text style={{fontStyle: 'normal',
-                fontFamily: 'Montserrat',
-                fontSize: 14,
-                color: '#fff',
-                textAlign: 'left',
-                marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy cliente / deportista</Text>
-              )}
             </View>
-            {isTrainer ? (
-              <View>
-                <Mytextinput
-                  placeholder="Email"
-                  style={{ padding: 10, color: 'white' }}
-                  onChangeText={
-                    (email) => setEmail(email)
-                  }
-                />
-                <MytextinputPassword
-                  placeholder="Password"
-                  style={{ padding: 10, color: 'white' }}
-                  onChangeText={
-                    (password) => setPassword(password)
-                  }
-                />
-              </View>
-            ) : (
-              <View>
-                <Mytextinput
-                  placeholder="Email"
-                  style={{ padding: 10, color: 'white' }}
-                  onChangeText={
-                    (email) => setEmail(email)
-                  }
-                />
-                <MytextinputPassword
-                  placeholder="Password"
-                  style={{ padding: 10, color: 'white' }}
-                  onChangeText={
-                    (password) => setPassword(password)
-                  }
-                />
-              </View>
-            )}
-
-            <Mybutton
-              text="Login"
-              title="Login"
-              customClick={doLogin}
-            />
-
-            <Text style={styles.boldText} onPress={() => {
-              navigation.navigate('RegisterScreen');
-            }} >¿No tienes cuenta? Regístrate</Text>
-
-            </KeyboardAwareScrollView>
+            <Mytext 
+              text={errorPageText} 
+              estilos={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#d32f2f',
+                textAlign: 'center',
+              }}/>
           </View>
-        </View>
+        ) : (
+          <View style={{ flex: 1 }}>
+            <View style={{ flex: 1 }}>
+              <Image
+                style={styles.gymImageLogo}
+                source={logoGymImage}
+              />
+              <KeyboardAwareScrollView>
+              <Image
+                style={styles.upperLogo}
+                source={logoTreina}
+              />
+              <View style={{flexDirection: 'row', flex: 1, marginLeft: 30, marginBottom: 10}}>
+                <Switch
+                  style={{alignSelf: 'flex-start', marginRight: 10, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }]}}
+                  trackColor={{ false: '#000', true: '#fff' }}
+                  thumbColor={isTrainer ? '#9a0007' : '#000000'}
+                  ios_backgroundColor="#fff"
+                  value={isTrainer}
+                  onValueChange={(value) => {
+                    setIsTrainer(value);
+                  }}
+                />
+                {isTrainer ? (
+                  <Text style={{fontStyle: 'normal',
+                  fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  color: '#fff',
+                  textAlign: 'left',
+                  marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy entrenador</Text>
+                ) : (
+                  <Text style={{fontStyle: 'normal',
+                  fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  color: '#fff',
+                  textAlign: 'left',
+                  marginTop: 8, ...Platform.select({android: {marginTop: 16}})}}>Soy cliente / deportista</Text>
+                )}
+              </View>
+              {isTrainer ? (
+                <View>
+                  <Mytextinput
+                    placeholder="Email"
+                    style={{ padding: 10, color: 'white' }}
+                    onChangeText={
+                      (email) => setEmail(email)
+                    }
+                  />
+                  <MytextinputPassword
+                    placeholder="Password"
+                    style={{ padding: 10, color: 'white' }}
+                    onChangeText={
+                      (password) => setPassword(password)
+                    }
+                  />
+                </View>
+              ) : (
+                <View>
+                  <Mytextinput
+                    placeholder="Email"
+                    style={{ padding: 10, color: 'white' }}
+                    onChangeText={
+                      (email) => setEmail(email)
+                    }
+                  />
+                  <MytextinputPassword
+                    placeholder="Password"
+                    style={{ padding: 10, color: 'white' }}
+                    onChangeText={
+                      (password) => setPassword(password)
+                    }
+                  />
+                </View>
+              )}
+
+              <Mybutton
+                text="Login"
+                title="Login"
+                customClick={doLogin}
+              />
+
+              <Text style={styles.boldText} onPress={() => {
+                navigation.navigate('RegisterScreen');
+              }} >¿No tienes cuenta? Regístrate</Text>
+
+              <Text style={styles.boldText} onPress={() => {
+                navigation.navigate('ForgotPasswordScreen');
+              }} >¿Has olvidado tu contraseña?</Text>
+
+              </KeyboardAwareScrollView>
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

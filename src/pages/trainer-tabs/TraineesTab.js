@@ -10,7 +10,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const TraineesTab = ({ navigation, route }) => {
 
@@ -39,20 +39,7 @@ const TraineesTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-    console.log("TraineesTab - 1");
-    console.log(route);
-    console.log("TraineesTab - 2");
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //setTrainees(getMyTraineesAux());
     getMyTrainees();
-
   }, [isFocused]);
 
   let getMyTraineesAux = () => {
@@ -83,7 +70,7 @@ const TraineesTab = ({ navigation, route }) => {
   }
 
   let getMyTrainees = () => {
-    axios.post(`${baseUrl}/trainer/trainees`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -107,7 +94,7 @@ const TraineesTab = ({ navigation, route }) => {
   }
 
   let deleteTrainee = (item) => {
-    axios.post(`${baseUrl}/trainer/trainees/delete`, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/delete`, {
       id: item.id
     }, {
       headers: {

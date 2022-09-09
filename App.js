@@ -20,6 +20,7 @@ import TraineeDetailsMainScreen from './src/pages/trainer-tabs/TraineeDetailsMai
 import NewExerciceToTraineeScreen from './src/pages/trainer-tabs/NewExerciceToTraineeScreen';
 import NewFoodToTraineeScreen from './src/pages/trainer-tabs/NewFoodToTraineeScreen';
 import EditProfileScreen from './src/pages/trainee-tabs/EditProfileScreen';
+import ForgotPasswordScreen from './src/pages/ForgotPasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,18 @@ const App = () => {
           options={{
             title: 'Login',
             headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="ForgotPasswordScreen"
+          component={ForgotPasswordScreen}
+          options={{
+            title: 'Recuperar contraseña',
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
           }}
         />
         <Stack.Screen

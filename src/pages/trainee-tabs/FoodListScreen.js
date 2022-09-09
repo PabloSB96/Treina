@@ -11,63 +11,89 @@ import MyActionButton from '../components/MyActionButton';
 import { Picker } from '@react-native-picker/picker';
 import Mytextinputred from '../components/Mytextinputred';
 
+import { useIsFocused } from '@react-navigation/native';
 import logoShopping from '../assets/icons/treina_undraw_shopping.png';
+import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const FoodListScreen = ({ navigation, route }) => {
 
+  let isFocused = useIsFocused();
+
   useEffect(() => {
     setLoading(true);
+    getShoppingList();
+  }, [isFocused]);
 
-    setFoodList(getMyFoodListAux());
-  }, []);
-
-  //let {userToken} = route.params;
   let [loading, setLoading] = useState(false);
   let [foodList, setFoodList]= useState();
   let [showAll, setShowAll] = useState(true);
+  let [isTherePendingElements, setIsTherePendingElements] = useState(false);
 
-  let getMyFoodListAux = () => {
-    let obj1 = {
-      id: 1,
-      title: 'Pollo',
-      details: undefined,
-      checked: false
-    };
-    let obj2 = {
-      id: 2,
-      title: 'Agua',
-      details: 'Bezoya',
-      checked: false
-    };
-    let obj3 = {
-      id: 3,
-      title: 'Ternera',
-      details: undefined,
-      checked: true
-    };
-    let obj4 = {
-      id: 4,
-      title: 'Corn Falkes',
-      details: 'Marca Mercadona 0% sin azucares.',
-      checked: false
-    };
-    var result = [];
-    result.push(obj1);
-    result.push(obj2);
-    result.push(obj3);
-    result.push(obj4);
-    setLoading(false);
-    return result;
+  let getShoppingList = () => {
+    setLoading(true);
+    axios.post(`${configuration.BASE_URL}/trainee/food/shoppinglist`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      setFoodList(response.data);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("DietTab - getMyDiet - error - 1");
+      console.log(error);
+      console.log("DietTab - getMyDiet - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
   }
 
-  let getMyFoodList = () => {}
+  let updateShoppingListItem = (item) => {
+    setLoading(true);
+    axios.post(`${configuration.BASE_URL}/trainee/food/shoppinglist/` + item.id, {
+      checked: (!item.checked)
+    }, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then((response) => {
+      let copy = JSON.parse(JSON.stringify(item));
+      let foodListCopy = JSON.parse(JSON.stringify(foodList));
+      copy.checked = false;
+      for (let i = 0; i < foodListCopy.length; i++) {
+        if (foodListCopy[i].id == item.id) {
+          foodListCopy[i].checked = !(item.checked);
+        }
+      }
+      setFoodList(foodListCopy);
+      setIsTherePendingElements(false);
+      setLoading(false);
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      console.log("DietTab - getMyDiet - error - 1");
+      console.log(error);
+      console.log("DietTab - getMyDiet - error - 2");
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
 
   let listItemView = (item) => {
     return (
       <View
-        key={item.producto_id}
+        key={item.id}
         style={[{
           backgroundColor: '#fff', 
           borderColor: '#eee', 
@@ -88,36 +114,20 @@ const FoodListScreen = ({ navigation, route }) => {
         <View style={{flex: 1, flexDirection: 'row'}}>
           <View style={{flex: 3}}>
             <Text style={styles.boldText}>{item.title}</Text>
-            {(item.details == undefined || item.details == null || item.details == '') ? (
+            {(item.description == undefined || item.description == null || item.description == '') ? (
               <Text style={[styles.noDetailsText, {marginTop: 5}]}>No hay detalles para este producto.</Text>
             ) : (
-              <Text style={[styles.baseText, {marginTop: 5}]}>{item.details}</Text>
+              <Text style={[styles.baseText, {marginTop: 5}]}>{item.description}</Text>
             )}
           </View>
           <View style={{flex: 1,}}>
             {item.checked ? (
               <MyActionButton btnIcon='check-circle' iconSize={30} iconColor='#d32f2f' customClick={() => {
-                let copy = JSON.parse(JSON.stringify(item));
-                let foodListCopy = JSON.parse(JSON.stringify(foodList));
-                copy.checked = false;
-                for (let i = 0; i < foodListCopy.length; i++) {
-                  if (foodListCopy[i].id == item.id) {
-                    foodListCopy[i].checked = !(item.checked);
-                  }
-                }
-                setFoodList(foodListCopy);
+                updateShoppingListItem(item);
               }} />
             ) : (
               <MyActionButton btnIcon='check-circle' iconSize={30} iconColor='#AAA' customClick={() => {
-                let copy = JSON.parse(JSON.stringify(item));
-                let foodListCopy = JSON.parse(JSON.stringify(foodList));
-                copy.checked = false;
-                for (let i = 0; i < foodListCopy.length; i++) {
-                  if (foodListCopy[i].id == item.id) {
-                    foodListCopy[i].checked = !(item.checked);
-                  }
-                }
-                setFoodList(foodListCopy);
+                updateShoppingListItem(item);
               }} />
             )}
           </View>
@@ -177,11 +187,62 @@ const FoodListScreen = ({ navigation, route }) => {
               data={foodList}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => {
+                if (!item.checked) {
+                  setIsTherePendingElements(true);
+                }
                 if (!item.checked || showAll) {
                   return listItemView(item);
                 }
               }}
               />
+
+            {(showAll && foodList != undefined && foodList.length == 0) ? (
+              <View style={{flex: 1}}>
+                <View style={{flex: 1, height: 200, marginTop: 0}}>
+                  <Image
+                    source={noResultsLogo}
+                    style={{
+                      flex: 1,
+                      resizeMode: 'contain', 
+                      width: '60%',
+                      alignSelf: 'center'}}
+                  />
+                </View>
+                <Mytext 
+                  text="No hay ningún elemento en la lista." 
+                  estilos={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#d32f2f',
+                    textAlign: 'center',
+                  }}/>
+              </View>
+            ) : (
+              <View>
+                {(!showAll && !isTherePendingElements) ? (
+                  <View style={{flex: 1}}>
+                    <View style={{flex: 1, height: 200, marginTop: 0}}>
+                      <Image
+                        source={noResultsLogo}
+                        style={{
+                          flex: 1,
+                          resizeMode: 'contain', 
+                          width: '60%',
+                          alignSelf: 'center'}}
+                      />
+                    </View>
+                    <Mytext 
+                      text="No hay ningún elemento en la lista." 
+                      estilos={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#d32f2f',
+                        textAlign: 'center',
+                      }}/>
+                  </View>
+                ) : null}
+              </View>
+            )}
 
             </KeyboardAwareScrollView>
           </View>

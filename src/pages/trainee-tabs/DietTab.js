@@ -10,7 +10,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const DietTab = ({ navigation, route }) => {
 
@@ -21,12 +21,16 @@ const DietTab = ({ navigation, route }) => {
   let [userToken, setUserToken] = useState();
   let [detailsModalVisibility, setDetailsModalVisibility] = useState(false);
   let [detailsModalDescription, setDetailsModalDescription] = useState('');
+  let [shopList, setShopList] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Icon name='list-alt' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
-          navigation.navigate('FoodListScreen')
+          console.log("\n\n\nDietTab - navigate - 1");
+          console.log(shopList);
+          console.log("DietTab - navigate - 2\n\n\n");
+          navigation.navigate('FoodListScreen', {userToken: route.params.userToken})
         }}  />
       )
     });
@@ -51,8 +55,6 @@ const DietTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: false,
       onSunday: false
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -91,15 +93,21 @@ const DietTab = ({ navigation, route }) => {
   }
 
   let getMyDiet = () => {
-    axios.post(`${baseUrl}/trainee/food`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainee/food`, {}, {
       headers: {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("\n\n\nDietTab - getMyDiet - 1");
-      console.log(response.data);
-      console.log("DietTab - getMyDiet - 2\n\n\n");
-      orderMyDiet(response.data);
+      let food = JSON.stringify(response.data);
+      food = food.replaceAll('ShoppingElementTrainerFoods', 'ShoppingElementTraineeFoods');
+      let foodObj = JSON.parse(food);
+      let shopListArray = [];
+      for (let i = 0; i < foodObj.length; i++ ){
+        for (let j = 0; j < foodObj[i].ShoppingElementTraineeFoods.length; j++) {
+          shopListArray.push(foodObj[i].ShoppingElementTraineeFoods[j]);
+        }
+      }
+      orderMyDiet(foodObj, shopListArray);
       return ;
     }).catch((error) => {
       setLoading(false);
@@ -115,7 +123,13 @@ const DietTab = ({ navigation, route }) => {
     });
   }
 
-  let orderMyDiet = (diet) => {
+  let orderMyDiet = (diet, shopListArray) => {
+    console.log("\n\n\nDietTab - orderMyDiet - 1");
+    console.log(diet);
+    console.log("DietTab - orderMyDiet - 2");
+    console.log(shopListArray);
+    console.log("DietTab - orderMyDiet - 3");
+    console.log("\n\n\n");
     var result = new Map();
     for (var i = 0; i < diet.length; i++) {
       if (diet[i].onMonday) {
@@ -176,6 +190,7 @@ const DietTab = ({ navigation, route }) => {
       }
     }
     setMyDiet(result);
+    setShopList(shopListArray);
     setLoading(false);
   }
 
@@ -193,7 +208,7 @@ const DietTab = ({ navigation, route }) => {
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
               <Text style={[styles.labelText, {flex: 1}]}>Tipo</Text>
-              <Text style={[styles.baseText, {flex: 1}]}>{item.foodType}</Text>
+              <Text style={[styles.baseText, {flex: 1}]}>{item.FoodType.title}</Text>
             </View>
             <Mytextbutton 
               estilos={{alignSelf: 'flex-end', margin: 0, padding: 0}} 

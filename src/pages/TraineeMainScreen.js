@@ -30,8 +30,6 @@ const Stack = createStackNavigator();
 
 const db = DatabaseConnection.getConnection();
 
-const baseUrl = 'http://192.168.8.102:8066';
-
 function TraineeMainScreen({ navigation, route }) {
 
   const Tab = createBottomTabNavigator();

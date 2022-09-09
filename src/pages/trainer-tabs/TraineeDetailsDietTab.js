@@ -10,7 +10,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const TraineeDetailsDietTab = ({ navigation, route }) => {
 
@@ -38,17 +38,6 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //setFoodList(getMyFoodListAux());
-    
-    //setFoodList(getMyFoodList());
     getMyFoodList();
   }, [isFocused]);
 
@@ -66,8 +55,6 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: true,
       onSunday: true
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -106,7 +93,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
   }
 
   let getMyFoodList = () => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/food`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/food`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -129,7 +116,7 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
   }
 
   let deleteFood = (item) => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/food/delete`, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/food/delete`, {
       id: item.id
     }, {
       headers: {

@@ -19,7 +19,7 @@ import MyActionButton from '../components/MyActionButton';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const ProfileTab = ({ navigation, route }) => {
 
@@ -41,15 +41,6 @@ const ProfileTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //setMyProfile(getMyProfileInfoAux());
     getMyProfileInfo();
 
   }, [isFocused]);
@@ -68,7 +59,7 @@ const ProfileTab = ({ navigation, route }) => {
   }
 
   let getMyProfileInfo = () => {
-    axios.post(`${baseUrl}/trainer/profile`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/profile`, {}, {
       headers: {
         token: route.params.userToken
       }

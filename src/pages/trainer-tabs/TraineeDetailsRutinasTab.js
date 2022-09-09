@@ -10,7 +10,7 @@ import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import { useIsFocused } from '@react-navigation/native';
 import Mytextbutton from '../components/Mytextbutton';
 
-const baseUrl = 'http://192.168.8.102:8066';
+import { configuration } from '../configuration';
 
 const TraineeDetailsRutinasTab = ({ navigation, route }) => {
 
@@ -39,17 +39,6 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
 
   useEffect(() => {
     setLoading(true);
-
-    /*console.log(userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 2");
-    console.log(route.params.route.params.userToken);
-    console.log("adfasdfajdkfljaslkñdf ---- 3");
-    setUserToken(route.params.route.params.userToken);*/
-
-    // TODO
-    //setExerciceList(getMyExerciceListAux());
-    
-    //setExerciceList(getMyExerciceList());
     getMyExerciceList();
   }, [isFocused]);
 
@@ -69,8 +58,6 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
       onFriday: true,
       onSaturday: false,
       onSunday: false
-      // TODO
-      // y luego implementar el layout de cada card, el dialogo con los detalles
     };
     let obj2 = {
       id: 2,
@@ -113,7 +100,7 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
   }
 
   let getMyExerciceList = () => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices`, {}, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/exercices`, {}, {
       headers: {
         token: route.params.userToken
       }
@@ -136,7 +123,7 @@ const TraineeDetailsRutinasTab = ({ navigation, route }) => {
   }
 
   let deleteExercice = (item) => {
-    axios.post(`${baseUrl}/trainer/trainees/` + route.params.userId + `/exercices/delete`, {
+    axios.post(`${configuration.BASE_URL}/trainer/trainees/` + route.params.userId + `/exercices/delete`, {
       id: item.id
     }, {
       headers: {
