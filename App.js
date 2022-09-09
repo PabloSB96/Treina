@@ -45,7 +45,6 @@ const App = () => {
   });
 
   if (!loaded) {
-    console.log("Fonts did not loaded!!");
     return null;
   }
 

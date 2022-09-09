@@ -64,15 +64,11 @@ const ProfileTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log(response.data);
       setLoading(false);
       setMyProfile(response.data);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyProfile - error - 1");
-      console.log(error);
-      console.log("trainer - getMyProfile - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

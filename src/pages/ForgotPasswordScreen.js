@@ -42,9 +42,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
           setLoading(false);
           setStep('step2-codeandpassword');
         }).catch((error) => {
-          console.log("login - error - 1");
-          console.log(error.response.data);
-          console.log("login - error - 2");
           setLoading(false);
           if (error.response.data != undefined) {
             if(error.response.data == 'BAD_REQUEST') {
@@ -94,9 +91,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
             );
             navigation.goBack(null);
           }).catch((error) => {
-            console.log("login - error - 1");
-            console.log(error.response.data);
-            console.log("login - error - 2");
             setLoading(false);
             if (error.response.data != undefined) {
               if(error.response.data == 'BAD_REQUEST') {

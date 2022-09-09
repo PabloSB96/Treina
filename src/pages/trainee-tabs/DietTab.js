@@ -27,9 +27,6 @@ const DietTab = ({ navigation, route }) => {
     navigation.setOptions({
       headerRight: () => (
         <Icon name='list-alt' style={{right: 20, top: 3}} size={25} color='#fff' onPress={() => {
-          console.log("\n\n\nDietTab - navigate - 1");
-          console.log(shopList);
-          console.log("DietTab - navigate - 2\n\n\n");
           navigation.navigate('FoodListScreen', {userToken: route.params.userToken})
         }}  />
       )
@@ -111,9 +108,6 @@ const DietTab = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("DietTab - getMyDiet - error - 1");
-      console.log(error);
-      console.log("DietTab - getMyDiet - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -124,12 +118,6 @@ const DietTab = ({ navigation, route }) => {
   }
 
   let orderMyDiet = (diet, shopListArray) => {
-    console.log("\n\n\nDietTab - orderMyDiet - 1");
-    console.log(diet);
-    console.log("DietTab - orderMyDiet - 2");
-    console.log(shopListArray);
-    console.log("DietTab - orderMyDiet - 3");
-    console.log("\n\n\n");
     var result = new Map();
     for (var i = 0; i < diet.length; i++) {
       if (diet[i].onMonday) {

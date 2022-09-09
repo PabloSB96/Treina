@@ -75,15 +75,11 @@ const TraineesTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log(response.data);
       setLoading(false);
       setTrainees(response.data);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyTrainees - error - 1");
-      console.log(error);
-      console.log("trainer - getMyTrainees - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -111,9 +107,6 @@ const TraineesTab = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyExerciceList - error - 1");
-      console.log(error);
-      console.log("trainer - getMyExerciceList - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

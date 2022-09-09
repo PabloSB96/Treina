@@ -43,9 +43,6 @@ const FoodListScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("DietTab - getMyDiet - error - 1");
-      console.log(error);
-      console.log("DietTab - getMyDiet - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -78,9 +75,6 @@ const FoodListScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("DietTab - getMyDiet - error - 1");
-      console.log(error);
-      console.log("DietTab - getMyDiet - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

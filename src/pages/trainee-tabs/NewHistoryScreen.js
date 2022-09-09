@@ -86,9 +86,6 @@ const NewHistoryScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("NewHistoryScreen - saveData - error - 1");
-      console.log(error);
-      console.log("NewHistoryScreen - saveData - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

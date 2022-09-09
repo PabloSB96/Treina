@@ -34,15 +34,8 @@ const LoginScreen = ({ navigation }) => {
     axios.post(`${configuration.BASE_URL}/config`, {
       appVersion: configuration.APP_VERSION,
     }).then((response) => {
-      console.log("\n\n\nlogin - checkConfig - 1");
-      console.log(response);
-      console.log("login - checkConfig - 2\n\n\n");
       checkToken();
     }).catch((error) => {
-      console.log("login - error - 1");
-      console.log(error.response.data);
-      console.log("login - error - 2");
-      
       if (error.response.data != undefined && error.response.data != undefined) {
         if(error.response.data == 'BAD_REQUEST') {
           setLoading(false);
@@ -73,9 +66,7 @@ const LoginScreen = ({ navigation }) => {
         setLoading(false);
       }
     } catch(e) {
-      console.log("asynstorage - 1");
-      console.log(e);
-      console.log("asynstorage - 2");
+      setLoading(false);
     }
   }
 
@@ -83,11 +74,7 @@ const LoginScreen = ({ navigation }) => {
     try {
       await AsyncStorage.setItem('treina.token', token);
       await AsyncStorage.setItem('treina.isTrainer', JSON.stringify(isTrainer));
-    } catch(e){
-      console.log("asynstorage - 1");
-      console.log(e);
-      console.log("asynstorage - 2");
-    }
+    } catch(e){ }
 
     setLoading(false);
     if (isTrainer) {
@@ -111,22 +98,14 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    console.log("do login");
-
     // Call REST API Login
     axios.post(`${configuration.BASE_URL}/login`, {
       isTrainer,
       email: email.trim().toLowerCase(),
       password
     }).then((response) => {
-      console.log("\n\nlogin - ok - 1");
-      console.log(response.data);
-      console.log("login - ok - 2\n\n");
       saveToken(response.data.token);
     }).catch((error) => {
-      console.log("login - error - 1");
-      console.log(error.response.data);
-      console.log("login - error - 2");
       setLoading(false);
       if (error.response.data != undefined && error.response.data.message != undefined) {
         if(error.response.data.message == 'PASSWORD_INCORRECT') {

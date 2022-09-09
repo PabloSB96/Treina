@@ -114,17 +114,11 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("\n\n\nNewExerciceToTraineeScreen - getMyExerciceList - 1");
-      console.log(response.data);
-      console.log("NewExerciceToTraineeScreen - getMyExerciceList - 2\n\n\n");
       setExerciceList(response.data);
       setLoading(false);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("NewExerciceToTraineeScreen - getMyExerciceList - error - 1");
-      console.log(error);
-      console.log("NewExerciceToTraineeScreen - getMyExerciceList - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -200,9 +194,6 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - saveExercice - error - 1");
-      console.log(error);
-      console.log("trainer - saveExercice - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -279,7 +270,6 @@ const NewExerciceToTraineeScreen = ({ navigation, route }) => {
                   marginBottom: 10,
                 }}
                 customClick={() => {
-                  console.log("SELECCIONAR DE DATOS - 1");
                   setPickModalVisibility(true);}}
               />
 

@@ -91,16 +91,10 @@ const RutinasTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("\n\n\nRutinasTab - getMyRoutines - 1");
-      console.log(response.data);
-      console.log("RutinasTab - getMyRoutines - 2\n\n\n");
       orderMyRoutines(response.data);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainee - getMyRoutines - error - 1");
-      console.log(error);
-      console.log("trainee - getMyRoutines - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

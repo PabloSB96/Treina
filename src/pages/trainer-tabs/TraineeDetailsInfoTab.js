@@ -92,18 +92,10 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log(response.data);
       updateWeightChartData(response.data);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyHistory - error - 1");
-      console.log(error);
-      console.log("trainer - getMyHistory - error - 2");
-      console.log(JSON.stringify(error));
-      console.log("trainer - getMyHistory - error - 3");
-      console.log(error.response);
-      console.log("trainer - getMyHistory - error - 4");
       Alert.alert(
         'Atención',
         'a) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -133,18 +125,11 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("trainer - getMyProfile - response - 1");
-      console.log(response.data);
-      console.log("trainer - getMyProfile - response - 2");
-      console.log(response.data);
       setMyProfile(response.data);
       setLoading(false);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyProfile - error - 1");
-      console.log(error);
-      console.log("trainer - getMyProfile - error - 2");
       Alert.alert(
         'Atención',
         'b) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -155,33 +140,17 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   }
 
   let updateWeightChartData = (historyData) => {
-    console.log("updateWeightChartData - 1");
     if (historyData != undefined) {
-      console.log("updateWeightChartData - 2a");
-      console.log(historyData);
-      console.log("updateWeightChartData - 2b");
       var labels = [];
       var values = [];
       for (var i = 0; i < historyData.length; i++) {
-        console.log("updateWeightChartData - 3a");
-        console.log((new Date(historyData[i].createdAt)));
-        console.log("updateWeightChartData - 3b");
-        console.log((new Date(historyData[i].createdAt)).toLocaleDateString());
-        console.log("updateWeightChartData - 3c");
         labels.unshift((new Date(historyData[i].createdAt)).toLocaleDateString());
         values.unshift(historyData[i].weightKg);
       }
-      console.log("updateWeightChartData - 4");
       setWeightChartLabels(labels);
       setWeightChartValues(values);
       setMyHistory(historyData);
-      console.log("updateWeightChartData - 5");
-      console.log(labels);
-      console.log("updateWeightChartData - 6");
       getMyProfileInfo();
-      console.log("updateWeightChartData - 7");
-      console.log(values);
-      console.log("updateWeightChartData - 8");
       setLoading(false);
     }
   }

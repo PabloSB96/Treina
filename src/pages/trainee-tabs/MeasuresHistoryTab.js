@@ -86,16 +86,10 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("\n\n\nMeasuresHistoryTab - getMyHistory - 1");
-      console.log(response.data);
-      console.log("MeasuresHistoryTab - getMyHistory - 2\n\n\n");
       updateWeightChartData(response.data);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("MeasuresHistoryTab - getMyHistory - error - 1");
-      console.log(error);
-      console.log("MeasuresHistoryTab - getMyHistory - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -106,11 +100,6 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
   }
 
   let updateWeightChartData = (historyData) => {
-
-    console.log("\n\n\nMesauresHistoryTab - updateWeightChartData - 1");
-    console.log(historyData);
-    console.log("MesauresHistoryTab - updateWeightChartData - 2");
-
     if (historyData != undefined) {
       var labels = [];
       var values = [];
@@ -118,11 +107,6 @@ const MeasuresHistoryTab = ({ navigation, route }) => {
         labels.unshift((new Date(historyData[i].createdAt)).toLocaleDateString());
         values.unshift(historyData[i].weightKg);
       }
-
-      console.log(labels);
-      console.log("MesauresHistoryTab - updateWeightChartData - 3");
-      console.log(values);
-      console.log("MesauresHistoryTab - updateWeightChartData - 4\n\n\n");
 
       setWeightChartLabels(labels);
       setWeightChartValues(values);

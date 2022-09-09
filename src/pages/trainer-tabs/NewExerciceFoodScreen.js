@@ -54,9 +54,6 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
   let [shoppingListIndex, setShoppingListIndex] = useState(0);
 
   let initializeFood = (item) => {
-    console.log("\n\nNewExerciceFoodScreen - initializeFood - 1");
-    console.log(item);
-    console.log("NewExerciceFoodScreen - initializeFood - 1\n\n");
     setIsFood(true);
     setTitle(item.title);
     setDescription(item.description);
@@ -232,9 +229,6 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
         series
       }
     }
-    console.log("exercices - edit - new - 1");
-    console.log(route.params);
-    console.log("exercices - edit - new - 2");
     axios.post(url, data, {
       headers: {
         token: route.params.userToken

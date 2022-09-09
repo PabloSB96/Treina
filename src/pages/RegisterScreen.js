@@ -213,11 +213,6 @@ const RegisterScreen = ({ navigation }) => {
             );
             return ;
           } else {
-            console.log("error - 1");
-            console.log(error);
-            console.log("error - 2");
-            console.log(error.response);
-            console.log("error - 3");
             Alert.alert(
               'Atención',
               'Comprueba de nuevo todos los campos o inténtalo más tarde.',

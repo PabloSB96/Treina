@@ -105,15 +105,11 @@ const DataTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log(response.data);
       setExerciceList(response.data);
       setLoading(false);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyTrainees - error - 1");
-      console.log(error);
-      console.log("trainer - getMyTrainees - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -180,15 +176,11 @@ const DataTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log(response.data);
       setFoodList(response.data);
       getMyExerciceList();
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyTrainees - error - 1");
-      console.log(error);
-      console.log("trainer - getMyTrainees - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

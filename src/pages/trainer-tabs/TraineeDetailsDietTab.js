@@ -103,9 +103,6 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyFoodList - error - 1");
-      console.log(error);
-      console.log("trainer - getMyFoodList - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -133,9 +130,6 @@ const TraineeDetailsDietTab = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("trainer - getMyExerciceList - error - 1");
-      console.log(error);
-      console.log("trainer - getMyExerciceList - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

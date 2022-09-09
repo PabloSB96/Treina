@@ -63,9 +63,6 @@ const EditProfileScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("ProfileTab - getMyProfileInfo - error - 1");
-      console.log(error);
-      console.log("ProfileTab - getMyProfileInfo - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -131,9 +128,6 @@ const EditProfileScreen = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("EditProfileScreen - saveExercice - error - 1");
-      console.log(error);
-      console.log("trainer - saveExercice - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',

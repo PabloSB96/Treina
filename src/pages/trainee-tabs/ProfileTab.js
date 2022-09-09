@@ -71,17 +71,11 @@ const ProfileTab = ({ navigation, route }) => {
         token: route.params.userToken
       }
     }).then((response) => {
-      console.log("\n\n\nProfileTab - getMyProfileInfo - 1");
-      console.log(response.data);
-      console.log("ProfileTab - getMyProfileInfo - 2\n\n\n");
       setMyProfile(response.data);
       setLoading(false);
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("ProfileTab - getMyProfileInfo - error - 1");
-      console.log(error);
-      console.log("ProfileTab - getMyProfileInfo - error - 2");
       Alert.alert(
         'Atención',
         'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
@@ -105,11 +99,6 @@ const ProfileTab = ({ navigation, route }) => {
       return ;
     }).catch((error) => {
       setLoading(false);
-      console.log("ProfileTab - getMyProfileInfo - error - 1");
-      console.log(error);
-      console.log("ProfileTab - getMyProfileInfo - error - 2");
-      console.log(error.response);
-      console.log("ProfileTab - getMyProfileInfo - error - 3");
       if (error!=undefined && error.response != undefined && error.response.data == 'BAD_REQUEST') {
         Alert.alert(
           'Atención',
