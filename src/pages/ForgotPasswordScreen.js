@@ -58,6 +58,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 [{text: 'Ok'},],
                 { cancelable: false }
               );          
+            } else {
+              Alert.alert(
+                'Atención',
+                'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                [{text: 'Ok'},],
+                { cancelable: false }
+              );
             }
           }
         });
@@ -114,6 +121,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
                   [{text: 'Ok'},],
                   { cancelable: false }
                 );          
+              } else {
+                Alert.alert(
+                  'Atención',
+                  'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                  [{text: 'Ok'},],
+                  { cancelable: false }
+                );
               }
             }
           });

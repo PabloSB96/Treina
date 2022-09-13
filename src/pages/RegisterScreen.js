@@ -215,7 +215,7 @@ const RegisterScreen = ({ navigation }) => {
           } else {
             Alert.alert(
               'Atención',
-              'Comprueba de nuevo todos los campos o inténtalo más tarde.',
+              'Comprueba de nuevo todos los campos o inténtalo más tarde. Si el problema persiste contáctanos en: treina.ayuda@gmail.com',
               [{text: 'Ok'},],
               { cancelable: false }
             );

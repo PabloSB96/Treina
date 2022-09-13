@@ -98,7 +98,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
       setLoading(false);
       Alert.alert(
         'Atención',
-        'a) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
         [{text: 'Ok'},],
         { cancelable: false }
       );
@@ -132,7 +132,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
       setLoading(false);
       Alert.alert(
         'Atención',
-        'b) Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
         [{text: 'Ok'},],
         { cancelable: false }
       );

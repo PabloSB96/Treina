@@ -65,7 +65,7 @@ const EditProfileScreen = ({ navigation, route }) => {
       setLoading(false);
       Alert.alert(
         'Atención',
-        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
         [{text: 'Ok'},],
         { cancelable: false }
       );
@@ -130,7 +130,7 @@ const EditProfileScreen = ({ navigation, route }) => {
       setLoading(false);
       Alert.alert(
         'Atención',
-        'Ha ocurrido un problema. Inténtelo más tarde o póngase en contacto con nuestro Soporte Técnico.',
+        'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
         [{text: 'Ok'},],
         { cancelable: false }
       );

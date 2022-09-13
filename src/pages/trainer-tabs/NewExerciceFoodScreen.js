@@ -168,6 +168,13 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
             [{text: 'Ok'},],
             { cancelable: false }
           );
+        } else {
+          Alert.alert(
+            'Atención',
+            'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
         }
       }
     });
@@ -243,6 +250,13 @@ const NewExerciceFoodScreen = ({ navigation, route }) => {
           Alert.alert(
             'Atención',
             'La información es incorrecta. Comprueba que todos los campos estén cubiertos y son correctos.',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
+        } else {
+          Alert.alert(
+            'Atención',
+            'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
             [{text: 'Ok'},],
             { cancelable: false }
           );
