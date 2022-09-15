@@ -2,16 +2,17 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="1290"
+   width="1024"
    height="500"
-   viewBox="0 0 341.31249 132.29167"
+   viewBox="0 0 270.93333 132.29167"
    version="1.1"
    id="svg5"
    xml:space="preserve"
-   inkscape:export-filename="capturas.png"
+   inkscape:export-filename="capturas-1024-500.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
    inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   sodipodi:docname="capturas.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -28,7 +29,7 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.73851712"
-     inkscape:cx="354.76497"
+     inkscape:cx="639.11856"
      inkscape:cy="345.28651"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
@@ -99,15 +100,15 @@
      inkscape:label="Capa 1"
      inkscape:groupmode="layer"
      id="layer1"><rect
-       style="fill:#9a0007;fill-opacity:1;stroke-width:0.285157"
+       style="fill:#9a0007;fill-opacity:1;stroke-width:0.254131"
        id="rect2191"
-       width="340.7081"
-       height="131.84077"
-       x="0.35826299"
-       y="0.35826299"
-       ry="15.581181" /><g
+       width="270.48856"
+       height="131.89653"
+       x="0.22238871"
+       y="0.19756825"
+       ry="15.58777" /><g
        id="g6377"
-       transform="translate(2.2528648,0.53546487)"><g
+       transform="matrix(0.79390117,0,0,0.79390117,1.7710222,14.057685)"><g
          inkscape:label="Layer 1"
          id="layer1-8"
          transform="matrix(0.48565171,0,0,0.49717022,14.321437,-36.585688)"><rect
