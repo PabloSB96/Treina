@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import noResultsLogo from '../assets/icons/treina_undraw_noresults.png';
 import logoProfile from '../assets/icons/treina_undraw_profile.png';
+import logoElementHeightWeight from '../assets/icons/treina_undraw_element_heightweight.png';
 import logoElementTarget from '../assets/icons/treina_undraw_profile_element_target.png';
 import logoElementTargetFull from '../assets/icons/treina_undraw_profile_element_targetfull.png';
 import logoSexH from '../assets/icons/treina_undraw_man.png';
@@ -241,6 +242,18 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                           <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
                             <Text style={[styles.elementTitle, {}]}>Objetivo (completo)</Text>
                             <Text style={[styles.elementText,]}>{myProfile.goalFull}</Text>
+                          </View>
+                        </View>
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                          <Image
+                            style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
+                            source={logoElementHeightWeight}
+                          />
+                          <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
+                            <Text style={[styles.elementTitle, {}]}>Peso inicial (kg)</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.weight}</Text>
+                            <Text style={[styles.elementTitle, {}]}>Altura inicial (cm)</Text>
+                            <Text style={[styles.elementText,]}>{myProfile.height}</Text>
                           </View>
                         </View>
                       </View>

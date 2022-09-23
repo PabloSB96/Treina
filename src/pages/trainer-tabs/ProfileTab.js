@@ -78,6 +78,29 @@ const ProfileTab = ({ navigation, route }) => {
     });
   }
 
+  let deleteAccount = () => {
+    axios.post(`${configuration.BASE_URL}/account/delete`, {}, {
+      headers: {
+        token: route.params.userToken
+      }
+    }).then(async (response) => {
+      try {
+        await AsyncStorage.removeItem('treina.token');
+        await AsyncStorage.removeItem('treina.isTrainer');
+      } catch(e){}
+      navigation.replace('LoginScreen');
+      return ;
+    }).catch((error) => {
+      setLoading(false);
+      Alert.alert(
+        'Atención',
+        'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+    });
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -164,6 +187,26 @@ const ProfileTab = ({ navigation, route }) => {
                           )}
                         </View>
                       </View>
+
+                      <Mybutton
+                        text="Eliminar cuenta"
+                        title="Eliminar cuenta"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 50
+                        }}
+                        customClick={async () => {
+                          Alert.alert(
+                            'Atención',
+                            '¿Está seguro que desea eliminar su cuenta? Se borrarán de forma permanente sus datos.',
+                            [{text: 'Confirmar', onPress: () => {
+                              deleteAccount();
+                            }}, {text: 'Cancelar'}],
+                            { cancelable: false }
+                          );
+                        }}
+                      />
+
                       <Mybutton
                         text="Cerrar sesión"
                         title="Cerrar sesión"
