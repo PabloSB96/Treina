@@ -15,11 +15,29 @@ import { configuration } from './configuration';
 
 import noResultsLogo from './assets/icons/treina_undraw_noresults.png';
 
+import Purchases from 'react-native-purchases';
+
 const db = DatabaseConnection.getConnection();
 
 const LoginScreen = ({ navigation }) => {
+
+  /*async function initPurchases() {
+    console.log("App: initPurchases: 1");
+    if (Platform.OS === 'ios') {
+      console.log("App: initPurchases: ios: 1");
+      await Purchases.configure({apiKey: "public_ios_sdk_key"});
+      console.log("App: initPurchases: ios: 2");
+    } else if (Platform.OS === 'android') {
+      console.log("App: initPurchases: android: 1");
+      await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
+      console.log("App: initPurchases: android: 2");
+    }
+  }*/
+
   useEffect(() => {
     checkConfig();
+    //Purchases.setDebugLogsEnabled(true);
+    //initPurchases();  
   }, []);
 
   let [loading, setLoading] = useState(true);
@@ -53,6 +71,7 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let checkToken = async () => {
+    console.log("LoginScreen: checkToken: 1");
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
