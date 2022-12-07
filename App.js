@@ -47,6 +47,19 @@ async function initPurchases() {
     console.log("App: initPurchases: android: 1");
     await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
     console.log("App: initPurchases: android: 2");
+    try {
+      console.log("App: initPurchases: android: 3");
+      const offerings = await Purchases.getOfferings();
+      console.log("App: initPurchases: android: 4");
+      console.log(offerings);
+      console.log("App: initPurchases: android: 5");
+    } catch (e) {
+      console.log("\nApp: initPurchases: android: error: 1");
+      console.log(e);
+      console.log("App: initPurchases: android: error: 2");
+      console.log(JSON.stringify(e));
+      console.log("App: initPurchases: android: error: 3\n\n\n");
+    }
   }
 }
 
