@@ -41,7 +41,7 @@ async function initPurchases() {
   console.log("App: initPurchases: 1");
   if (Platform.OS === 'ios') {
     console.log("App: initPurchases: ios: 1");
-    await Purchases.configure({apiKey: "public_ios_sdk_key"});
+    await Purchases.configure({apiKey: "b8727197725d4ecb858fa2f204e28a94"});
     console.log("App: initPurchases: ios: 2");
   } else if (Platform.OS === 'android') {
     console.log("App: initPurchases: android: 1");
