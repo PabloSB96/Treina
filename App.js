@@ -11,7 +11,7 @@ const APIKeys = {
 export default function App() {
   const [currentOffering, setCurrentOffering] = useState<PurchasesOffering | null>(null);
 
-  useEffect(() => {
+  useEffect(async () => {
     const fetchData = async () => {
       const offerings = await Purchases.getOfferings();
       setCurrentOffering(offerings.current);
@@ -19,7 +19,7 @@ export default function App() {
 
     Purchases.setDebugLogsEnabled(true);
     if (Platform.OS == "android") {
-      await Purchases.configure({ apiKey: (APIKeys.google });
+      await Purchases.configure({ apiKey: APIKeys.google });
     } else {
       await Purchases.configure({ apiKey: APIKeys.apple });
     }
