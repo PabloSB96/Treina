@@ -18,6 +18,7 @@ import { Platform } from 'expo-modules-core';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Purchases from 'react-native-purchases';
 
 import logoTreina from './assets/icon.png';
 import logoGymImage from './assets/login_gym.jpeg';
@@ -33,6 +34,43 @@ const RegisterScreen = ({ navigation }) => {
   useEffect(() => {}, []);
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  async function initPurchases() {
+    setLoading(false);
+    console.log("App: initPurchases: 1");
+    if (Platform.OS === 'ios') {
+      console.log("App: initPurchases: ios: 1");
+      await Purchases.configure({apiKey: "b8727197725d4ecb858fa2f204e28a94"});
+      console.log("App: initPurchases: ios: 2");
+    } else if (Platform.OS === 'android') {
+      console.log("App: initPurchases: android: 1");
+      await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
+      console.log("App: initPurchases: android: 2");
+      try {
+        console.log("App: initPurchases: android: 3");
+        const customerInfo = await Purchases.getCustomerInfo();
+        console.log("App: initPurchases: android: 4");
+        console.log(customerInfo);
+        console.log("App: initPurchases: android: 5");
+        /*const offerings = await Purchases.getOfferings();
+        console.log("App: initPurchases: android: 4");
+        console.log(offerings);
+        console.log("App: initPurchases: android: 5");*/
+        if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
+          console.log("El usuario ya tiene una subscripción activa");
+          return ;
+        } else {
+          navigation.navigate('PaywallScreen');
+        }
+      } catch (e) {
+        console.log("\nApp: initPurchases: android: error: 1");
+        console.log(e);
+        console.log("App: initPurchases: android: error: 2");
+        console.log(JSON.stringify(e));
+        console.log("App: initPurchases: android: error: 3\n\n\n");
+      }
+    }
+  }
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -97,6 +135,7 @@ const RegisterScreen = ({ navigation }) => {
   }
 
   let doRegister = () => {
+    
 
     setLoading(true);
 
@@ -184,7 +223,8 @@ const RegisterScreen = ({ navigation }) => {
         weight: weightNumber,
         trainerCode
       }).then((response) => {
-        saveToken(response.data.token, isTrainer);
+        //saveToken(response.data.token, isTrainer);
+        initPurchases();
       }).catch((error) => {
         setLoading(false);
         if (error.response.data != undefined && error.response.data.message != undefined) {

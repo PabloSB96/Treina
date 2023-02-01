@@ -24,6 +24,9 @@ import EditProfileScreen from './src/pages/trainee-tabs/EditProfileScreen';
 import ForgotPasswordScreen from './src/pages/ForgotPasswordScreen';
 import Purchases from 'react-native-purchases';
 
+import { configuration } from './src/pages/configuration';
+import PaywallScreen from './src/pages/paywall/PaywallScreen';
+
 const Stack = createStackNavigator();
 
 // Color palette
@@ -37,31 +40,7 @@ const Stack = createStackNavigator();
 // <color name="black">#000000</color>
 // <color name="red">#d32f2f</color>
 
-async function initPurchases() {
-  console.log("App: initPurchases: 1");
-  if (Platform.OS === 'ios') {
-    console.log("App: initPurchases: ios: 1");
-    await Purchases.configure({apiKey: "b8727197725d4ecb858fa2f204e28a94"});
-    console.log("App: initPurchases: ios: 2");
-  } else if (Platform.OS === 'android') {
-    console.log("App: initPurchases: android: 1");
-    await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
-    console.log("App: initPurchases: android: 2");
-    try {
-      console.log("App: initPurchases: android: 3");
-      const offerings = await Purchases.getOfferings();
-      console.log("App: initPurchases: android: 4");
-      console.log(offerings);
-      console.log("App: initPurchases: android: 5");
-    } catch (e) {
-      console.log("\nApp: initPurchases: android: error: 1");
-      console.log(e);
-      console.log("App: initPurchases: android: error: 2");
-      console.log(JSON.stringify(e));
-      console.log("App: initPurchases: android: error: 3\n\n\n");
-    }
-  }
-}
+
 
 const App = () => {
 
@@ -104,7 +83,6 @@ const App = () => {
   }
 
   Purchases.setDebugLogsEnabled(true);
-  initPurchases();
 
   return (
     <NavigationContainer >
@@ -223,6 +201,19 @@ const App = () => {
           options={{
             headerShown: true,
             title: 'Acerca de',
+            detachPreviousScreen: false,
+            headerStyle: {
+              backgroundColor: '#d32f2f',
+            },
+            headerTintColor: '#ffffff'
+          }}
+        />
+        <Stack.Screen
+          name="PaywallScreen"
+          component={PaywallScreen}
+          options={{
+            headerShown: true,
+            title: 'Pago de subscripción',
             detachPreviousScreen: false,
             headerStyle: {
               backgroundColor: '#d32f2f',
