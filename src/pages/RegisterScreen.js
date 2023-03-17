@@ -138,12 +138,15 @@ const RegisterScreen = ({ navigation }) => {
     
 
     setLoading(true);
+    console.log("RegisterScreen - doRegister - 1");
 
     // Check device ID
     let deviceId = null;
 
     getDeviceId().then((result) => {
       deviceId = result;
+
+      console.log("RegisterScreen - doRegister - 2");
 
       // Check if values are correct
       if (email == undefined || email.trim() == "" || 
@@ -207,6 +210,7 @@ const RegisterScreen = ({ navigation }) => {
           );
         }
       }
+      console.log("RegisterScreen - doRegister - 3");
       // Call REST API Register
       axios.post(`${configuration.BASE_URL}/register`, {
         isTrainer,
@@ -224,6 +228,7 @@ const RegisterScreen = ({ navigation }) => {
         trainerCode
       }).then((response) => {
         //saveToken(response.data.token, isTrainer);
+        console.log("RegisterScreen - doRegister - 4");
         initPurchases();
       }).catch((error) => {
         setLoading(false);
@@ -237,13 +242,16 @@ const RegisterScreen = ({ navigation }) => {
             );
             return ;
           } else if (error.response.data.message == 'USER_NOT_ACTIVE') {
-            Alert.alert(
+            /*Alert.alert(
               'Atención',
               'Te has registrado como entrenador/a correctamente. Recuerda que para activar tu cuenta debes ponerte en contacto con nosotros en: treina.ayuda@gmail.com',
               [{text: 'Ok'},],
               { cancelable: false }
             );
-            navigation.goBack(null);
+            navigation.goBack(null);*/
+            setLoading(false);
+            initPurchases();
+            return ;
           } else if (error.response.data.message == 'NOT_ABLE_TO_GENERATE_CODE') { 
             Alert.alert(
               'Atención',
