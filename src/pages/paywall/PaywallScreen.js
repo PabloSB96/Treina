@@ -53,7 +53,7 @@ const PaywallScreen = ({ navigation, route }) => {
         {/* The paywall flat list displaying each package */}
         <FlatList
           data={packages}
-          renderItem={({ item }) => <PackageItem purchasePackage={item} setIsPurchasing={setIsPurchasing} />}
+          renderItem={({ item }) => <PackageItem purchasePackage={item} setIsPurchasing={setIsPurchasing} email={route.params.email} />}
           keyExtractor={(item) => item.identifier}
           ListHeaderComponent={header}
           ListHeaderComponentStyle={styles.headerFooterContainer}

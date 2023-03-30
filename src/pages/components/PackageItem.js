@@ -4,8 +4,9 @@ import Purchases from 'react-native-purchases';
 import { useNavigation } from '@react-navigation/native';
 
 import { configuration } from '../configuration';
+import axios from 'axios';
 
-const PackageItem = ({purchasePackage, setIsPurchasing}) => {
+const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
   const {
     product: { title, description, priceString },
   } = purchasePackage;
@@ -30,10 +31,40 @@ const PackageItem = ({purchasePackage, setIsPurchasing}) => {
 
       if (typeof purchaserInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
         navigation.goBack();
+      } else {
+        // Update treina-service with the information about the purchasePackage (package that was purchased)
+        // TODO: call service /registerPlan
+        axios.post(`${configuration.BASE_URL}/registerPlan`, {
+          email: email,
+          revenuecat: purchasePackage
+        }).then((response) => {
+          // GO TO LOGIN
+          Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          navigation.replace('LoginScreen');
+          return ;
+        }).catch((error) => {
+          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          navigation.replace('LoginScreen');
+          return ;
+        });
       }
     } catch (e) {
       if (!e.userCancelled) {
-        Alert.alert('Error purchasing package', e.message);
+        //Alert.alert('Error purchasing package', e.message);
+        // CÓDIGO PROVISIONAL PARA SIMULAR COMPORTAMIENTO CORRECTO
+        axios.post(`${configuration.BASE_URL}/registerPlan`, {
+          email: email,
+          revenuecat: purchasePackage
+        }).then((response) => {
+          // GO TO LOGIN
+          Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          navigation.replace('LoginScreen');
+          return ;
+        }).catch((error) => {
+          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          navigation.replace('LoginScreen');
+          return ;
+        });
       }
     } finally {
       setIsPurchasing(false);

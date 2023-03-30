@@ -60,7 +60,7 @@ const RegisterScreen = ({ navigation }) => {
           console.log("El usuario ya tiene una subscripción activa");
           return ;
         } else {
-          navigation.navigate('PaywallScreen');
+          navigation.navigate('PaywallScreen', {email: email});
         }
       } catch (e) {
         console.log("\nApp: initPurchases: android: error: 1");
@@ -228,7 +228,6 @@ const RegisterScreen = ({ navigation }) => {
         trainerCode
       }).then((response) => {
         //saveToken(response.data.token, isTrainer);
-        console.log("RegisterScreen - doRegister - 4");
         initPurchases();
       }).catch((error) => {
         setLoading(false);
@@ -261,6 +260,11 @@ const RegisterScreen = ({ navigation }) => {
             );
             return ;
           } else {
+            console.log("RegisterScreen - error - 1");
+            console.log(error);
+            console.log("RegisterScreen - error - 2");
+            console.log(JSON.stringify(error));
+            console.log("RegisterScreen - error - 3");
             Alert.alert(
               'Atención',
               'Comprueba de nuevo todos los campos o inténtalo más tarde. Si el problema persiste contáctanos en: treina.ayuda@gmail.com',
