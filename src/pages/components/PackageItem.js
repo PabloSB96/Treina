@@ -52,12 +52,13 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
       if (!e.userCancelled) {
         //Alert.alert('Error purchasing package', e.message);
         // CÓDIGO PROVISIONAL PARA SIMULAR COMPORTAMIENTO CORRECTO
-        axios.post(`${configuration.BASE_URL}/registerPlan`, {
+        axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
           email: email,
-          revenuecat: purchasePackage
+          revenuecat: purchasePackage,
+          message: JSON.stringify(e.message)
         }).then((response) => {
           // GO TO LOGIN
-          Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
           navigation.replace('LoginScreen');
           return ;
         }).catch((error) => {
