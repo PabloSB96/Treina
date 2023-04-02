@@ -72,20 +72,35 @@ const LoginScreen = ({ navigation }) => {
 
   let checkToken = async () => {
     console.log("LoginScreen: checkToken: 1");
-    try {
-      const tokenValue = await AsyncStorage.getItem('treina.token');
-      const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
-      if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
-        if (isTrainerAS) {
-          navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+    const customerInfo = await Purchases.getCustomerInfo();
+    console.log(customerInfo);
+    console.log("LoginScreen: checkToken: 2");
+    if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
+      Alert.alert(
+        'Atención',
+        'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: ayuda.treina@gmail.com',
+        [{text: 'Ok'},],
+        { cancelable: false }
+      );
+      navigation.navigate('PaywallScreen', {email: email});
+      setLoading(false);
+      return ;
+    } else {
+      try {
+        const tokenValue = await AsyncStorage.getItem('treina.token');
+        const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
+        if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
+          if (isTrainerAS) {
+            navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+          } else {
+            navigation.replace('TraineeMainScreen', {userToken: tokenValue});
+          }
         } else {
-          navigation.replace('TraineeMainScreen', {userToken: tokenValue});
+          setLoading(false);
         }
-      } else {
+      } catch(e) {
         setLoading(false);
       }
-    } catch(e) {
-      setLoading(false);
     }
   }
 
