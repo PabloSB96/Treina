@@ -33,8 +33,8 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
         navigation.goBack();
       } else {
         // Update treina-service with the information about the purchasePackage (package that was purchased)
-        // TODO: call service /registerPlan
-        axios.post(`${configuration.BASE_URL}/registerPlan`, {
+        // TODO: call service /plan/register
+        axios.post(`${configuration.BASE_URL}/plan/register`, {
           email: email,
           revenuecat: purchasePackage
         }).then((response) => {
@@ -58,11 +58,11 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
           message: JSON.stringify(e.message)
         }).then((response) => {
           // GO TO LOGIN
-          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
           navigation.replace('LoginScreen');
           return ;
         }).catch((error) => {
-          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
           navigation.replace('LoginScreen');
           return ;
         });
