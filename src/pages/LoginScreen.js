@@ -21,29 +21,11 @@ const db = DatabaseConnection.getConnection();
 
 const LoginScreen = ({ navigation }) => {
 
-  /*async function initPurchases() {
-    console.log("App: initPurchases: 1");
-    if (Platform.OS === 'ios') {
-      console.log("App: initPurchases: ios: 1");
-      await Purchases.configure({apiKey: "public_ios_sdk_key"});
-      console.log("App: initPurchases: ios: 2");
-    } else if (Platform.OS === 'android') {
-      console.log("App: initPurchases: android: 1");
-      await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
-      console.log("App: initPurchases: android: 2");
-    }
-  }*/
-
   async function initPurchases() {
-    console.log("App: initPurchases: 1");
     if (Platform.OS === 'ios') {
-      console.log("App: initPurchases: ios: 1");
       await Purchases.configure({apiKey: "b8727197725d4ecb858fa2f204e28a94"});
-      console.log("App: initPurchases: ios: 2");
     } else if (Platform.OS === 'android') {
-      console.log("App: initPurchases: android: 1");
       await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
-      console.log("App: initPurchases: android: 2");
     }
   }
 
@@ -84,26 +66,19 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let checkToken = async () => {
-    console.log("LoginScreen: checkToken: 1");
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
-      console.log("LoginScreen: checkToken: 2");
       if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
-        console.log("LoginScreen: checkToken: 3");
         if (isTrainerAS) {
-          console.log("LoginScreen: checkToken: 4");
           navigation.replace('TrainerMainScreen', {userToken: tokenValue});
         } else {
-          console.log("LoginScreen: checkToken: 5");
           navigation.replace('TraineeMainScreen', {userToken: tokenValue});
         }
       } else {
-        console.log("LoginScreen: checkToken: 6");
         setLoading(false);
       }
     } catch(e) {
-      console.log("LoginScreen: checkToken: 7");
       setLoading(false);
     }
   }
@@ -143,9 +118,6 @@ const LoginScreen = ({ navigation }) => {
       password
     }).then(async (response) => {
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log("LoginScreen: doLogin: purchase - 1");
-      console.log(customerInfo);
-      console.log("LoginScreen: doLogin: purchase - 2");
       if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
         Alert.alert(
           'Atención',
@@ -161,9 +133,6 @@ const LoginScreen = ({ navigation }) => {
       }
     }).catch(async (error) => {
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log("LoginScreen: doLogin: purchase - 1");
-      console.log(customerInfo);
-      console.log("LoginScreen: doLogin: purchase - 2");
       setLoading(false);
       if (error.response.data != undefined && error.response.data.message != undefined) {
         if(error.response.data.message == 'PASSWORD_INCORRECT') {
@@ -181,29 +150,23 @@ const LoginScreen = ({ navigation }) => {
             { cancelable: false }
           );          
         } else if (error.response.data.message == 'USER_NOT_ACTIVE') {
-          console.log("Login - error - USER_NOT_ACTIVE: 1");
           if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == 'undefined') {
-            console.log("Login - error - USER_NOT_ACTIVE: 2");
             Alert.alert(
               'Atención',
               'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
               [{text: 'Ok'},],
               { cancelable: false }
             );
-            console.log("Login - error - USER_NOT_ACTIVE: 3");
             navigation.navigate('PaywallScreen', {email: email});
             setLoading(false);
             return ;
           } else {
-            console.log("Login - error - USER_NOT_ACTIVE: 4");
             // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
             axios.post(`${configuration.BASE_URL}/plan/activate`, {
               email: email
             }).then((response) => {
-              console.log("Login - error - USER_NOT_ACTIVE: 5");
               saveToken(response.data.token);
             }).catch((error) => {
-              console.log("Login - error - USER_NOT_ACTIVE: 6");
               Alert.alert(
                 'Atención',
                 'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',

@@ -44,33 +44,6 @@ const Stack = createStackNavigator();
 
 const App = () => {
 
-  /*useEffect(() => {
-    Purchases.setDebugLogsEnabled(true);
-    //initPurchases();
-    const getPackages = async () => {
-      console.log("App: initPurchases: 1");
-      if (Platform.OS === 'ios') {
-        console.log("App: initPurchases: ios: 1");
-        await Purchases.configure({apiKey: "public_ios_sdk_key"});
-        console.log("App: initPurchases: ios: 2");
-      } else if (Platform.OS === 'android') {
-        console.log("App: initPurchases: android: 1");
-        await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
-        console.log("App: initPurchases: android: 2");
-      }
-      try {
-        const offerings = await Purchases.getOfferings();
-        if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-          console.log(offerings.current.availablePackages);
-        }
-      } catch (e) {
-        Alert.alert('Error getting offers', e.message);
-      }
-    };
-
-    getPackages();
-  }, []);*/
-
   // TODO uncomment this line
   LogBox.ignoreAllLogs();
 

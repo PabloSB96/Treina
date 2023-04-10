@@ -17,14 +17,6 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
     setIsPurchasing(true);
 
     const customerInfo = await Purchases.getCustomerInfo();
-    console.log("paywall - customerInfo - 1");
-    console.log(customerInfo);
-    console.log("paywall - customerInfo - 2");
-    // customerInfo.entitlements.active[0].productIdentifier
-
-    console.log("paywall - 1");
-    console.log(purchasePackage);
-    console.log("paywall - 2");
 
     try {
       const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);

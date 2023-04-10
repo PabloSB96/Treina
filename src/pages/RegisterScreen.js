@@ -37,25 +37,14 @@ const RegisterScreen = ({ navigation }) => {
 
   async function initPurchases() {
     setLoading(false);
-    console.log("App: initPurchases: 1");
     try {
-      console.log("App: initPurchases: android: 3");
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log("App: initPurchases: android: 4");
-      console.log(customerInfo);
-      console.log("App: initPurchases: android: 5");
       if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
-        console.log("El usuario ya tiene una subscripción activa");
         return ;
       } else {
         navigation.navigate('PaywallScreen', {email: email});
       }
     } catch (e) {
-      console.log("\nApp: initPurchases: android: error: 1");
-      console.log(e);
-      console.log("App: initPurchases: android: error: 2");
-      console.log(JSON.stringify(e));
-      console.log("App: initPurchases: android: error: 3\n\n\n");
     }
   }
 
@@ -123,15 +112,12 @@ const RegisterScreen = ({ navigation }) => {
 
   let doRegister = () => {
     setLoading(true);
-    console.log("RegisterScreen - doRegister - 1");
 
     // Check device ID
     let deviceId = null;
 
     getDeviceId().then((result) => {
       deviceId = result;
-
-      console.log("RegisterScreen - doRegister - 2");
 
       // Check if values are correct
       if (email == undefined || email.trim() == "" || 
@@ -195,7 +181,6 @@ const RegisterScreen = ({ navigation }) => {
           );
         }
       }
-      console.log("RegisterScreen - doRegister - 3");
       // Call REST API Register
       axios.post(`${configuration.BASE_URL}/register`, {
         isTrainer,
@@ -248,11 +233,6 @@ const RegisterScreen = ({ navigation }) => {
             );
             return ;
           } else {
-            console.log("RegisterScreen - error - 1");
-            console.log(error);
-            console.log("RegisterScreen - error - 2");
-            console.log(JSON.stringify(error));
-            console.log("RegisterScreen - error - 3");
             Alert.alert(
               'Atención',
               'Comprueba de nuevo todos los campos o inténtalo más tarde. Si el problema persiste contáctanos en: treina.ayuda@gmail.com',
