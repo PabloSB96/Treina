@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
 
   async function initPurchases() {
     if (Platform.OS === 'ios') {
-      await Purchases.configure({apiKey: "b8727197725d4ecb858fa2f204e28a94"});
+      await Purchases.configure({apiKey: "appl_xSMnhmixZUKQTgtGGppNYkZQciO"});
     } else if (Platform.OS === 'android') {
       await Purchases.configure({apiKey: "goog_RocYJwqosMyIbsJQQggMOGURYBc"});
     }

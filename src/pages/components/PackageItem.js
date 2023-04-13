@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, Alert, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Alert, StyleSheet, Platform } from 'react-native';
 import Purchases from 'react-native-purchases';
 import { useNavigation } from '@react-navigation/native';
 
@@ -81,7 +81,7 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
       shadowRadius: 5, 
       elevation: 3, 
       shadowColor: '#222' }]}>
-      <View style={{flex: 1, flexDirection: 'row'}}>
+      <View style={{flex: 1, flexDirection: 'row', ...Platform.select({ios: {flexDirection: 'column'}})}}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.terms}>{description}</Text>
       </View>
