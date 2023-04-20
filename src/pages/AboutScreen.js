@@ -30,7 +30,7 @@ const AboutScreen = ({ navigation, route }) => {
             />
 
             <View><Text style={[styles.label, {flex: 1, marginTop: 30}]}>Versión actual</Text></View>
-            <View><Text style={{flex: 1, marginTop: 5, fontWeight: 'bold', fontSize: 14}}>1.0.0</Text></View>
+            <View><Text style={{flex: 1, marginTop: 5, fontWeight: 'bold', fontSize: 14}}>1.0.1</Text></View>
             <View><Text style={{flex: 1, marginTop: 5, fontSize: 12}}>Versión inicial de la aplicación.</Text></View>
 
             <View><Text style={[styles.label, {flex: 1, marginTop: 40}]}>Contacto</Text></View>

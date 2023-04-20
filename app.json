@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.developm8.Treina",
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "versionCode": 14,
