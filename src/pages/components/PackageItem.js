@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
   const {
-    product: { title, description, priceString },
+    product: { title, description, priceString, identifier },
   } = purchasePackage;
 
   const navigation = useNavigation();
@@ -20,6 +20,10 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
 
     try {
       const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);
+
+      console.log("\n\nPackageItem - 1");
+      console.log(purchaserInfo);
+      console.log("PackageItem - 2\n\n");
 
       if (typeof purchaserInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
         navigation.goBack();
@@ -82,8 +86,20 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
       elevation: 3, 
       shadowColor: '#222' }]}>
       <View style={{flex: 1, flexDirection: 'row', ...Platform.select({ios: {flexDirection: 'column'}})}}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.terms}>{description}</Text>
+        {title != '' ? <Text style={styles.title}>{title}</Text> : null}
+        {title == '' && identifier == 'treina_10_1m_0w0' ? <Text style={styles.title}>Plan Básico (mensual)</Text> : null}
+        {title == '' && identifier == 'treina_15_1m_0w0' ? <Text style={styles.title}>Plan Premium (mensual)</Text> : null}
+        {title == '' && identifier == 'treina_30_1m_0w0' ? <Text style={styles.title}>Plan Empresarial (mensual)</Text> : null}
+        {title == '' && identifier == 'treina_100_1y_0w0' ? <Text style={styles.title}>Plan Básico (anual)</Text> : null}
+        {title == '' && identifier == 'treina_150_1y_0w0' ? <Text style={styles.title}>Plan Premium (anual)</Text> : null}
+        {title == '' && identifier == 'treina_300_1y_0w0' ? <Text style={styles.title}>Plan Empresarial (anual)</Text> : null}
+        {description != '' ? <Text style={styles.terms}>{description}</Text> : null}
+        {description == '' && identifier == 'treina_10_1m_0w0' ? <Text style={styles.terms}>Plan Básico - Renovación mensual</Text> : null}
+        {description == '' && identifier == 'treina_15_1m_0w0' ? <Text style={styles.terms}>Plan Premium - Renovación mensual</Text> : null}
+        {description == '' && identifier == 'treina_30_1m_0w0' ? <Text style={styles.terms}>Plan Empresarial - Renovación mensual</Text> : null}
+        {description == '' && identifier == 'treina_100_1y_0w0' ? <Text style={styles.terms}>Plan Básico - Renovación anual</Text> : null}
+        {description == '' && identifier == 'treina_150_1y_0w0' ? <Text style={styles.terms}>Plan Premium - Renovación anual</Text> : null}
+        {description == '' && identifier == 'treina_300_1y_0w0' ? <Text style={styles.terms}>Plan Empresarial - Renovación anual</Text> : null}
       </View>
       <Text style={styles.title}>{priceString}</Text>
     </Pressable>

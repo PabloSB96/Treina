@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, Text, StyleSheet, Alert, FlatList } from 'react-native';
+import { View, SafeAreaView, Text, StyleSheet, Alert, FlatList, Pressable } from 'react-native';
 import PackageItem from '../components/PackageItem';
 
 import Purchases from 'react-native-purchases';
+import { Linking } from 'react-native';
 
 const PaywallScreen = ({ navigation, route }) => {
 
@@ -18,6 +19,9 @@ const PaywallScreen = ({ navigation, route }) => {
       try {
         const offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
+          console.log(offerings.current.availablePackages);
+          console.log("\n\n\n");
+          console.log(JSON.stringify(offerings.current.availablePackages));
           setPackages(offerings.current.availablePackages);
         }
       } catch (e) {
@@ -41,9 +45,11 @@ const PaywallScreen = ({ navigation, route }) => {
 
   const footer = () => {
     return (
-      <Text style={[styles.text, {fontSize: 12}]}>
-        Términos y condiciones: https://treina.app/privacy-policy/
-      </Text>
+      <Pressable onPress={() => { Linking.openURL('https://treina.app/privacy-policy/') }}>
+        <Text style={[styles.text, {fontSize: 12, color: '#0000ff'}]}>
+          Términos y condiciones: https://treina.app/privacy-policy/
+        </Text>
+      </Pressable>
     );
   };
 
