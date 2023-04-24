@@ -25,7 +25,7 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
       console.log(purchaserInfo);
       console.log("PackageItem - 2\n\n");
 
-      if (typeof purchaserInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
+      if (typeof purchaserInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== undefined) {
         navigation.goBack();
       } else {
         // Update treina-service with the information about the purchasePackage (package that was purchased)

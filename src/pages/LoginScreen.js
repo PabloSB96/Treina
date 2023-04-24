@@ -118,7 +118,17 @@ const LoginScreen = ({ navigation }) => {
       password
     }).then(async (response) => {
       const customerInfo = await Purchases.getCustomerInfo();
-      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
+      console.log("LoginScreen - doLogin - 1");
+      console.log(customerInfo);
+      console.log("LoginScreen - doLogin - 2");
+      console.log(JSON.stringify(customerInfo));
+      console.log("LoginScreen - doLogin - 3");
+      console.log(customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]);
+      console.log("LoginScreen - doLogin - 3.2");
+      console.log(JSON.stringify(customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]));
+      console.log("LoginScreen - doLogin - 3.3");
+      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== undefined) {
+        console.log("LoginScreen - doLogin - 4");
         Alert.alert(
           'Atención',
           'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
@@ -129,6 +139,7 @@ const LoginScreen = ({ navigation }) => {
         setLoading(false);
         return ;
       } else {
+        console.log("LoginScreen - doLogin - 5");
         saveToken(response.data.token);
       }
     }).catch(async (error) => {
