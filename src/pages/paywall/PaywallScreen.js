@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, Text, StyleSheet, Alert, FlatList, Pressable } from 'react-native';
+import { View, SafeAreaView, Text, StyleSheet, Alert, FlatList, Pressable, ActivityIndicator } from 'react-native';
 import PackageItem from '../components/PackageItem';
 
 import Purchases from 'react-native-purchases';
@@ -55,6 +55,14 @@ const PaywallScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {isPurchasing ? (
+        <View style={[styles.container, styles.horizontal, styles.loading]}>
+          <View style={{justifyContent: 'space-around'}}>
+           <ActivityIndicator size="large" color="#d32f2f" />
+            <Text style={{color: '#d32f2f'}}>El proceso de suscripción se ha iniciado. Esto podría tardar hasta unos minutos...</Text>
+          </View>
+        </View>
+      ): null}
       <View style={styles.page}>
         {/* The paywall flat list displaying each package */}
         <FlatList
@@ -74,6 +82,22 @@ const PaywallScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    flex: 1,
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    zIndex: 2,
+    backgroundColor: '#ffffff00'
+  },
+  horizontal: {
+    justifyContent: 'space-around',
+    padding: 40,
+  },
+  loading: {
+    backgroundColor: '#fff'
+  },
   /*container: {
     position: 'absolute',
     flex: 1,
