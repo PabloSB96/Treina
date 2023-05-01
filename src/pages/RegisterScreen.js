@@ -36,24 +36,14 @@ const RegisterScreen = ({ navigation }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   async function initPurchases() {
-    console.log("RegisterScreen - initPurchases - 1");
     setLoading(false);
-    console.log("RegisterScreen - initPurchases - 2");
     try {
-      console.log("RegisterScreen - initPurchases - 3");
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log("RegisterScreen - initPurchases - 4");
-      console.log(customerInfo);
-      console.log("RegisterScreen - initPurchases - 5");
-      console.log(JSON.stringify(customerInfo));
-      console.log("RegisterScreen - initPurchases - 6");
       if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
-        console.log("RegisterScreen - initPurchases - 7 : return");
         Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
         navigation.replace('LoginScreen');
         return ;
       } else {
-        console.log("RegisterScreen - initPurchases - 8 : go to paywall");
         navigation.navigate('PaywallScreen', {email: email});
       }
     } catch (e) {
@@ -209,18 +199,9 @@ const RegisterScreen = ({ navigation }) => {
         weight: weightNumber,
         trainerCode
       }).then((response) => {
-        console.log("RegisterScreen - doRegister - 1");
-        console.log(response);
-        console.log("RegisterScreen - doRegister - 2");
-        console.log(JSON.stringify(response));
-        console.log("RegisterScreen - doRegister - 3");
-        console.log(isTrainer);
-        console.log("RegisterScreen - doRegister - 4");
         if (isTrainer) {
-          console.log("RegisterScreen - doRegister - 5");
           initPurchases();
         } else {
-          console.log("RegisterScreen - doRegister - 6");
           saveToken(response.data.token, isTrainer);
         }
       }).catch((error) => {

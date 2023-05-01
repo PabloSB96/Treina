@@ -19,9 +19,6 @@ const PaywallScreen = ({ navigation, route }) => {
       try {
         const offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-          console.log(offerings.current.availablePackages);
-          console.log("\n\n\n");
-          console.log(JSON.stringify(offerings.current.availablePackages));
           setPackages(offerings.current.availablePackages);
         }
       } catch (e) {
@@ -59,7 +56,7 @@ const PaywallScreen = ({ navigation, route }) => {
         <View style={[styles.container, styles.horizontal, styles.loading]}>
           <View style={{justifyContent: 'space-around'}}>
            <ActivityIndicator size="large" color="#d32f2f" />
-            <Text style={{color: '#d32f2f'}}>El proceso de suscripción se ha iniciado. Esto podría tardar hasta unos minutos...</Text>
+            <Text style={{color: '#d32f2f'}}>El proceso de suscripción se ha iniciado. Esto podría tardar hasta unos minutos, por favor espera, porque podrías interrumpir el proceso de suscripción...</Text>
           </View>
         </View>
       ): null}

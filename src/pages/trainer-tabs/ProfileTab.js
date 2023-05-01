@@ -65,11 +65,6 @@ const ProfileTab = ({ navigation, route }) => {
       }
     }).then((response) => {
       setLoading(false);
-      console.log("\n\n\n");
-      console.log(response);
-      console.log("\n");
-      console.log(response.data);
-      console.log("\n\n\n");
       setMyProfile(response.data);
       return ;
     }).catch((error) => {

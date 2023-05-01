@@ -118,19 +118,7 @@ const LoginScreen = ({ navigation }) => {
       password
     }).then(async (response) => {
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log("LoginScreen - doLogin - 1");
-      console.log(customerInfo);
-      console.log("LoginScreen - doLogin - 2");
-      console.log(JSON.stringify(customerInfo));
-      console.log("LoginScreen - doLogin - 3");
-      console.log(customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]);
-      console.log("LoginScreen - doLogin - 3.2");
-      console.log(JSON.stringify(customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]));
-      console.log("LoginScreen - doLogin - 3.3");
-      console.log(customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined);
-      console.log("LoginScreen - doLogin - 3.4");
-      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
-        console.log("LoginScreen - doLogin - 5");
+      if (customerInfo != null && customerInfo.entitlements != null && typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
         let standardProductTitle = '';
         let standardProductPriceString = '';
         switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
@@ -159,16 +147,17 @@ const LoginScreen = ({ navigation }) => {
             standardProductPriceString = '300,00 €/mes';
             break;
         }
+        let revenuecatDataObj = {
+          product: {
+            identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
+            title: standardProductTitle,
+            priceString: standardProductPriceString,
+            customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+          }
+        };
         axios.post(`${configuration.BASE_URL}/plan/register`, {
           email: email,
-          revenuecat: {
-            product: {
-              identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
-              title: standardProductTitle,
-              priceString: standardProductPriceString,
-              customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
-            }
-          }
+          revenuecat: revenuecatDataObj
         }).then((response) => {
           // GO TO LOGIN
           saveToken(response.data.token);
@@ -179,7 +168,6 @@ const LoginScreen = ({ navigation }) => {
         });
         
       } else {
-        console.log("LoginScreen - doLogin - 4");
         Alert.alert(
           'Atención',
           'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',

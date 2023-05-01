@@ -21,18 +21,29 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
     try {
       const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);
 
-      console.log("\n\nPackageItem - 1");
-      console.log(purchaserInfo);
-      console.log("PackageItem - 2\n\n");
+      let customerInfo = await Purchases.getCustomerInfo();
 
-      if (typeof purchaserInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== undefined) {
-        navigation.goBack();
+      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+        axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
+          email: email,
+          revenuecat: purchasePackage,
+          message: 'Error: developm8.com.treina: Error in PackageItem, typeof customerInfo.entitlments.active[configuration.ENTITLMENT_ID] == undefined, it seems that an error ocurred. purchasePackage object attached as revenueCat object.'
+        }).then((response) => {
+          // GO TO LOGIN
+          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+          navigation.replace('LoginScreen');
+          return ;
+        }).catch((error) => {
+          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+          navigation.replace('LoginScreen');
+          return ;
+        });
       } else {
         // Update treina-service with the information about the purchasePackage (package that was purchased)
         // TODO: call service /plan/register
         axios.post(`${configuration.BASE_URL}/plan/register`, {
           email: email,
-          revenuecat: purchasePackage
+          revenuecat: customerInfo
         }).then((response) => {
           // GO TO LOGIN
           Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
