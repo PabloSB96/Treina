@@ -39,8 +39,8 @@ const RegisterScreen = ({ navigation }) => {
     setLoading(false);
     try {
       const customerInfo = await Purchases.getCustomerInfo();
-      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] !== 'undefined') {
-        Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+      if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+        Alert.alert('Detalles de su cuenta', 'Su cuenta está activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
         navigation.replace('LoginScreen');
         return ;
       } else {
@@ -234,6 +234,16 @@ const RegisterScreen = ({ navigation }) => {
               { cancelable: false }
             );
             return ;
+          } else if (error.response.data.message == 'USER_ALREADY_EXISTS') {
+            if (isTrainer) {
+              setLoading(false);
+              initPurchases();
+              return ;
+            } else {
+              setLoading(false);
+              Alert.alert('Atención', '¡Este email ya está en uso! Comprueba que es correcto o ve atrás e inicia sesión');
+              return ;
+            }
           } else {
             Alert.alert(
               'Atención',
