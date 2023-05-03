@@ -117,65 +117,70 @@ const LoginScreen = ({ navigation }) => {
       email: email.trim().toLowerCase(),
       password
     }).then(async (response) => {
-      const customerInfo = await Purchases.getCustomerInfo();
-      if (customerInfo != null && customerInfo.entitlements != null && typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
-        let standardProductTitle = '';
-        let standardProductPriceString = '';
-        switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
-          case 'treina_10_1m_0w0':
-            standardProductTitle = 'Plan Básico (mensual)';
-            standardProductPriceString = '9,99 €/mes';
-            break;
-          case 'treina_15_1m_0w0':
-            standardProductTitle = 'Plan Premium (mensual)';
-            standardProductPriceString = '14,99 €/mes';
-            break;
-          case 'treina_30_1m_0w0':
-            standardProductTitle = 'Plan Empresarial (mensual)';
-            standardProductPriceString = '29,99 €/mes';
-            break;
-          case 'treina_100_1y_0w0':
-            standardProductTitle = 'Plan Básico (anual)';
-            standardProductPriceString = '99,99 €/mes';
-            break;
-          case 'treina_150_1y_0w0':
-            standardProductTitle = 'Plan Premium (anual)';
-            standardProductPriceString = '150,00 €/mes';
-            break;
-          case 'treina_300_1y_0w0':
-            standardProductTitle = 'Plan Empresarial (anual)';
-            standardProductPriceString = '300,00 €/mes';
-            break;
-        }
-        let revenuecatDataObj = {
-          product: {
-            identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
-            title: standardProductTitle,
-            priceString: standardProductPriceString,
-            customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+      if (isTrainer) {
+        const customerInfo = await Purchases.getCustomerInfo();
+        if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+          let standardProductTitle = '';
+          let standardProductPriceString = '';
+          switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
+            case 'treina_10_1m_0w0':
+              standardProductTitle = 'Plan Básico (mensual)';
+              standardProductPriceString = '9,99 €/mes';
+              break;
+            case 'treina_15_1m_0w0':
+              standardProductTitle = 'Plan Premium (mensual)';
+              standardProductPriceString = '14,99 €/mes';
+              break;
+            case 'treina_30_1m_0w0':
+              standardProductTitle = 'Plan Empresarial (mensual)';
+              standardProductPriceString = '29,99 €/mes';
+              break;
+            case 'treina_100_1y_0w0':
+              standardProductTitle = 'Plan Básico (anual)';
+              standardProductPriceString = '99,99 €/mes';
+              break;
+            case 'treina_150_1y_0w0':
+              standardProductTitle = 'Plan Premium (anual)';
+              standardProductPriceString = '150,00 €/mes';
+              break;
+            case 'treina_300_1y_0w0':
+              standardProductTitle = 'Plan Empresarial (anual)';
+              standardProductPriceString = '300,00 €/mes';
+              break;
           }
-        };
-        axios.post(`${configuration.BASE_URL}/plan/register`, {
-          email: email,
-          revenuecat: revenuecatDataObj
-        }).then((response) => {
-          // GO TO LOGIN
-          saveToken(response.data.token);
+          let revenuecatDataObj = {
+            product: {
+              identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
+              title: standardProductTitle,
+              priceString: standardProductPriceString,
+              customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+            }
+          };
+          axios.post(`${configuration.BASE_URL}/plan/register`, {
+            email: email,
+            revenuecat: revenuecatDataObj
+          }).then((response) => {
+            // GO TO LOGIN
+            saveToken(response.data.token);
+            return ;
+          }).catch((error) => {
+            saveToken(response.data.token);
+            return ;
+          });
+          
+        } else {
+          Alert.alert(
+            'Atención',
+            'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+            [{text: 'Ok'},],
+            { cancelable: false }
+          );
+          navigation.navigate('PaywallScreen', {email: email});
+          setLoading(false);
           return ;
-        }).catch((error) => {
-          saveToken(response.data.token);
-          return ;
-        });
-        
+        }
       } else {
-        Alert.alert(
-          'Atención',
-          'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
-          [{text: 'Ok'},],
-          { cancelable: false }
-        );
-        navigation.navigate('PaywallScreen', {email: email});
-        setLoading(false);
+        saveToken(response.data.token);
         return ;
       }
     }).catch(async (error) => {
