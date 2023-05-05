@@ -42,11 +42,18 @@ const PaywallScreen = ({ navigation, route }) => {
 
   const footer = () => {
     return (
-      <Pressable onPress={() => { Linking.openURL('https://treina.app/privacy-policy/') }}>
-        <Text style={[styles.text, {fontSize: 12, color: '#0000ff'}]}>
-          Términos y condiciones: https://treina.app/privacy-policy/
-        </Text>
-      </Pressable>
+      <View>
+        <Pressable onPress={() => { Linking.openURL('https://treina.app/privacy-policy/') }}>
+          <Text style={[styles.text, {fontSize: 12, color: '#0000ff'}]}>
+            Términos y condiciones: https://treina.app/privacy-policy/
+          </Text>
+        </Pressable>
+        <Pressable onPress={() => { Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/') }}>
+          <Text style={[styles.text, {fontSize: 12, color: '#0000ff'}]}>
+            Términos de uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+          </Text>
+        </Pressable>
+      </View>
     );
   };
 

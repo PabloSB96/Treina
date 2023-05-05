@@ -169,15 +169,20 @@ const LoginScreen = ({ navigation }) => {
           });
           
         } else {
-          Alert.alert(
-            'Atención',
-            'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
-            [{text: 'Ok'},],
-            { cancelable: false }
-          );
-          navigation.navigate('PaywallScreen', {email: email});
-          setLoading(false);
-          return ;
+          const restore = await Purchases.restorePurchases();
+          if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+            // TODO HACER LO MISMO QUE ARRIBA DE CARGAR Y REGISTRAR EL PLAN DE NUEVO Y ESAS COSAS.
+          } else {
+            Alert.alert(
+              'Atención',
+              'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+              [{text: 'Ok'},],
+              { cancelable: false }
+            );
+            navigation.navigate('PaywallScreen', {email: email});
+            setLoading(false);
+            return ;
+          }
         }
       } else {
         saveToken(response.data.token);
