@@ -19,10 +19,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.developm8.Treina",
-      "buildNumber": "4"
+      "buildNumber": "5"
     },
     "android": {
-      "versionCode": 17,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
