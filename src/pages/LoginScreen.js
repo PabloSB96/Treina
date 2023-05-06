@@ -118,7 +118,7 @@ const LoginScreen = ({ navigation }) => {
       password
     }).then(async (response) => {
       if (isTrainer) {
-        const customerInfo = await Purchases.getCustomerInfo();
+        let customerInfo = await Purchases.getCustomerInfo();
         if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
           let standardProductTitle = '';
           let standardProductPriceString = '';
