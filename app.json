@@ -2,7 +2,7 @@
   "expo": {
     "name": "Treina",
     "slug": "Treina",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.developm8.Treina",
-      "buildNumber": "6"
+      "buildNumber": "1"
     },
     "android": {
       "versionCode": 19,
