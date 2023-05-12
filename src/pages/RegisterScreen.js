@@ -183,6 +183,7 @@ const RegisterScreen = ({ navigation }) => {
           );
         }
       }
+      console.log("\n\n\nRegisterScreen - 1");
       // Call REST API Register
       axios.post(`${configuration.BASE_URL}/register`, {
         isTrainer,
@@ -199,12 +200,16 @@ const RegisterScreen = ({ navigation }) => {
         weight: weightNumber,
         trainerCode
       }).then((response) => {
+        console.log("RegisterScreen - 2");
         if (isTrainer) {
           initPurchases();
         } else {
           saveToken(response.data.token, isTrainer);
         }
       }).catch((error) => {
+        console.log("RegisterScreen - 3");
+        console.log(JSON.stringify(error));
+        console.log("RegisterScreen - 4");
         setLoading(false);
         if (error.response.data != undefined && error.response.data.message != undefined) {
           if (error.response.data.message == 'TRAINER_CODE_NOT_EXISTS') {
@@ -235,15 +240,9 @@ const RegisterScreen = ({ navigation }) => {
             );
             return ;
           } else if (error.response.data.message == 'USER_ALREADY_EXISTS') {
-            if (isTrainer) {
-              setLoading(false);
-              initPurchases();
-              return ;
-            } else {
-              setLoading(false);
-              Alert.alert('Atención', '¡Este email ya está en uso! Comprueba que es correcto o ve atrás e inicia sesión');
-              return ;
-            }
+            setLoading(false);
+            Alert.alert('Atención', '¡Este email ya está en uso! Comprueba que es correcto o ve atrás e inicia sesión');
+            return ;
           } else {
             Alert.alert(
               'Atención',

@@ -117,59 +117,25 @@ const LoginScreen = ({ navigation }) => {
       email: email.trim().toLowerCase(),
       password
     }).then(async (response) => {
+      console.log("\n\n\nLoginScreen - 1");
+      console.log(JSON.stringify(response));
+      console.log("LoginScreen - 2\n\n\n");
       if (isTrainer) {
-        let customerInfo = await Purchases.getCustomerInfo();
-        if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
-          let standardProductTitle = '';
-          let standardProductPriceString = '';
-          switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
-            case 'treina_10_1m_0w0':
-              standardProductTitle = 'Plan Básico (mensual)';
-              standardProductPriceString = '9,99 €/mes';
-              break;
-            case 'treina_15_1m_0w0':
-              standardProductTitle = 'Plan Premium (mensual)';
-              standardProductPriceString = '14,99 €/mes';
-              break;
-            case 'treina_30_1m_0w0':
-              standardProductTitle = 'Plan Empresarial (mensual)';
-              standardProductPriceString = '29,99 €/mes';
-              break;
-            case 'treina_100_1y_0w0':
-              standardProductTitle = 'Plan Básico (anual)';
-              standardProductPriceString = '99,99 €/mes';
-              break;
-            case 'treina_150_1y_0w0':
-              standardProductTitle = 'Plan Premium (anual)';
-              standardProductPriceString = '150,00 €/mes';
-              break;
-            case 'treina_300_1y_0w0':
-              standardProductTitle = 'Plan Empresarial (anual)';
-              standardProductPriceString = '300,00 €/mes';
-              break;
-          }
-          let revenuecatDataObj = {
-            product: {
-              identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
-              title: standardProductTitle,
-              priceString: standardProductPriceString,
-              customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
-            }
-          };
-          axios.post(`${configuration.BASE_URL}/plan/register`, {
-            email: email,
-            revenuecat: revenuecatDataObj
-          }).then((response) => {
-            // GO TO LOGIN
-            saveToken(response.data.token);
-            return ;
-          }).catch((error) => {
-            saveToken(response.data.token);
-            return ;
-          });
-          
+        let date2DaysInFutureFromToday = new Date((new Date()).getTime() + 1000*60*60*24*2);
+        console.log("LoginScreen - 3");
+        console.log(response.data.isInTrial);
+        console.log((new Date(response.data.trialStartDate)).getTime());
+        console.log(date2DaysInFutureFromToday.getTime());
+        console.log(response.data.isInTrial == true);
+        console.log((new Date(response.data.trialStartDate)).getTime() < date2DaysInFutureFromToday.getTime());
+        console.log("LoginScreen - 4\n\n");
+        if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() < date2DaysInFutureFromToday.getTime()) {
+          // user still in trial, so can log in
+          saveToken(response.data.token);
+          return ;
         } else {
-          customerInfo = await Purchases.restorePurchases();
+          // user without plan or out of trial. Should purchase a suscription
+          let customerInfo = await Purchases.getCustomerInfo();
           if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
             let standardProductTitle = '';
             let standardProductPriceString = '';
@@ -218,16 +184,68 @@ const LoginScreen = ({ navigation }) => {
               saveToken(response.data.token);
               return ;
             });
+            
           } else {
-            Alert.alert(
-              'Atención',
-              'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
-              [{text: 'Ok'},],
-              { cancelable: false }
-            );
-            navigation.navigate('PaywallScreen', {email: email});
-            setLoading(false);
-            return ;
+            customerInfo = await Purchases.restorePurchases();
+            if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+              let standardProductTitle = '';
+              let standardProductPriceString = '';
+              switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
+                case 'treina_10_1m_0w0':
+                  standardProductTitle = 'Plan Básico (mensual)';
+                  standardProductPriceString = '9,99 €/mes';
+                  break;
+                case 'treina_15_1m_0w0':
+                  standardProductTitle = 'Plan Premium (mensual)';
+                  standardProductPriceString = '14,99 €/mes';
+                  break;
+                case 'treina_30_1m_0w0':
+                  standardProductTitle = 'Plan Empresarial (mensual)';
+                  standardProductPriceString = '29,99 €/mes';
+                  break;
+                case 'treina_100_1y_0w0':
+                  standardProductTitle = 'Plan Básico (anual)';
+                  standardProductPriceString = '99,99 €/mes';
+                  break;
+                case 'treina_150_1y_0w0':
+                  standardProductTitle = 'Plan Premium (anual)';
+                  standardProductPriceString = '150,00 €/mes';
+                  break;
+                case 'treina_300_1y_0w0':
+                  standardProductTitle = 'Plan Empresarial (anual)';
+                  standardProductPriceString = '300,00 €/mes';
+                  break;
+              }
+              let revenuecatDataObj = {
+                product: {
+                  identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
+                  title: standardProductTitle,
+                  priceString: standardProductPriceString,
+                  customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+                }
+              };
+              axios.post(`${configuration.BASE_URL}/plan/register`, {
+                email: email,
+                revenuecat: revenuecatDataObj
+              }).then((response) => {
+                // GO TO LOGIN
+                saveToken(response.data.token);
+                return ;
+              }).catch((error) => {
+                saveToken(response.data.token);
+                return ;
+              });
+            } else {
+              Alert.alert(
+                'Atención',
+                'Hemos detectado que no tienes una suscripción activa. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+                [{text: 'Ok'},],
+                { cancelable: false }
+              );
+              navigation.navigate('PaywallScreen', {email: email});
+              setLoading(false);
+              return ;
+            }
           }
         }
       } else {

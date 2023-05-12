@@ -181,7 +181,11 @@ const ProfileTab = ({ navigation, route }) => {
                         <View style={{flex: 3, marginTop: 'auto', marginBottom: 'auto'}}>
                           <Text style={[styles.elementTitle, {}]}>Plan de la cuenta</Text>
                           {myProfile.plan == undefined ? (
-                            <Text style={[styles.elementText,]}>Ninguno.</Text>
+                            <View>
+                              {myProfile.isInTrial ? (
+                                <Text style={[styles.elementText,]}>Plan de prueba</Text>
+                              ) : null}
+                            </View>
                           ) : (
                             <Text style={[styles.elementText,]}>{myProfile.plan.title}</Text>
                           )}

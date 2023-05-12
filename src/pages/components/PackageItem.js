@@ -16,66 +16,89 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
   const onSelection = async () => {
     setIsPurchasing(true);
 
-    const customerInfo = await Purchases.getCustomerInfo();
+    console.log("\n\n\nPackageItem - 1");
+    console.log("identifier: " + identifier);
+    console.log("description: " + description);
+    console.log("priceString: " + priceString);
+    console.log("email: " + email);
+    console.log("PackageItem - 2\n\n\n");
+    if (identifier == configuration.TRIAL_ID) {
+      // user purchased trial package
+      // just register the trial with specific end point
+      console.log("\n\n\nPackageItem - register /plan/trial\n\n\n");
+      axios.post(`${configuration.BASE_URL}/plan/trial`, {
+        email: email
+      }).then((response) => {
+        // GO TO LOGIN
+        Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a probar Treina! Recuérda que tienes ' + configuration.TRIAL_NUMBER_DAYS + ' días de prueba. Luego podrás suscribirte a uno de los planes y continuar usando la misma información que ya hayas introducido en Treina.');
+        navigation.replace('LoginScreen');
+        return ;
+      }).catch((error) => {
+        Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no hemos podido registrar su plan de prueba. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+        navigation.replace('LoginScreen');
+        return ;
+      });
+    } else {
+      const customerInfo = await Purchases.getCustomerInfo();
+      try {
+        const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);
 
-    try {
-      const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);
+        let customerInfo = await Purchases.getCustomerInfo();
 
-      let customerInfo = await Purchases.getCustomerInfo();
-
-      if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
-        axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
-          email: email,
-          revenuecat: purchasePackage,
-          message: 'Error: developm8.com.treina: Error in PackageItem, typeof customerInfo.entitlments.active[configuration.ENTITLMENT_ID] == undefined, it seems that an error ocurred. purchasePackage object attached as revenueCat object.'
-        }).then((response) => {
-          // GO TO LOGIN
-          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
-          navigation.replace('LoginScreen');
-          return ;
-        }).catch((error) => {
-          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
-          navigation.replace('LoginScreen');
-          return ;
-        });
-      } else {
-        // Update treina-service with the information about the purchasePackage (package that was purchased)
-        // TODO: call service /plan/register
-        axios.post(`${configuration.BASE_URL}/plan/register`, {
-          email: email,
-          revenuecat: customerInfo
-        }).then((response) => {
-          // GO TO LOGIN
-          Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
-          navigation.replace('LoginScreen');
-          return ;
-        }).catch((error) => {
-          Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
-          navigation.replace('LoginScreen');
-          return ;
-        });
+        if (typeof customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+          axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
+            email: email,
+            revenuecat: purchasePackage,
+            message: 'Error: developm8.com.treina: Error in PackageItem, typeof customerInfo.entitlments.active[configuration.ENTITLMENT_ID] == undefined, it seems that an error ocurred. purchasePackage object attached as revenueCat object.'
+          }).then((response) => {
+            // GO TO LOGIN
+            Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+            navigation.replace('LoginScreen');
+            return ;
+          }).catch((error) => {
+            Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+            navigation.replace('LoginScreen');
+            return ;
+          });
+        } else {
+          // Update treina-service with the information about the purchasePackage (package that was purchased)
+          // TODO: call service /plan/register
+          axios.post(`${configuration.BASE_URL}/plan/register`, {
+            email: email,
+            revenuecat: customerInfo
+          }).then((response) => {
+            // GO TO LOGIN
+            Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+            navigation.replace('LoginScreen');
+            return ;
+          }).catch((error) => {
+            Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
+            navigation.replace('LoginScreen');
+            return ;
+          });
+        }
+      } catch (e) {
+        if (!e.userCancelled) {
+          //Alert.alert('Error purchasing package', e.message);
+          // CÓDIGO PROVISIONAL PARA SIMULAR COMPORTAMIENTO CORRECTO
+          axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
+            email: email,
+            revenuecat: purchasePackage,
+            message: JSON.stringify(e.message)
+          }).then((response) => {
+            // GO TO LOGIN
+            Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+            navigation.replace('LoginScreen');
+            return ;
+          }).catch((error) => {
+            Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
+            navigation.replace('LoginScreen');
+            return ;
+          });
+        }
+      } finally {
+        setIsPurchasing(false);
       }
-    } catch (e) {
-      if (!e.userCancelled) {
-        //Alert.alert('Error purchasing package', e.message);
-        // CÓDIGO PROVISIONAL PARA SIMULAR COMPORTAMIENTO CORRECTO
-        axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
-          email: email,
-          revenuecat: purchasePackage,
-          message: JSON.stringify(e.message)
-        }).then((response) => {
-          // GO TO LOGIN
-          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
-          navigation.replace('LoginScreen');
-          return ;
-        }).catch((error) => {
-          Alert.alert('Ha ocurrido un problema', 'Su cuenta no ha sido activada porque no te has podido suscribir a ningún plan. Inicia sesión e intenta volver a suscribirte. En caso de que este problema se repita, contacta con nosotros en: treina.ayuda@gmail.com');
-          navigation.replace('LoginScreen');
-          return ;
-        });
-      }
-    } finally {
-      setIsPurchasing(false);
     }
   };
 
@@ -112,7 +135,11 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email}) => {
         {description == '' && identifier == 'treina_150_1y_0w0' ? <Text style={styles.terms}>Plan Premium - Renovación anual</Text> : null}
         {description == '' && identifier == 'treina_300_1y_0w0' ? <Text style={styles.terms}>Plan Empresarial - Renovación anual</Text> : null}
       </View>
-      <Text style={styles.title}>{priceString}</Text>
+      {identifier == configuration.TRIAL_ID ? (
+        <View style={styles.labelFree}><Text style={styles.titleFree}>Gratis</Text></View>
+      ) : (
+        <Text style={styles.title}>{priceString}</Text>
+      )}
     </Pressable>
   );
 };
@@ -129,6 +156,19 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  labelFree: {
+    backgroundColor: '#cc0000',
+    fontWeight: 'bold',
+    height: 30,
+    padding: 5,
+    paddingHorizontal: 20,
+    borderRadius: 10
+  },
+  titleFree: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },

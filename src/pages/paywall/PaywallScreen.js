@@ -4,6 +4,7 @@ import PackageItem from '../components/PackageItem';
 
 import Purchases from 'react-native-purchases';
 import { Linking } from 'react-native';
+import { configuration } from '../configuration';
 
 const PaywallScreen = ({ navigation, route }) => {
 
@@ -16,9 +17,23 @@ const PaywallScreen = ({ navigation, route }) => {
   useEffect(() => {
     // Get current available packages
     const getPackages = async () => {
+      console.log("\n\n\nPaywallScreen - 1");
       try {
-        const offerings = await Purchases.getOfferings();
+        let offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
+          let trial = {
+            product: {
+              identifier: configuration.TRIAL_ID,
+              title: 'Prueba de 3 días', 
+              description: 'Prueba gratis la aplicación durante 3 días', 
+              priceString: '0.00 €'
+            },
+            identifier: "TRIAL"
+          };
+          offerings.current.availablePackages.splice(0, 0, trial);
+          console.log("PaywallScreen - 2");
+          console.log(JSON.stringify(offerings.current.availablePackages));
+          console.log("PaywallScreen - 3");
           setPackages(offerings.current.availablePackages);
         }
       } catch (e) {
