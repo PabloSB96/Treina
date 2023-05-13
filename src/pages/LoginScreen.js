@@ -66,19 +66,164 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let checkToken = async () => {
+    console.log("LoginScreen - checkToken - 1");
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
       if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
+        console.log("LoginScreen - checkToken - 2");
         if (isTrainerAS) {
-          navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+          console.log("LoginScreen - checkToken - 3");
+          // check if user is in trial or needs to purchase something.
+          axios.post(`${configuration.BASE_URL}/plan/check`, {}, {
+            headers: {
+              token: tokenValue
+            }
+          }).then(async (response) => {
+            // check if he has a App Store valid subscription
+            console.log("LoginScreen - checkToken - 4");
+            if (response != undefined && response.data != undefined && response.data.message && response.data.message == 'TRIAL_ACTIVE') {
+              navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+              return ;
+            } else {
+              const customerInfo = await Purchases.getCustomerInfo();
+              if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+                console.log("LoginScreen - checkToken - 5");
+                Alert.alert(
+                  'Atención',
+                  'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
+                  [{text: 'Ok'},],
+                  { cancelable: false }
+                );
+                navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
+                setLoading(false);
+                return ;
+              } else {
+                console.log("LoginScreen - checkToken - 6");
+                // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
+                axios.post(`${configuration.BASE_URL}/plan/activate`, {
+                  email: email
+                }).then((response) => {
+                  console.log("LoginScreen - checkToken - 7");
+                  let standardProductTitle = '';
+                  let standardProductPriceString = '';
+                  switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
+                    case 'treina_10_1m_0w0':
+                      standardProductTitle = 'Plan Básico (mensual)';
+                      standardProductPriceString = '9,99 €/mes';
+                      break;
+                    case 'treina_15_1m_0w0':
+                      standardProductTitle = 'Plan Premium (mensual)';
+                      standardProductPriceString = '14,99 €/mes';
+                      break;
+                    case 'treina_30_1m_0w0':
+                      standardProductTitle = 'Plan Empresarial (mensual)';
+                      standardProductPriceString = '29,99 €/mes';
+                      break;
+                    case 'treina_100_1y_0w0':
+                      standardProductTitle = 'Plan Básico (anual)';
+                      standardProductPriceString = '99,99 €/mes';
+                      break;
+                    case 'treina_150_1y_0w0':
+                      standardProductTitle = 'Plan Premium (anual)';
+                      standardProductPriceString = '150,00 €/mes';
+                      break;
+                    case 'treina_300_1y_0w0':
+                      standardProductTitle = 'Plan Empresarial (anual)';
+                      standardProductPriceString = '300,00 €/mes';
+                      break;
+                  }
+                  axios.post(`${configuration.BASE_URL}/plan/register`, {
+                    email: email,
+                    revenuecat: {
+                      product: {
+                        identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
+                        title: standardProductTitle,
+                        priceString: standardProductPriceString,
+                        customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+                      }
+                    }
+                  }).then((response) => {
+                    // GO TO LOGIN
+                    console.log("LoginScreen - checkToken - 8");
+                    saveToken(response.data.token);
+                    return ;
+                  }).catch((error) => {
+                    console.log("LoginScreen - checkToken - 9");
+                    saveToken(response.data.token);
+                    return ;
+                  });
+                }).catch((error) => {
+                  console.log("LoginScreen - checkToken - 10");
+                  console.log(error);
+                  console.log("LoginScreen - checkToken - 11");
+                  console.log(JSON.stringify(error));
+                  console.log("LoginScreen - checkToken - 12");
+                  Alert.alert(
+                    'Atención',
+                    'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                    [{text: 'Ok'},],
+                    { cancelable: false }
+                  );
+                });
+              }
+            }
+          }).catch((error) => {
+            console.log("LoginScreen - checkToken - 13");
+            console.log(error);
+            console.log("LoginScreen - checkToken - 14");
+            console.log(JSON.stringify(error));
+            console.log("LoginScreen - checkToken - 15");
+            if (error.response.data != undefined && error.response.data.message != undefined) {
+              console.log("LoginScreen - checkToken - 16");
+              if(error.response.data.message == 'TRIAL_EXPIRED') {
+                console.log("LoginScreen - checkToken - 17");
+                Alert.alert(
+                  'Atención',
+                  'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+                  [{text: 'Ok'},],
+                  { cancelable: false }
+                );
+                navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
+                setLoading(false);
+                return ;
+              } else {
+                console.log("LoginScreen - checkToken - 18");
+                // show alert
+                Alert.alert(
+                  'Atención',
+                  'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                  [{text: 'Ok'},],
+                  { cancelable: false }
+                );
+                return ;
+              }
+            } else {
+              console.log("LoginScreen - checkToken - 19");
+              // show alert
+              Alert.alert(
+                'Atención',
+                'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                [{text: 'Ok'},],
+                { cancelable: false }
+              );
+              return ;
+            }
+          });
         } else {
+          console.log("LoginScreen - checkToken - 20");
           navigation.replace('TraineeMainScreen', {userToken: tokenValue});
         }
       } else {
+        console.log("LoginScreen - checkToken - 21");
         setLoading(false);
       }
     } catch(e) {
+      console.log("LoginScreen - checkToken - 22");
+      console.log(e);
+      console.log("LoginScreen - checkToken - 23");
+      console.log(JSON.stringify(e));
+      console.log("LoginScreen - checkToken - 24");
       setLoading(false);
     }
   }
@@ -121,19 +266,21 @@ const LoginScreen = ({ navigation }) => {
       console.log(JSON.stringify(response));
       console.log("LoginScreen - 2\n\n\n");
       if (isTrainer) {
-        let date2DaysInFutureFromToday = new Date((new Date()).getTime() + 1000*60*60*24*2);
+        let date2DaysInPastFromToday = new Date((new Date()).getTime() - 1000*60*60*24*2);
         console.log("LoginScreen - 3");
         console.log(response.data.isInTrial);
         console.log((new Date(response.data.trialStartDate)).getTime());
-        console.log(date2DaysInFutureFromToday.getTime());
+        console.log(date2DaysInPastFromToday.getTime());
         console.log(response.data.isInTrial == true);
-        console.log((new Date(response.data.trialStartDate)).getTime() < date2DaysInFutureFromToday.getTime());
-        console.log("LoginScreen - 4\n\n");
-        if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() < date2DaysInFutureFromToday.getTime()) {
+        console.log((new Date(response.data.trialStartDate)).getTime() < date2DaysInPastFromToday.getTime());
+        console.log("LoginScreen - 4");
+        if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() > date2DaysInPastFromToday.getTime()) {
           // user still in trial, so can log in
+          console.log("LoginScreen - 4.1");
           saveToken(response.data.token);
           return ;
         } else {
+          console.log("LoginScreen - 4.2");
           // user without plan or out of trial. Should purchase a suscription
           let customerInfo = await Purchases.getCustomerInfo();
           if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
@@ -242,7 +389,11 @@ const LoginScreen = ({ navigation }) => {
                 [{text: 'Ok'},],
                 { cancelable: false }
               );
-              navigation.navigate('PaywallScreen', {email: email});
+              let trialAlreadyUsed = false;
+              if (response != undefined && response.data != undefined && response.data.isInTrial != undefined) {
+                trialAlreadyUsed = response.data.isInTrial;
+              }
+              navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: trialAlreadyUsed});
               setLoading(false);
               return ;
             }

@@ -220,6 +220,14 @@ const RegisterScreen = ({ navigation }) => {
               { cancelable: false }
             );
             return ;
+          } else if (error.response.data.message == 'TRAINER_MAX_CLIENTS_EXCEEDED') {
+            Alert.alert(
+              'Atención',
+              'Tu entrenador ha alcanzado el número máximo de clientes que puede gestionar a través de Treina. Contacta con él o ella para que amplíe su plan en Treina y pueda admitir más clientes.',
+              [{text: 'Ok'},],
+              { cancelable: false }
+            );
+            return ;
           } else if (error.response.data.message == 'USER_NOT_ACTIVE') {
             /*Alert.alert(
               'Atención',

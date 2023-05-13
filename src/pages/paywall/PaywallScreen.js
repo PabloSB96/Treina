@@ -21,16 +21,23 @@ const PaywallScreen = ({ navigation, route }) => {
       try {
         let offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-          let trial = {
-            product: {
-              identifier: configuration.TRIAL_ID,
-              title: 'Prueba de 3 días', 
-              description: 'Prueba gratis la aplicación durante 3 días', 
-              priceString: '0.00 €'
-            },
-            identifier: "TRIAL"
-          };
-          offerings.current.availablePackages.splice(0, 0, trial);
+          console.log("PaywallScreen - 1.1");
+          console.log(route);
+          console.log("PaywallScreen - 1.2");
+          console.log(JSON.stringify(route));
+          console.log("PaywallScreen - 1.3");
+          if (!(route != undefined && route.params != undefined && route.params.trialAlreadyUsed != undefined && route.params.trialAlreadyUsed == true)) {
+            let trial = {
+              product: {
+                identifier: configuration.TRIAL_ID,
+                title: 'Prueba de 3 días', 
+                description: 'Prueba gratis la aplicación durante 3 días', 
+                priceString: '0.00 €'
+              },
+              identifier: "TRIAL"
+            };
+            offerings.current.availablePackages.splice(0, 0, trial);
+          }
           console.log("PaywallScreen - 2");
           console.log(JSON.stringify(offerings.current.availablePackages));
           console.log("PaywallScreen - 3");
