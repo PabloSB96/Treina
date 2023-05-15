@@ -101,6 +101,10 @@ const ProfileTab = ({ navigation, route }) => {
     });
   }
 
+  let changeAccountPlan = () => {
+    navigation.navigate('PaywallScreen', {email: myProfile.email, trialAlreadyUsed: true, changePlanAction: true});
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -193,11 +197,30 @@ const ProfileTab = ({ navigation, route }) => {
                       </View>
 
                       <Mybutton
+                        text="Cambiar plan de la cuenta"
+                        title="Cambiar plan de la cuenta"
+                        estilos={{
+                            marginTop: 40,
+                            marginBottom: 20
+                        }}
+                        customClick={async () => {
+                          Alert.alert(
+                            'Atención',
+                            '¿Está seguro que deseas cambiar el plan de tu cuenta?',
+                            [{text: 'Confirmar', onPress: () => {
+                              changeAccountPlan();
+                            }}, {text: 'Cancelar'}],
+                            { cancelable: false }
+                          );
+                        }}
+                      />
+
+                      <Mybutton
                         text="Eliminar cuenta"
                         title="Eliminar cuenta"
                         estilos={{
-                            marginTop: 40,
-                            marginBottom: 50
+                            marginTop: 10,
+                            marginBottom: 20
                         }}
                         customClick={async () => {
                           Alert.alert(
@@ -215,7 +238,7 @@ const ProfileTab = ({ navigation, route }) => {
                         text="Cerrar sesión"
                         title="Cerrar sesión"
                         estilos={{
-                            marginTop: 40,
+                            marginTop: 10,
                             marginBottom: 50
                         }}
                         customClick={async () => {

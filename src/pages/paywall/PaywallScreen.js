@@ -11,6 +11,8 @@ const PaywallScreen = ({ navigation, route }) => {
   // - State for all available package
   const [packages, setPackages] = useState([]);
 
+  let [infoClient, setInfoClient] = useState();
+
   // - State for displaying an overlay view
   const [isPurchasing, setIsPurchasing] = useState(false);
 
@@ -18,29 +20,40 @@ const PaywallScreen = ({ navigation, route }) => {
     // Get current available packages
     const getPackages = async () => {
       console.log("\n\n\nPaywallScreen - 1");
+      let infoCliente = await Purchases.getCustomerInfo();
+      setInfoClient(infoCliente);
+      // console.log(JSON.stringify(infoCliente));
+      // console.log("PaywallScreen - 2");
+      // if (infoCliente.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+      //   console.log(infoCliente.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier);
+      //   console.log("PaywallScreen - 3");
+      //   console.log(infoCliente.entitlements.active[configuration.ENTITLEMENT_ID].latestPurchaseDate);
+      //   console.log("\n\n\nPaywallScreen - 3");
+      // }
+      //console.log("\n\n\nPaywallScreen - 1");
       try {
         let offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-          console.log("PaywallScreen - 1.1");
-          console.log(route);
-          console.log("PaywallScreen - 1.2");
-          console.log(JSON.stringify(route));
-          console.log("PaywallScreen - 1.3");
+          //console.log("PaywallScreen - 1.1");
+          //console.log(route);
+          //console.log("PaywallScreen - 1.2");
+          //console.log(JSON.stringify(route));
+          //console.log("PaywallScreen - 1.3");
           if (!(route != undefined && route.params != undefined && route.params.trialAlreadyUsed != undefined && route.params.trialAlreadyUsed == true)) {
             let trial = {
               product: {
                 identifier: configuration.TRIAL_ID,
-                title: 'Prueba de 3 días', 
-                description: 'Prueba gratis la aplicación durante 3 días', 
+                title: 'Prueba de ' + configuration.TRIAL_NUMBER_DAYS + ' días', 
+                description: 'Prueba gratis la aplicación durante ' + configuration.TRIAL_NUMBER_DAYS + ' días', 
                 priceString: '0.00 €'
               },
               identifier: "TRIAL"
             };
             offerings.current.availablePackages.splice(0, 0, trial);
           }
-          console.log("PaywallScreen - 2");
-          console.log(JSON.stringify(offerings.current.availablePackages));
-          console.log("PaywallScreen - 3");
+          //console.log("PaywallScreen - 2");
+          //console.log(JSON.stringify(offerings.current.availablePackages));
+          //console.log("PaywallScreen - 3");
           setPackages(offerings.current.availablePackages);
         }
       } catch (e) {
@@ -93,7 +106,7 @@ const PaywallScreen = ({ navigation, route }) => {
         {/* The paywall flat list displaying each package */}
         <FlatList
           data={packages}
-          renderItem={({ item }) => <PackageItem purchasePackage={item} setIsPurchasing={setIsPurchasing} email={route.params.email} />}
+          renderItem={({ item }) => <PackageItem purchasePackage={item} setIsPurchasing={setIsPurchasing} email={route.params.email} infoClient={infoClient} />}
           keyExtractor={(item) => item.identifier}
           ListHeaderComponent={header}
           ListHeaderComponentStyle={styles.headerFooterContainer}
