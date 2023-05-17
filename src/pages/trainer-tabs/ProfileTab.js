@@ -20,6 +20,7 @@ import MyActionButton from '../components/MyActionButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { configuration } from '../configuration';
+import Purchases from 'react-native-purchases';
 
 const ProfileTab = ({ navigation, route }) => {
 
@@ -58,8 +59,21 @@ const ProfileTab = ({ navigation, route }) => {
     return result;
   }
 
-  let getMyProfileInfo = () => {
-    axios.post(`${configuration.BASE_URL}/trainer/profile`, {}, {
+  let getMyProfileInfo = async () => {
+    const customerInfo = await Purchases.getCustomerInfo();
+    let customerPurchase = null;
+    console.log("ProfileTab - getMyProfileInfo - 1");
+    console.log(JSON.stringify(customerInfo));
+    console.log("ProfileTab - getMyProfileInfo - 2");
+    if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
+      customerPurchase = customerInfo.entitlements.active[configuration.ENTITLEMENT_ID];
+      console.log("ProfileTab - getMyProfileInfo - 3");
+      console.log(JSON.stringify(customerPurchase));
+      console.log("ProfileTab - getMyProfileInfo - 4");
+    }
+    axios.post(`${configuration.BASE_URL}/trainer/profile`, {
+      revenuecat: customerPurchase
+    }, {
       headers: {
         token: route.params.userToken
       }

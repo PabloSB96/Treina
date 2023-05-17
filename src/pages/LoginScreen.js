@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
+  useEffect(async () => {
     checkConfig();
     //Purchases.setDebugLogsEnabled(true);
     initPurchases();
@@ -187,7 +187,7 @@ const LoginScreen = ({ navigation }) => {
                 });
               }
             }
-          }).catch((error) => {
+          }).catch(async (error) => {
             console.log("LoginScreen - checkToken - 13");
             console.log(error);
             console.log("LoginScreen - checkToken - 14");
@@ -196,16 +196,25 @@ const LoginScreen = ({ navigation }) => {
             if (error.response.data != undefined && error.response.data.message != undefined) {
               console.log("LoginScreen - checkToken - 16");
               if(error.response.data.message == 'TRIAL_EXPIRED') {
-                console.log("LoginScreen - checkToken - 17");
-                Alert.alert(
-                  'Atención',
-                  'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
-                  [{text: 'Ok'},],
-                  { cancelable: false }
-                );
-                navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
-                setLoading(false);
-                return ;
+                const customerInfo = await Purchases.getCustomerInfo();
+                if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+                  console.log("LoginScreen - checkToken - 17");
+                  Alert.alert(
+                    'Atención',
+                    'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+                    [{text: 'Ok'},],
+                    { cancelable: false }
+                  );
+                  navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
+                  setLoading(false);
+                  return ;
+                } else {
+                  // Customer has expired trial but has already a active suscription
+                  saveToken(tokenValue);
+                  return ;
+                  // TODO
+                }
+                
               } else {
                 console.log("LoginScreen - checkToken - 18");
                 // show alert
