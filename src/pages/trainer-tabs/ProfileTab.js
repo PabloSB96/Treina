@@ -82,6 +82,11 @@ const ProfileTab = ({ navigation, route }) => {
       setMyProfile(response.data);
       return ;
     }).catch((error) => {
+      console.log("ProfileTab - getMyProfileInfo - error - 1");
+      console.log(error);
+      console.log("ProfileTab - getMyProfileInfo - error - 2");
+      console.log(JSON.stringify(error));
+      console.log("ProfileTab - getMyProfileInfo - error - 3");
       setLoading(false);
       Alert.alert(
         'Atención',
