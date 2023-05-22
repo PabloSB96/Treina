@@ -19,26 +19,11 @@ const PaywallScreen = ({ navigation, route }) => {
   useEffect(() => {
     // Get current available packages
     const getPackages = async () => {
-      console.log("\n\n\nPaywallScreen - 1");
       let infoCliente = await Purchases.getCustomerInfo();
       setInfoClient(infoCliente);
-      // console.log(JSON.stringify(infoCliente));
-      // console.log("PaywallScreen - 2");
-      // if (infoCliente.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
-      //   console.log(infoCliente.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier);
-      //   console.log("PaywallScreen - 3");
-      //   console.log(infoCliente.entitlements.active[configuration.ENTITLEMENT_ID].latestPurchaseDate);
-      //   console.log("\n\n\nPaywallScreen - 3");
-      // }
-      //console.log("\n\n\nPaywallScreen - 1");
       try {
         let offerings = await Purchases.getOfferings();
         if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-          //console.log("PaywallScreen - 1.1");
-          //console.log(route);
-          //console.log("PaywallScreen - 1.2");
-          //console.log(JSON.stringify(route));
-          //console.log("PaywallScreen - 1.3");
           if (!(route != undefined && route.params != undefined && route.params.trialAlreadyUsed != undefined && route.params.trialAlreadyUsed == true)) {
             let trial = {
               product: {
@@ -51,9 +36,6 @@ const PaywallScreen = ({ navigation, route }) => {
             };
             offerings.current.availablePackages.splice(0, 0, trial);
           }
-          //console.log("PaywallScreen - 2");
-          //console.log(JSON.stringify(offerings.current.availablePackages));
-          //console.log("PaywallScreen - 3");
           setPackages(offerings.current.availablePackages);
         }
       } catch (e) {

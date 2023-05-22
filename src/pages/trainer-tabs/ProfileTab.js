@@ -62,14 +62,8 @@ const ProfileTab = ({ navigation, route }) => {
   let getMyProfileInfo = async () => {
     const customerInfo = await Purchases.getCustomerInfo();
     let customerPurchase = null;
-    console.log("ProfileTab - getMyProfileInfo - 1");
-    console.log(JSON.stringify(customerInfo));
-    console.log("ProfileTab - getMyProfileInfo - 2");
     if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
       customerPurchase = customerInfo.entitlements.active[configuration.ENTITLEMENT_ID];
-      console.log("ProfileTab - getMyProfileInfo - 3");
-      console.log(JSON.stringify(customerPurchase));
-      console.log("ProfileTab - getMyProfileInfo - 4");
     }
     axios.post(`${configuration.BASE_URL}/trainer/profile`, {
       revenuecat: customerPurchase
@@ -82,11 +76,6 @@ const ProfileTab = ({ navigation, route }) => {
       setMyProfile(response.data);
       return ;
     }).catch((error) => {
-      console.log("ProfileTab - getMyProfileInfo - error - 1");
-      console.log(error);
-      console.log("ProfileTab - getMyProfileInfo - error - 2");
-      console.log(JSON.stringify(error));
-      console.log("ProfileTab - getMyProfileInfo - error - 3");
       setLoading(false);
       Alert.alert(
         'Atención',

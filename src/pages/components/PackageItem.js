@@ -16,18 +16,9 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email, infoClient}) => {
   const onSelection = async () => {
     setIsPurchasing(true);
 
-    console.log("\n\n\nPackageItem - 1");
-    console.log("identifier: " + identifier);
-    console.log("description: " + description);
-    console.log("priceString: " + priceString);
-    console.log("email: " + email);
-    console.log("PackageItem - 2\n\n\n");
-    console.log("\n\nPackageItem - suscription comprada correctamente - 1");
     if (identifier == configuration.TRIAL_ID) {
-      console.log("PackageItem - suscription comprada correctamente - 2");
       // user purchased trial package
       // just register the trial with specific end point
-      console.log("\n\n\nPackageItem - register /plan/trial\n\n\n");
       axios.post(`${configuration.BASE_URL}/plan/trial`, {
         email: email
       }).then((response) => {
@@ -41,22 +32,12 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email, infoClient}) => {
         return ;
       });
     } else {
-      console.log("PackageItem - suscription comprada correctamente - 3");
       try {
         const { purchaserInfo } = await Purchases.purchasePackage(purchasePackage);
 
-        console.log("PackageItem - suscription comprada correctamente - 3.1");
-        console.log(JSON.stringify(purchaserInfo));
-        console.log("PackageItem - suscription comprada correctamente - 3.2");
-
         let customerInfo = await Purchases.getCustomerInfo();
 
-        console.log("PackageItem - suscription comprada correctamente - 3.3");
-        console.log(customerInfo);
-        console.log("PackageItem - suscription comprada correctamente - 3.4");
-
         if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
-          console.log("PackageItem - suscription comprada correctamente - 4");
           axios.post(`${configuration.BASE_URL}/registerPurchaseError`, {
             email: email,
             revenuecat: purchasePackage,
@@ -72,9 +53,6 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email, infoClient}) => {
             return ;
           });
         } else {
-          console.log("PackageItem - suscription comprada correctamente - 5");
-          console.log(JSON.stringify(customerInfo));
-          console.log("PackageItem - suscription comprada correctamente - 6");
           // Update treina-service with the information about the purchasePackage (package that was purchased)
           // TODO: call service /plan/register
           axios.post(`${configuration.BASE_URL}/plan/register`, {
@@ -82,25 +60,16 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email, infoClient}) => {
             revenuecat: customerInfo
           }).then((response) => {
             // GO TO LOGIN
-            console.log("PackageItem - suscription comprada correctamente - 10");
-            console.log(JSON.stringify(response));
-            console.log("PackageItem - suscription comprada correctamente - 11");
             Alert.alert('Cuenta registrada correctamente', 'Su cuenta ha sido activada correctamente. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
             navigation.replace('LoginScreen');
             return ;
           }).catch((error) => {
-            console.log("PackageItem - suscription comprada correctamente - 12");
-            console.log(JSON.stringify(error));
-            console.log("PackageItem - suscription comprada correctamente - 13");
             Alert.alert('Cuenta registrada', 'Su cuenta ha sido activada. A continuación inicia sesión y ¡empieza a gestionar tus clientes!');
             navigation.replace('LoginScreen');
             return ;
           });
         }
       } catch (e) {
-        console.log("PackageItem - suscription comprada correctamente - 7");
-        console.log(JSON.stringify(e));
-        console.log("PackageItem - suscription comprada correctamente - 8");
         if (!e.userCancelled) {
           //Alert.alert('Error purchasing package', e.message);
           // CÓDIGO PROVISIONAL PARA SIMULAR COMPORTAMIENTO CORRECTO

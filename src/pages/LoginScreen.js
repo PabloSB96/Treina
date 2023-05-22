@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     checkConfig();
     //Purchases.setDebugLogsEnabled(true);
     initPurchases();
@@ -66,25 +66,11 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let checkToken = async () => {
-    console.log("LoginScreen - checkToken - 1");
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
-      console.log("LoginScreen - checkToken - 1.1");
-      console.log(tokenValue);
-      console.log("LoginScreen - checkToken - 1.2");
-      console.log(isTrainerAS);
-      console.log("LoginScreen - checkToken - 1.3");
-      console.log(JSON.stringify(tokenValue));
-      console.log("LoginScreen - checkToken - 1.4");
-      console.log(JSON.stringify(isTrainerAS));
-      console.log("LoginScreen - checkToken - 1.5");
       if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
-        console.log("LoginScreen - checkToken - 2");
-        console.log(isTrainerAS);
-        console.log("LoginScreen - checkToken - 2.1");
         if (isTrainerAS) {
-          console.log("LoginScreen - checkToken - 3");
           // check if user is in trial or needs to purchase something.
           axios.post(`${configuration.BASE_URL}/plan/check`, {}, {
             headers: {
@@ -92,14 +78,12 @@ const LoginScreen = ({ navigation }) => {
             }
           }).then(async (response) => {
             // check if he has a App Store valid subscription
-            console.log("LoginScreen - checkToken - 4");
             if (response != undefined && response.data != undefined && response.data.message && response.data.message == 'TRIAL_ACTIVE') {
               navigation.replace('TrainerMainScreen', {userToken: tokenValue});
               return ;
             } else {
               const customerInfo = await Purchases.getCustomerInfo();
               if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
-                console.log("LoginScreen - checkToken - 5");
                 Alert.alert(
                   'Atención',
                   'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
@@ -110,7 +94,6 @@ const LoginScreen = ({ navigation }) => {
                 setLoading(false);
                 return ;
               } else {
-                console.log("LoginScreen - checkToken - 6");
                 // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
                 axios.post(`${configuration.BASE_URL}/plan/activate`, {
                   email: email
@@ -119,7 +102,6 @@ const LoginScreen = ({ navigation }) => {
                     token: tokenValue
                   }
                 }).then((response) => {
-                  console.log("LoginScreen - checkToken - 7");
                   let standardProductTitle = '';
                   let standardProductPriceString = '';
                   switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
@@ -160,24 +142,13 @@ const LoginScreen = ({ navigation }) => {
                     }
                   }).then((response) => {
                     // GO TO LOGIN
-                    console.log("LoginScreen - checkToken - 8");
                     saveToken(response.data.token);
                     return ;
                   }).catch((error) => {
-                    console.log("LoginScreen - checkToken - 9");
-                    console.log(JSON.stringify(error));
-                    console.log("LoginScreen - checkToken - 9.1");
-                    console.log(JSON.stringify(response.data));
-                    console.log("LoginScreen - checkToken - 9.2");
                     saveToken(response.data.token);
                     return ;
                   });
                 }).catch((error) => {
-                  console.log("LoginScreen - checkToken - 10");
-                  console.log(error);
-                  console.log("LoginScreen - checkToken - 11");
-                  console.log(JSON.stringify(error));
-                  console.log("LoginScreen - checkToken - 12");
                   Alert.alert(
                     'Atención',
                     'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
@@ -188,17 +159,10 @@ const LoginScreen = ({ navigation }) => {
               }
             }
           }).catch(async (error) => {
-            console.log("LoginScreen - checkToken - 13");
-            console.log(error);
-            console.log("LoginScreen - checkToken - 14");
-            console.log(JSON.stringify(error));
-            console.log("LoginScreen - checkToken - 15");
             if (error.response.data != undefined && error.response.data.message != undefined) {
-              console.log("LoginScreen - checkToken - 16");
               if(error.response.data.message == 'TRIAL_EXPIRED') {
                 const customerInfo = await Purchases.getCustomerInfo();
                 if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
-                  console.log("LoginScreen - checkToken - 17");
                   Alert.alert(
                     'Atención',
                     'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
@@ -216,7 +180,6 @@ const LoginScreen = ({ navigation }) => {
                 }
                 
               } else {
-                console.log("LoginScreen - checkToken - 18");
                 // show alert
                 Alert.alert(
                   'Atención',
@@ -227,7 +190,6 @@ const LoginScreen = ({ navigation }) => {
                 return ;
               }
             } else {
-              console.log("LoginScreen - checkToken - 19");
               // show alert
               Alert.alert(
                 'Atención',
@@ -239,55 +201,27 @@ const LoginScreen = ({ navigation }) => {
             }
           });
         } else {
-          console.log("LoginScreen - checkToken - 20");
           navigation.replace('TraineeMainScreen', {userToken: tokenValue});
         }
       } else {
-        console.log("LoginScreen - checkToken - 21");
         setLoading(false);
       }
     } catch(e) {
-      console.log("LoginScreen - checkToken - 22");
-      console.log(e);
-      console.log("LoginScreen - checkToken - 23");
-      console.log(JSON.stringify(e));
-      console.log("LoginScreen - checkToken - 24");
       setLoading(false);
     }
   }
 
   let saveToken = async (token) => {
-    console.log("LoginScreen - saveToken - 1");
-    console.log(token);
-    console.log("LoginScreen - saveToken - 2");
-    console.log(isTrainer);
-    console.log("LoginScreen - saveToken - 3");
     let isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
-    console.log("LoginScreen - saveToken - 3.1");
-    console.log(isTrainerAS);
-    console.log("LoginScreen - saveToken - 3.2");
-    console.log(isTrainerAS != null);
-    console.log(isTrainerAS != undefined);
-    console.log(isTrainerAS != '');
-    console.log(isTrainerAS != null && isTrainerAS != undefined && isTrainerAS != '');
-    console.log("LoginScreen - saveToken - 3.3");
     if (isTrainerAS != null && isTrainerAS != undefined && isTrainerAS != '') {
       setIsTrainer(isTrainerAS);
     } else {
       isTrainerAS = isTrainer;
     }
-    console.log("LoginScreen - saveToken - 3.3");
-    console.log(isTrainer);
-    console.log("LoginScreen - saveToken - 3.4");
     try {
       await AsyncStorage.setItem('treina.token', token);
-      console.log("LoginScreen - saveToken - 3.5 - savedToken");
       await AsyncStorage.setItem('treina.isTrainer', JSON.stringify(isTrainerAS));
-      console.log("LoginScreen - saveToken - 3.6 - savedisTrainer");
     } catch(e){
-      console.log("LoginScreen - saveToken - 4");
-      console.log(JSON.stringify(e));
-      console.log("LoginScreen - saveToken - 5");
     }
 
     setLoading(false);
@@ -318,25 +252,13 @@ const LoginScreen = ({ navigation }) => {
       email: email.trim().toLowerCase(),
       password
     }).then(async (response) => {
-      console.log("\n\n\nLoginScreen - 1");
-      console.log(JSON.stringify(response));
-      console.log("LoginScreen - 2\n\n\n");
       if (isTrainer) {
         let dateDaysInPastFromToday = new Date((new Date()).getTime() - 1000 * 60 * 60 * 24 * configuration.TRIAL_NUMBER_DAYS);
-        console.log("LoginScreen - 3");
-        console.log(response.data.isInTrial);
-        console.log((new Date(response.data.trialStartDate)).getTime());
-        console.log(dateDaysInPastFromToday.getTime());
-        console.log(response.data.isInTrial == true);
-        console.log((new Date(response.data.trialStartDate)).getTime() < dateDaysInPastFromToday.getTime());
-        console.log("LoginScreen - 4");
         if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() > dateDaysInPastFromToday.getTime()) {
           // user still in trial, so can log in
-          console.log("LoginScreen - 4.1");
           saveToken(response.data.token);
           return ;
         } else {
-          console.log("LoginScreen - 4.2");
           // user without plan or out of trial. Should purchase a suscription
           let customerInfo = await Purchases.getCustomerInfo();
           if (customerInfo != null && customerInfo.entitlements != null && customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] != undefined) {
