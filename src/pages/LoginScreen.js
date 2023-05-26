@@ -43,20 +43,29 @@ const LoginScreen = ({ navigation }) => {
   let [errorPageText, setErrorPageText] = useState('');
 
   let checkConfig = async () => {
+    console.log("LoginScreen - checkConfig - 1");
     setLoading(true);
+    console.log("LoginScreen - checkConfig - 1");
     axios.post(`${configuration.BASE_URL}/config`, {
       appVersion: configuration.APP_VERSION,
     }).then((response) => {
+      console.log("LoginScreen - checkConfig - 2");
       checkToken();
     }).catch((error) => {
+      console.log("LoginScreen - checkConfig - 3");
+      console.log(JSON.stringify(error));
+      console.log("LoginScreen - checkConfig - 4");
       if (error.response.data != undefined && error.response.data != undefined) {
+        console.log("LoginScreen - checkConfig - 5");
         if(error.response.data == 'BAD_REQUEST') {
+          console.log("LoginScreen - checkConfig - 6");
           setLoading(false);
           
           setErrorPageText("Ha ocurrido un problema. Intentalo de nuevo más tarde o ponte en contacto con nuestro soporte.");
           setShowErrorPage(true);
           
         } else if (error.response.data == 'INTERNAL_ERROR') {
+          console.log("LoginScreen - checkConfig - 7");
           setLoading(false);    
           setErrorPageText("Ha ocurrido un problema. Por favor, comprueba que tengas la última versión de la aplicación instalada en tu dispositivo.");
           setShowErrorPage(true);
@@ -66,24 +75,33 @@ const LoginScreen = ({ navigation }) => {
   }
 
   let checkToken = async () => {
+    console.log("LoginScreen - checkToken - 1");
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
+      console.log("LoginScreen - checkToken - 2");
       if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
+        console.log("LoginScreen - checkToken - 3");
         if (isTrainerAS) {
+          console.log("LoginScreen - checkToken - 4");
           // check if user is in trial or needs to purchase something.
           axios.post(`${configuration.BASE_URL}/plan/check`, {}, {
             headers: {
               token: tokenValue
             }
           }).then(async (response) => {
+            console.log("LoginScreen - checkToken - 5");
             // check if he has a App Store valid subscription
             if (response != undefined && response.data != undefined && response.data.message && response.data.message == 'TRIAL_ACTIVE') {
+              console.log("LoginScreen - checkToken - 6");
               navigation.replace('TrainerMainScreen', {userToken: tokenValue});
               return ;
             } else {
+              console.log("LoginScreen - checkToken - 7");
               const customerInfo = await Purchases.getCustomerInfo();
+              console.log("LoginScreen - checkToken - 8");
               if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+                console.log("LoginScreen - checkToken - 9");
                 Alert.alert(
                   'Atención',
                   'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
@@ -94,6 +112,7 @@ const LoginScreen = ({ navigation }) => {
                 setLoading(false);
                 return ;
               } else {
+                console.log("LoginScreen - checkToken - 10");
                 // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
                 axios.post(`${configuration.BASE_URL}/plan/activate`, {
                   email: email
@@ -102,6 +121,7 @@ const LoginScreen = ({ navigation }) => {
                     token: tokenValue
                   }
                 }).then((response) => {
+                  console.log("LoginScreen - checkToken - 11");
                   let standardProductTitle = '';
                   let standardProductPriceString = '';
                   switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
@@ -142,13 +162,20 @@ const LoginScreen = ({ navigation }) => {
                     }
                   }).then((response) => {
                     // GO TO LOGIN
+                    console.log("LoginScreen - checkToken - 12");
                     saveToken(response.data.token);
                     return ;
                   }).catch((error) => {
+                    console.log("LoginScreen - checkToken - 13");
+                    console.log(JSON.stringify(error));
+                    console.log("LoginScreen - checkToken - 14");
                     saveToken(response.data.token);
                     return ;
                   });
                 }).catch((error) => {
+                  console.log("LoginScreen - checkToken - 15");
+                  console.log(JSON.stringify(error));
+                  console.log("LoginScreen - checkToken - 16");
                   Alert.alert(
                     'Atención',
                     'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
@@ -159,7 +186,11 @@ const LoginScreen = ({ navigation }) => {
               }
             }
           }).catch(async (error) => {
+            console.log("LoginScreen - checkToken - 17");
+            console.log(JSON.stringify(error));
+            console.log("LoginScreen - checkToken - 18");
             if (error.response.data != undefined && error.response.data.message != undefined) {
+              console.log("LoginScreen - checkToken - 19");
               if(error.response.data.message == 'TRIAL_EXPIRED') {
                 const customerInfo = await Purchases.getCustomerInfo();
                 if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
@@ -190,6 +221,7 @@ const LoginScreen = ({ navigation }) => {
                 return ;
               }
             } else {
+              console.log("LoginScreen - checkToken - 20");
               // show alert
               Alert.alert(
                 'Atención',
@@ -201,12 +233,17 @@ const LoginScreen = ({ navigation }) => {
             }
           });
         } else {
+          console.log("LoginScreen - checkToken - 21");
           navigation.replace('TraineeMainScreen', {userToken: tokenValue});
         }
       } else {
+        console.log("LoginScreen - checkToken - 22");
         setLoading(false);
       }
     } catch(e) {
+      console.log("LoginScreen - checkToken - 23");
+      console.log(JSON.stringify(e));
+      console.log("LoginScreen - checkToken - 24");
       setLoading(false);
     }
   }
