@@ -111,7 +111,7 @@ const PackageItem = ({purchasePackage, setIsPurchasing, email, infoClient}) => {
       shadowRadius: 5, 
       elevation: 3, 
       shadowColor: '#222' }]}>
-      <View style={{flex: 1, flexDirection: 'row', ...Platform.select({ios: {flexDirection: 'column'}})}}>
+      <View style={{flex: 1, flexDirection: 'column', ...Platform.select({ios: {flexDirection: 'column'}})}}>
         {title != '' ? <Text style={styles.title}>{title}</Text> : null}
         {title == '' && identifier == 'treina_10_1m_0w0' ? <Text style={styles.title}>Plan Básico (mensual)</Text> : null}
         {title == '' && identifier == 'treina_15_1m_0w0' ? <Text style={styles.title}>Plan Premium (mensual)</Text> : null}
