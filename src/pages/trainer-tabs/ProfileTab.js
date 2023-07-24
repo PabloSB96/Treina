@@ -29,6 +29,7 @@ const ProfileTab = ({ navigation, route }) => {
   let [loading, setLoading] = useState(false);
   let [myProfile, setMyProfile] = useState();
   let [userToken, setUserToken] = useState();
+  let [purchasesEnabled, setPurchasesEnabled] = useState();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,8 +44,13 @@ const ProfileTab = ({ navigation, route }) => {
   useEffect(() => {
     setLoading(true);
     getMyProfileInfo();
-
+    getConfig();
   }, [isFocused]);
+
+  let getConfig = async () => {
+    let purchases = await AsyncStorage.getItem(configuration.PURCHASES_ENABLED);
+    setPurchasesEnabled(purchases);
+  }
 
   let getMyProfileInfoAux = () => {
     let result = {
@@ -185,7 +191,7 @@ const ProfileTab = ({ navigation, route }) => {
                           <Text style={[styles.elementText,]}>{myProfile.traineeNumber}</Text>
                         </View>
                       </View>
-                      <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{flex: 1, flexDirection: 'row', marginBottom: 40}}>
                         <Image
                           style={{flex: 1, resizeMode: 'contain', width: '100%', height: 100,}}
                           source={logoElementLogo}
@@ -196,7 +202,11 @@ const ProfileTab = ({ navigation, route }) => {
                             <View>
                               {myProfile.isInTrial ? (
                                 <Text style={[styles.elementText,]}>Plan de prueba</Text>
-                              ) : null}
+                              ) : <View>
+                                    {purchasesEnabled == 'false' ? (
+                                      <Text style={[styles.elementText,]}>Plan gratuíto</Text>
+                                    ) : null}
+                                  </View>}
                             </View>
                           ) : (
                             <Text style={[styles.elementText,]}>{myProfile.plan.title}</Text>
@@ -204,24 +214,25 @@ const ProfileTab = ({ navigation, route }) => {
                         </View>
                       </View>
 
-                      <Mybutton
-                        text="Cambiar plan de la cuenta"
-                        title="Cambiar plan de la cuenta"
-                        estilos={{
-                            marginTop: 40,
-                            marginBottom: 20
-                        }}
-                        customClick={async () => {
-                          Alert.alert(
-                            'Atención',
-                            '¿Está seguro que deseas cambiar el plan de tu cuenta?',
-                            [{text: 'Confirmar', onPress: () => {
-                              changeAccountPlan();
-                            }}, {text: 'Cancelar'}],
-                            { cancelable: false }
-                          );
-                        }}
-                      />
+                      {purchasesEnabled != 'false' ? (
+                        <Mybutton
+                          text="Cambiar plan de la cuenta"
+                          title="Cambiar plan de la cuenta"
+                          estilos={{
+                              marginBottom: 20
+                          }}
+                          customClick={async () => {
+                            Alert.alert(
+                              'Atención',
+                              '¿Está seguro que deseas cambiar el plan de tu cuenta?',
+                              [{text: 'Confirmar', onPress: () => {
+                                changeAccountPlan();
+                              }}, {text: 'Cancelar'}],
+                              { cancelable: false }
+                            );
+                          }}
+                        />
+                      ) : null}
 
                       <Mybutton
                         text="Eliminar cuenta"

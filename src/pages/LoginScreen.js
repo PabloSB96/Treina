@@ -48,8 +48,28 @@ const LoginScreen = ({ navigation }) => {
     //console.log("LoginScreen - checkConfig - 1");
     axios.post(`${configuration.BASE_URL}/config`, {
       appVersion: configuration.APP_VERSION,
-    }).then((response) => {
+    }).then(async (response) => {
       //console.log("LoginScreen - checkConfig - 2");
+      // Save purchases.enabled config variable
+      try {
+        let configs = response.data;
+        console.log("LoginScreen - checkConfig - 1");
+        console.log(configs);
+        console.log("LoginScreen - checkConfig - 2");
+        console.log(JSON.stringify(configs));
+        console.log("LoginScreen - checkConfig - 3");
+        let purchasesEnabled = 'false';
+        if (configs != undefined) {
+          for (let i = 0; i < configs.length; i++) {
+            if (configs[i].name == configuration.PURCHASES_ENABLED) {
+              purchasesEnabled = configs[i].value;
+              break;
+            }
+          }
+        }
+        await AsyncStorage.setItem(configuration.PURCHASES_ENABLED, purchasesEnabled);
+      } catch(e){
+      }
       checkToken();
     }).catch((error) => {
       //console.log("LoginScreen - checkConfig - 3");
@@ -79,124 +99,37 @@ const LoginScreen = ({ navigation }) => {
     try {
       const tokenValue = await AsyncStorage.getItem('treina.token');
       const isTrainerAS = JSON.parse(await AsyncStorage.getItem('treina.isTrainer'));
+      const purchasesEnabled = await AsyncStorage.getItem(configuration.PURCHASES_ENABLED);
+      console.log("LoginScreen - checkToken - 1");
+      console.log(purchasesEnabled);
+      console.log("LoginScreen - checkToken - 2");
       //console.log("LoginScreen - checkToken - 2");
       if (tokenValue != null && tokenValue != undefined && isTrainerAS != null && isTrainerAS != undefined) {
         //console.log("LoginScreen - checkToken - 3");
         if (isTrainerAS) {
-          //console.log("LoginScreen - checkToken - 4");
-          // check if user is in trial or needs to purchase something.
-          axios.post(`${configuration.BASE_URL}/plan/check`, {}, {
-            headers: {
-              token: tokenValue
-            }
-          }).then(async (response) => {
-            //console.log("LoginScreen - checkToken - 5");
-            // check if he has a App Store valid subscription
-            if (response != undefined && response.data != undefined && response.data.message && response.data.message == 'TRIAL_ACTIVE') {
-              //console.log("LoginScreen - checkToken - 6");
-              navigation.replace('TrainerMainScreen', {userToken: tokenValue});
-              return ;
-            } else {
-              //console.log("LoginScreen - checkToken - 7");
-              const customerInfo = await Purchases.getCustomerInfo();
-              //console.log("LoginScreen - checkToken - 8");
-              if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
-                //console.log("LoginScreen - checkToken - 9");
-                Alert.alert(
-                  'Atención',
-                  'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
-                  [{text: 'Ok'},],
-                  { cancelable: false }
-                );
-                navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
-                setLoading(false);
+          if (purchasesEnabled != 'false') {
+            //console.log("LoginScreen - checkToken - 4");
+            // check if user is in trial or needs to purchase something.
+            axios.post(`${configuration.BASE_URL}/plan/check`, {}, {
+              headers: {
+                token: tokenValue
+              }
+            }).then(async (response) => {
+              //console.log("LoginScreen - checkToken - 5");
+              // check if he has a App Store valid subscription
+              if (response != undefined && response.data != undefined && response.data.message && response.data.message == 'TRIAL_ACTIVE') {
+                //console.log("LoginScreen - checkToken - 6");
+                navigation.replace('TrainerMainScreen', {userToken: tokenValue});
                 return ;
               } else {
-                //console.log("LoginScreen - checkToken - 10");
-                // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
-                axios.post(`${configuration.BASE_URL}/plan/activate`, {
-                  email: email
-                }, {
-                  headers: {
-                    token: tokenValue
-                  }
-                }).then((response) => {
-                  //console.log("LoginScreen - checkToken - 11");
-                  let standardProductTitle = '';
-                  let standardProductPriceString = '';
-                  switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
-                    case 'treina_10_1m_0w0':
-                      standardProductTitle = 'Plan Básico (mensual)';
-                      standardProductPriceString = '9,99 €/mes';
-                      break;
-                    case 'treina_15_1m_0w0':
-                      standardProductTitle = 'Plan Premium (mensual)';
-                      standardProductPriceString = '14,99 €/mes';
-                      break;
-                    case 'treina_30_1m_0w0':
-                      standardProductTitle = 'Plan Empresarial (mensual)';
-                      standardProductPriceString = '29,99 €/mes';
-                      break;
-                    case 'treina_100_1y_0w0':
-                      standardProductTitle = 'Plan Básico (anual)';
-                      standardProductPriceString = '99,99 €/mes';
-                      break;
-                    case 'treina_150_1y_0w0':
-                      standardProductTitle = 'Plan Premium (anual)';
-                      standardProductPriceString = '150,00 €/mes';
-                      break;
-                    case 'treina_300_1y_0w0':
-                      standardProductTitle = 'Plan Empresarial (anual)';
-                      standardProductPriceString = '300,00 €/mes';
-                      break;
-                  }
-                  axios.post(`${configuration.BASE_URL}/plan/register`, {
-                    email: email,
-                    revenuecat: {
-                      product: {
-                        identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
-                        title: standardProductTitle,
-                        priceString: standardProductPriceString,
-                        customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
-                      }
-                    }
-                  }).then((response) => {
-                    // GO TO LOGIN
-                    //console.log("LoginScreen - checkToken - 12");
-                    saveToken(response.data.token);
-                    return ;
-                  }).catch((error) => {
-                    //console.log("LoginScreen - checkToken - 13");
-                    //console.log(JSON.stringify(error));
-                    //console.log("LoginScreen - checkToken - 14");
-                    saveToken(response.data.token);
-                    return ;
-                  });
-                }).catch((error) => {
-                  //console.log("LoginScreen - checkToken - 15");
-                  //console.log(JSON.stringify(error));
-                  //console.log("LoginScreen - checkToken - 16");
-                  Alert.alert(
-                    'Atención',
-                    'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
-                    [{text: 'Ok'},],
-                    { cancelable: false }
-                  );
-                });
-              }
-            }
-          }).catch(async (error) => {
-            //console.log("LoginScreen - checkToken - 17");
-            //console.log(JSON.stringify(error));
-            //console.log("LoginScreen - checkToken - 18");
-            if (error.response.data != undefined && error.response.data.message != undefined) {
-              //console.log("LoginScreen - checkToken - 19");
-              if(error.response.data.message == 'TRIAL_EXPIRED') {
+                //console.log("LoginScreen - checkToken - 7");
                 const customerInfo = await Purchases.getCustomerInfo();
+                //console.log("LoginScreen - checkToken - 8");
                 if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+                  //console.log("LoginScreen - checkToken - 9");
                   Alert.alert(
                     'Atención',
-                    'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+                    'Tu cuenta no está activada. A continuación puedes suscribirte a un plan para activarla y empezar a gestionar tus clientes.',
                     [{text: 'Ok'},],
                     { cancelable: false }
                   );
@@ -204,13 +137,116 @@ const LoginScreen = ({ navigation }) => {
                   setLoading(false);
                   return ;
                 } else {
-                  // Customer has expired trial but has already a active suscription
-                  saveToken(tokenValue);
-                  return ;
-                  // TODO
+                  //console.log("LoginScreen - checkToken - 10");
+                  // El usuario tiene su suscripción activa, así que lo activamos a través de servicio para dejarle entrar.
+                  axios.post(`${configuration.BASE_URL}/plan/activate`, {
+                    email: email
+                  }, {
+                    headers: {
+                      token: tokenValue
+                    }
+                  }).then((response) => {
+                    //console.log("LoginScreen - checkToken - 11");
+                    let standardProductTitle = '';
+                    let standardProductPriceString = '';
+                    switch (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier) {
+                      case 'treina_10_1m_0w0':
+                        standardProductTitle = 'Plan Básico (mensual)';
+                        standardProductPriceString = '9,99 €/mes';
+                        break;
+                      case 'treina_15_1m_0w0':
+                        standardProductTitle = 'Plan Premium (mensual)';
+                        standardProductPriceString = '14,99 €/mes';
+                        break;
+                      case 'treina_30_1m_0w0':
+                        standardProductTitle = 'Plan Empresarial (mensual)';
+                        standardProductPriceString = '29,99 €/mes';
+                        break;
+                      case 'treina_100_1y_0w0':
+                        standardProductTitle = 'Plan Básico (anual)';
+                        standardProductPriceString = '99,99 €/mes';
+                        break;
+                      case 'treina_150_1y_0w0':
+                        standardProductTitle = 'Plan Premium (anual)';
+                        standardProductPriceString = '150,00 €/mes';
+                        break;
+                      case 'treina_300_1y_0w0':
+                        standardProductTitle = 'Plan Empresarial (anual)';
+                        standardProductPriceString = '300,00 €/mes';
+                        break;
+                    }
+                    axios.post(`${configuration.BASE_URL}/plan/register`, {
+                      email: email,
+                      revenuecat: {
+                        product: {
+                          identifier: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID].productIdentifier,
+                          title: standardProductTitle,
+                          priceString: standardProductPriceString,
+                          customerInfoEntitlementsActivePro: customerInfo.entitlements.active[configuration.ENTITLEMENT_ID]
+                        }
+                      }
+                    }).then((response) => {
+                      // GO TO LOGIN
+                      //console.log("LoginScreen - checkToken - 12");
+                      saveToken(response.data.token);
+                      return ;
+                    }).catch((error) => {
+                      //console.log("LoginScreen - checkToken - 13");
+                      //console.log(JSON.stringify(error));
+                      //console.log("LoginScreen - checkToken - 14");
+                      saveToken(response.data.token);
+                      return ;
+                    });
+                  }).catch((error) => {
+                    //console.log("LoginScreen - checkToken - 15");
+                    //console.log(JSON.stringify(error));
+                    //console.log("LoginScreen - checkToken - 16");
+                    Alert.alert(
+                      'Atención',
+                      'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                      [{text: 'Ok'},],
+                      { cancelable: false }
+                    );
+                  });
                 }
-                
+              }
+            }).catch(async (error) => {
+              //console.log("LoginScreen - checkToken - 17");
+              //console.log(JSON.stringify(error));
+              //console.log("LoginScreen - checkToken - 18");
+              if (error.response.data != undefined && error.response.data.message != undefined) {
+                //console.log("LoginScreen - checkToken - 19");
+                if(error.response.data.message == 'TRIAL_EXPIRED') {
+                  const customerInfo = await Purchases.getCustomerInfo();
+                  if (customerInfo.entitlements.active[configuration.ENTITLEMENT_ID] == undefined) {
+                    Alert.alert(
+                      'Atención',
+                      'Su período de prueba ha expirado. Suscríbete a alguno de nuestros planes para poder iniciar sesión. En caso de que creas que ya tienes una suscripción activa, contacta con nosotros en: treina.ayuda@gmail.com',
+                      [{text: 'Ok'},],
+                      { cancelable: false }
+                    );
+                    navigation.navigate('PaywallScreen', {email: email, trialAlreadyUsed: true});
+                    setLoading(false);
+                    return ;
+                  } else {
+                    // Customer has expired trial but has already a active suscription
+                    saveToken(tokenValue);
+                    return ;
+                    // TODO
+                  }
+                  
+                } else {
+                  // show alert
+                  Alert.alert(
+                    'Atención',
+                    'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
+                    [{text: 'Ok'},],
+                    { cancelable: false }
+                  );
+                  return ;
+                }
               } else {
+                //console.log("LoginScreen - checkToken - 20");
                 // show alert
                 Alert.alert(
                   'Atención',
@@ -220,18 +256,11 @@ const LoginScreen = ({ navigation }) => {
                 );
                 return ;
               }
-            } else {
-              //console.log("LoginScreen - checkToken - 20");
-              // show alert
-              Alert.alert(
-                'Atención',
-                'Ha ocurrido un problema. Inténtalo de nuevo más tarde o contáctanos en: treina.ayuda@gmail.com',
-                [{text: 'Ok'},],
-                { cancelable: false }
-              );
-              return ;
-            }
-          });
+            });
+          } else {
+            navigation.replace('TrainerMainScreen', {userToken: tokenValue});
+            return ;
+          }
         } else {
           //console.log("LoginScreen - checkToken - 21");
           navigation.replace('TraineeMainScreen', {userToken: tokenValue});
@@ -289,9 +318,14 @@ const LoginScreen = ({ navigation }) => {
       email: email.trim().toLowerCase(),
       password
     }).then(async (response) => {
+      const purchasesEnabled = await AsyncStorage.getItem(configuration.PURCHASES_ENABLED);
       if (isTrainer) {
         let dateDaysInPastFromToday = new Date((new Date()).getTime() - 1000 * 60 * 60 * 24 * configuration.TRIAL_NUMBER_DAYS);
-        if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() > dateDaysInPastFromToday.getTime()) {
+        if (purchasesEnabled == 'false') {
+          // purchases are disabled, so anyone can log in
+          saveToken(response.data.token);
+          return ;
+        } else if (response != undefined && response.data != undefined && response.data.isInTrial != undefined && response.data.trialStartDate != undefined && response.data.isInTrial == true && (new Date(response.data.trialStartDate)).getTime() > dateDaysInPastFromToday.getTime()) {
           // user still in trial, so can log in
           saveToken(response.data.token);
           return ;

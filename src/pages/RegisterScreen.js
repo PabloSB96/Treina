@@ -198,8 +198,9 @@ const RegisterScreen = ({ navigation }) => {
         height: heightNumber,
         weight: weightNumber,
         trainerCode
-      }).then((response) => {
-        if (isTrainer) {
+      }).then(async (response) => {
+        const purchasesEnabled = await AsyncStorage.getItem(configuration.PURCHASES_ENABLED);
+        if (isTrainer && purchasesEnabled != 'false') {
           initPurchases();
         } else {
           saveToken(response.data.token, isTrainer);
