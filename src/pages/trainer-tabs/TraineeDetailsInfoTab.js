@@ -22,6 +22,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { set } from 'react-native-reanimated';
 
 import { configuration } from '../configuration';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TraineeDetailsInfoTab = ({ navigation, route }) => {
 
@@ -37,11 +38,18 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
   let [currentDay, setCurrentDay] = useState(0);
   let [weightChartLabels, setWeightChartLabels] = useState([]);
   let [weightChartValues, setWeightChartValues] = useState([]);
+  let [chartsEnabled, setChartsEnabled] = useState();
 
   useEffect(() => {
     setLoading(true);
     getMyHistory();
+    loadConfig();
   }, [isFocused]);
+
+  let loadConfig = async () => {
+    let chartsEnabledVar = await AsyncStorage.getItem(configuration.CHARTS_ENABLED);
+    setChartsEnabled(chartsEnabledVar);
+  }
 
   let getMyHistoryAux = () => {
     let obj1 = {
@@ -348,7 +356,7 @@ const TraineeDetailsInfoTab = ({ navigation, route }) => {
                             </DataTable>
                           </ScrollView>
                         </View>
-                        {weightChartValues != undefined ? (
+                        {(weightChartValues != undefined && chartsEnabled == 'true' ) ? (
                           <View>
                             <View><Text style={[styles.titleText, {flex: 1}]}>Información física - Evolución peso</Text></View>
                             <ScrollView horizontal={true}>
